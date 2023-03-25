@@ -20,28 +20,55 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
+  <meta name="description" content="4  title:golang基础教程description: golang的基本语法categories:  [编程语言基础]       golang基础教程第一部分为：golang的基础语法：数据与方法，数据结构与算法、外部库的管理与使用、应用级编程。 第二部分为：golang的特性 第三部分为：golang的应用：golang与数据库的交互；golang的web请求； 参考资料： 8小时转">
+<meta property="og:type" content="article">
 <meta property="og:title" content="WenYa Yu Blog">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:url" content="http://example.com/2023/03/15/golang%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/index.html">
 <meta property="og:site_name" content="WenYa Yu Blog">
+<meta property="og:description" content="4  title:golang基础教程description: golang的基本语法categories:  [编程语言基础]       golang基础教程第一部分为：golang的基础语法：数据与方法，数据结构与算法、外部库的管理与使用、应用级编程。 第二部分为：golang的特性 第三部分为：golang的应用：golang与数据库的交互；golang的web请求； 参考资料： 8小时转">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230316002007968.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230316002105627.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230316002044290.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230316002140305.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230315232405998.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230315230929017.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/640">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230317150608883.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230317155426309.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318143813507.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318203926697.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318204057735.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318204306210.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318204631254.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318204803501.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318204939721.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318205048675.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318205210487.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318205430210.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318205548863.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318205729936.png">
+<meta property="og:image" content="https://gitee.com/yushen611/img/raw/master/image-20230318205915554.png">
+<meta property="article:published_time" content="2023-03-15T13:08:11.907Z">
+<meta property="article:modified_time" content="2023-03-18T13:29:22.472Z">
 <meta property="article:author" content="WenYa Yu">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/yushen611/img/raw/master/image-20230316002007968.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2023/03/15/golang%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>WenYa Yu Blog</title>
+  <title> | WenYa Yu Blog</title>
   
 
 
@@ -165,159 +192,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/26/Consul%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/myPhoto.jpg">
-      <meta itemprop="name" content="WenYa Yu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WenYa Yu Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/26/Consul%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">consul笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-26 01:43:16 / Modified: 02:09:44" itemprop="dateCreated datePublished" datetime="2023-03-26T01:43:16+08:00">2023-03-26</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index"><span itemprop="name">go</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>consul使用笔记。当前进度：consul的概念。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/03/26/Consul%E7%AC%94%E8%AE%B0/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/26/go-micro%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/myPhoto.jpg">
-      <meta itemprop="name" content="WenYa Yu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WenYa Yu Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/26/go-micro%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">go-micro笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-26 01:43:16 / Modified: 02:09:00" itemprop="dateCreated datePublished" datetime="2023-03-26T01:43:16+08:00">2023-03-26</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index"><span itemprop="name">go</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>go-micro使用笔记。当前进度：微服务的概念。micro的架构以及简单案例。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/03/26/go-micro%E7%AC%94%E8%AE%B0/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
@@ -333,10 +211,9 @@
       <meta itemprop="name" content="WenYa Yu Blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
+        <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2023/03/15/golang%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" class="post-title-link" itemprop="url">Untitled</a>
-        </h2>
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -366,7 +243,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>4</p>
+        <p>4</p>
 <hr>
 <p>title:golang基础教程<br>description: golang的基本语法<br>categories:</p>
 <ul>
@@ -1435,237 +1312,33 @@
 
 
 <h3 id><a href="#" class="headerlink" title></a></h3>
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/10/python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/myPhoto.jpg">
-      <meta itemprop="name" content="WenYa Yu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WenYa Yu Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/10/python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">python数据分析与机器学习</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-03-10 21:40:12" itemprop="dateCreated datePublished" datetime="2023-03-10T21:40:12+08:00">2023-03-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-12 21:13:26" itemprop="dateModified" datetime="2023-03-12T21:13:26+08:00">2023-03-12</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>数据分析与机器学习基础</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/03/10/python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/15/python%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/myPhoto.jpg">
-      <meta itemprop="name" content="WenYa Yu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WenYa Yu Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/09/15/python%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" class="post-title-link" itemprop="url">Python 基础语法.</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-09-15 10:15:16" itemprop="dateCreated datePublished" datetime="2022-09-15T10:15:16+08:00">2022-09-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-12 21:12:52" itemprop="dateModified" datetime="2023-03-12T21:12:52+08:00">2023-03-12</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>This is the blog about the basic and fundamental use of python.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/09/15/python%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/10/python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="prev" title="python数据分析与机器学习">
+      <i class="fa fa-chevron-left"></i> python数据分析与机器学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/26/go-micro%E7%AC%94%E8%AE%B0/" rel="next" title="go-micro笔记">
+      go-micro笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/15/hello/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/myPhoto.jpg">
-      <meta itemprop="name" content="WenYa Yu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WenYa Yu Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/15/hello/" class="post-title-link" itemprop="url">Welcome to visit my blog.</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-08-15 08:15:16" itemprop="dateCreated datePublished" datetime="2021-08-15T08:15:16+08:00">2021-08-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-30 16:18:58" itemprop="dateModified" datetime="2022-11-30T16:18:58+08:00">2022-11-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Hello, this is Yu Wenya's blog.Welcome to visit.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/15/hello/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
@@ -1718,6 +1391,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#golang%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">golang基础教程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81golang%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">一、golang简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#go%E8%AF%AD%E8%A8%80%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">2.1.</span> <span class="nav-text">go语言的优缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8A%BF"><span class="nav-number">2.1.1.</span> <span class="nav-text">优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E5%90%88%E6%96%B9%E5%90%91"><span class="nav-number">2.1.2.</span> <span class="nav-text">适合方向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E8%83%BD%E7%BC%BA%E7%82%B9"><span class="nav-number">2.1.3.</span> <span class="nav-text">可能缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">2.2.</span> <span class="nav-text">go的安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85%E4%B8%8E%E6%A3%80%E6%B5%8B%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">2.2.1.</span> <span class="nav-text">下载安装与检测环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%EF%BC%9AGOPROXY"><span class="nav-number">2.2.2.</span> <span class="nav-text">配置环境变量：GOPROXY</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%EF%BC%9AGO111MODULE"><span class="nav-number">2.2.3.</span> <span class="nav-text">配置环境变量：GO111MODULE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%EF%BC%9AGOPATH-%E5%92%8C-GOROOT"><span class="nav-number">2.2.4.</span> <span class="nav-text">查看环境变量：GOPATH 和 GOROOT</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GOROOT"><span class="nav-number">2.2.4.1.</span> <span class="nav-text">GOROOT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GOPATH"><span class="nav-number">2.2.4.2.</span> <span class="nav-text">GOPATH</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go%E7%9A%84hello-world"><span class="nav-number">2.3.</span> <span class="nav-text">go的hello world</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E6%9C%80%E7%AE%80hello-world%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.1.</span> <span class="nav-text">编写最简hello world代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E5%A4%9A%E5%8C%85hello-world"><span class="nav-number">2.3.2.</span> <span class="nav-text">编写多包hello world</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go%E8%AF%AD%E6%B3%95%E7%89%B9%E8%89%B2%E6%80%BB%E7%BB%93"><span class="nav-number">2.3.3.</span> <span class="nav-text">go语法特色总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go%E7%9A%84%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">2.4.</span> <span class="nav-text">go的常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C"><span class="nav-number">2.4.1.</span> <span class="nav-text">编译与运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">2.4.2.</span> <span class="nav-text">查看环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81"><span class="nav-number">2.4.3.</span> <span class="nav-text">格式化代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go%E7%9A%84%E5%85%B3%E9%94%AE%E5%AD%97%E4%B8%8E%E6%A0%87%E8%AF%86%E7%AC%A6%E7%AE%80%E4%BB%8B"><span class="nav-number">2.5.</span> <span class="nav-text">go的关键字与标识符简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#go%E7%9A%8425%E4%B8%AA%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">2.5.1.</span> <span class="nav-text">go的25个关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%AF%86%E7%AC%A6"><span class="nav-number">2.5.2.</span> <span class="nav-text">标识符</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E4%B8%8E%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">二、数据与方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">数据的类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.1.</span> <span class="nav-text">数据的基本类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Go%E6%94%AF%E6%8C%81%E7%9A%84%E5%86%85%E7%BD%AE%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">Go支持的内置基本类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E7%BD%AE%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%B0%BA%E5%AF%B8"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">内置基本类型的尺寸</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E7%BD%AE%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E7%9A%84%E9%9B%B6%E5%80%BC"><span class="nav-number">3.1.1.3.</span> <span class="nav-text">内置基本类型的零值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%AD%97%E9%9D%A2%E9%87%8F%E8%A1%A8%E7%A4%BA%E5%BD%A2%E5%BC%8F"><span class="nav-number">3.1.1.4.</span> <span class="nav-text">基本类型的字面量表示形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%98%BE%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.1.2.</span> <span class="nav-text">类型的显式类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E4%B8%8D%E7%A1%AE%E5%AE%9A%E5%80%BC"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">类型不确定值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%98%BE%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">显式类型转换</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">3.1.3.</span> <span class="nav-text">数据运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E9%92%88"><span class="nav-number">3.1.4.</span> <span class="nav-text">指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%90%8D%E7%A7%B0"><span class="nav-number">3.1.5.</span> <span class="nav-text">自定义数据类型名称</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">3.2.</span> <span class="nav-text">变量的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%8F%98%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">3.2.1.</span> <span class="nav-text">单变量的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%8F%98%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">3.2.2.</span> <span class="nav-text">多变量的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E4%B8%8E%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">3.2.3.</span> <span class="nav-text">局部变量与全局变量的说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">3.3.</span> <span class="nav-text">常量的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%B8%B8%E9%87%8F%E4%B8%8E%E5%A4%9A%E5%B8%B8%E9%87%8F%E5%AE%9A%E4%B9%89"><span class="nav-number">3.3.1.</span> <span class="nav-text">单常量与多常量定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%9A%E4%B8%BE%E5%B8%B8%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">3.3.2.</span> <span class="nav-text">枚举常量的定义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">3.4.</span> <span class="nav-text">函数的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">3.4.1.</span> <span class="nav-text">简单介绍与注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84%E5%8F%82%E6%95%B0"><span class="nav-number">3.4.2.</span> <span class="nav-text">函数的参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%89%E5%80%BC%E4%BC%A0%E9%80%92-VS-%E6%8C%89%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92"><span class="nav-number">3.4.2.1.</span> <span class="nav-text">按值传递 VS 按引用传递</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%A0%E9%80%92%E5%8F%98%E9%95%BF%E5%8F%82%E6%95%B0"><span class="nav-number">3.4.2.2.</span> <span class="nav-text">传递变长参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="nav-number">3.4.3.</span> <span class="nav-text">函数的返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.4.4.</span> <span class="nav-text">函数作为数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0-%E5%8F%88%E7%A7%B0%E4%B8%BA%E9%97%AD%E5%8C%85"><span class="nav-number">3.4.5.</span> <span class="nav-text">匿名函数(又称为闭包)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0"><span class="nav-number">3.4.6.</span> <span class="nav-text">内置函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84%E9%80%80%E5%87%BA%E9%98%B6%E6%AE%B5%EF%BC%9Adefer%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">3.4.7.</span> <span class="nav-text">函数的退出阶段：defer关键字</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6%E8%AF%AD%E6%B3%95"><span class="nav-number">3.5.</span> <span class="nav-text">基本流程控制语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#if-else%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E6%8E%A7%E5%88%B6%E4%BB%A3%E7%A0%81%E5%9D%97"><span class="nav-number">3.5.1.</span> <span class="nav-text">if-else条件分支控制代码块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#for%E5%BE%AA%E7%8E%AF%E4%BB%A3%E7%A0%81%E5%9D%97"><span class="nav-number">3.5.2.</span> <span class="nav-text">for循环代码块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#switch-case%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6%E4%BB%A3%E7%A0%81%E5%9D%97"><span class="nav-number">3.5.3.</span> <span class="nav-text">switch-case流程控制代码块</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">三、数据结构与算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E5%BC%95%E5%85%A5%E4%B8%8E%E5%8C%85%E7%AE%A1%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">包引入与包管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%85%E5%BC%95%E5%85%A5"><span class="nav-number">4.1.1.</span> <span class="nav-text">包引入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8C%85%E5%BC%95%E5%85%A5%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.1.1.</span> <span class="nav-text">包引入的方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8C%85%E5%BC%95%E5%85%A5%E6%97%B6%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%9A%E5%8C%85%E7%9A%84init%E5%87%BD%E6%95%B0"><span class="nav-number">4.1.1.2.</span> <span class="nav-text">包引入时的执行顺序：包的init函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%85%E7%AE%A1%E7%90%86"><span class="nav-number">4.1.2.</span> <span class="nav-text">包管理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%80%81%E7%9A%84%E5%8C%85%E7%AE%A1%E7%90%86%EF%BC%9AGOPATH"><span class="nav-number">4.1.2.1.</span> <span class="nav-text">老的包管理：GOPATH</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B0%E7%9A%84%E5%8C%85%E7%AE%A1%E7%90%86%EF%BC%9AGo-Modules"><span class="nav-number">4.1.2.2.</span> <span class="nav-text">新的包管理：Go Modules</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#go-mod%E5%91%BD%E4%BB%A4"><span class="nav-number">4.1.2.2.1.</span> <span class="nav-text">go mod命令</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%89%87"><span class="nav-number">4.2.</span> <span class="nav-text">切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96-make"><span class="nav-number">4.2.1.</span> <span class="nav-text">定义与初始化:make()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E7%89%87%E6%88%AA%E5%8F%96-slice"><span class="nav-number">4.2.2.</span> <span class="nav-text">切片截取:slice[:]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%95%BF%E5%BA%A6%E4%B8%8E%E5%AE%B9%E9%87%8F%EF%BC%9Alen-%E5%92%8C-cap-%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.3.</span> <span class="nav-text">长度与容量：len() 和 cap() 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%B8%8E%E6%8B%B7%E8%B4%9D%EF%BC%9Aappend-%E5%92%8C-copy-%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.4.</span> <span class="nav-text">添加与拷贝：append() 和 copy() 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E5%8F%82-slice-int"><span class="nav-number">4.2.5.</span> <span class="nav-text">传参:(slice []int)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%8D%E5%8E%86"><span class="nav-number">4.2.6.</span> <span class="nav-text">遍历</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%A0%E5%B0%84"><span class="nav-number">4.3.</span> <span class="nav-text">映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E6%96%B9%E5%BC%8F-make"><span class="nav-number">4.3.1.</span> <span class="nav-text">声明方式:make()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E4%B8%8E%E4%BF%AE%E6%94%B9"><span class="nav-number">4.3.2.</span> <span class="nav-text">增加与修改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4"><span class="nav-number">4.3.3.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE"><span class="nav-number">4.3.4.</span> <span class="nav-text">查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%8D%E5%8E%86-1"><span class="nav-number">4.3.5.</span> <span class="nav-text">遍历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F"><span class="nav-number">4.3.6.</span> <span class="nav-text">排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%AE%E5%80%BC%E5%AF%B9%E5%8F%8D%E8%BD%AC"><span class="nav-number">4.3.7.</span> <span class="nav-text">键值对反转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E5%8F%8A%E5%85%B6%E6%96%B9%E6%B3%95-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%89%B9%E5%BE%81"><span class="nav-number">4.4.</span> <span class="nav-text">结构体及其方法-面向对象的特征</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%81%E8%A3%85"><span class="nav-number">4.4.1.</span> <span class="nav-text">封装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">4.4.1.1.</span> <span class="nav-text">属性的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">4.4.1.2.</span> <span class="nav-text">方法的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="nav-number">4.4.1.3.</span> <span class="nav-text">对象实例化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF"><span class="nav-number">4.4.2.</span> <span class="nav-text">继承</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%88%B6%E7%B1%BB%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">4.4.2.1.</span> <span class="nav-text">父类的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%90%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF"><span class="nav-number">4.4.2.2.</span> <span class="nav-text">子类的继承</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%90%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="nav-number">4.4.2.3.</span> <span class="nav-text">子类的实例化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%80%81"><span class="nav-number">4.4.3.</span> <span class="nav-text">多态</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E6%80%81%E7%9A%84%E4%B8%89%E8%A6%81%E7%B4%A0"><span class="nav-number">4.4.3.1.</span> <span class="nav-text">多态的三要素</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%87%E8%83%BD%E9%80%9A%E7%94%A8%E7%B1%BB%EF%BC%9A%E5%A4%9A%E6%80%81%E7%9A%84%E6%9C%80%E5%A5%BD%E4%BD%93%E7%8E%B0"><span class="nav-number">4.5.</span> <span class="nav-text">万能通用类：多态的最好体现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#interface-%E7%B1%BB"><span class="nav-number">4.5.1.</span> <span class="nav-text">interface{}类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E6%9C%BA%E5%88%B6"><span class="nav-number">4.5.2.</span> <span class="nav-text">类型断言机制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8%E7%BA%A7%E7%BC%96%E7%A8%8B"><span class="nav-number">5.</span> <span class="nav-text">四、应用级编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="nav-number">5.1.</span> <span class="nav-text">并发编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%8D%8F%E7%A8%8B%E7%AE%80%E4%BB%8B"><span class="nav-number">5.1.1.</span> <span class="nav-text">线程与协程简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GMP%E6%A8%A1%E5%9E%8B%E7%AE%80%E4%BB%8B"><span class="nav-number">5.1.2.</span> <span class="nav-text">GMP模型简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#go%E8%AF%AD%E8%A8%80%E5%AF%B9%E5%8D%8F%E7%A8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.1.2.1.</span> <span class="nav-text">go语言对协程的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E5%9B%BE"><span class="nav-number">5.1.2.2.</span> <span class="nav-text">原理图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E7%AD%96%E7%95%A5%EF%BC%9Aworking-stealing%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.2.3.</span> <span class="nav-text">调度策略：working stealing机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E7%AD%96%E7%95%A5%EF%BC%9Ahand-off%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.2.4.</span> <span class="nav-text">调度策略：hand off机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">5.1.3.</span> <span class="nav-text"></span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
