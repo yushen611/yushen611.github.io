@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="consul+grpc最佳实践">
+<meta property="og:type" content="article">
+<meta property="og:title" content="consul+grpc最佳实践">
+<meta property="og:url" content="http://example.com/2023/04/04/consul&grpc%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:site_name" content="WenYa Yu Blog">
+<meta property="og:description" content="consul+grpc最佳实践">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-04-04T01:23:16.000Z">
+<meta property="article:modified_time" content="2023-04-12T15:17:33.719Z">
+<meta property="article:author" content="WenYa Yu">
+<meta property="article:tag" content="consul">
+<meta property="article:tag" content="grpc">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/04/04/consul&grpc%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>consul+grpc最佳实践 | WenYa Yu Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WenYa Yu Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">余文涯个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-research">
+
+    <a href="/research/" rel="section"><i class="fa fa-book fa-fw"></i>Research</a>
+
+  </li>
+        <li class="menu-item menu-item-projects">
+
+    <a href="/projects/" rel="section"><i class="fa fa-wrench fa-fw"></i>Projects</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/04/consul&grpc%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/myPhoto.jpg">
+      <meta itemprop="name" content="WenYa Yu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WenYa Yu Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          consul+grpc最佳实践
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-04-04 09:23:16" itemprop="dateCreated datePublished" datetime="2023-04-04T09:23:16+08:00">2023-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-12 23:17:33" itemprop="dateModified" datetime="2023-04-12T23:17:33+08:00">2023-04-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index"><span itemprop="name">go</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">consul+grpc最佳实践</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <meta name="referrer" content="no-referrer">
+
+<h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><h2 id="grpc概念"><a href="#grpc概念" class="headerlink" title="grpc概念"></a>grpc概念</h2><p>官网：<a target="_blank" rel="noopener" href="https://grpc.io/">gRPC</a></p>
+<blockquote>
+<p><strong>A high performance, open source universal RPC framework</strong></p>
+</blockquote>
+<h3 id="RPC是什么"><a href="#RPC是什么" class="headerlink" title="RPC是什么"></a>RPC是什么</h3><p><strong><em>RPC</em>是远程过程调用（Remote Procedure Call）</strong>。 RPC 的主要功能目标是让构建分布式计算（应用）更容易，在提供强大的远程调用能力时不损失本地调用的语义简洁性。为实现该目标，<u>RPC 框架需提供一种透明调用机制，让使用者不必显式的区分本地调用和远程调用</u>。</p>
+<p><strong>常见的rpc框架</strong>：</p>
+<ul>
+<li><strong>Dubbo</strong>：国内最早开源的 RPC 框架，由阿里巴巴公司开发并于 2011 年末对外开源，仅支持 Java 语言。</li>
+<li><strong>Motan</strong>：微博内部使用的 RPC 框架，于 2016 年对外开源，仅支持 Java 语言。</li>
+<li><strong>Tars</strong>：腾讯内部使用的 RPC 框架，于 2017 年对外开源，仅支持 C++ 语言。</li>
+<li><strong>Spring Cloud</strong>：国外 Pivotal 公司 2014 年对外开源的 RPC 框架，提供了丰富的生态组件。</li>
+<li><strong>gRPC</strong>：Google 于 2015 年对外开源的跨语言 RPC 框架，支持多种语言。</li>
+<li><strong>Thrift</strong>：最初是由 Facebook 开发的内部系统跨语言的 RPC 框架，2007 年贡献给了 Apache 基金，成为Apache 开源项目之一，支持多种语言。</li>
+</ul>
+<p><strong>rpc框架特征</strong></p>
+<ul>
+<li>1、<u>RPC框架一般使用长链接</u>，不必每次通信都要3次握手，减少网络开销。</li>
+<li>2、<u>RPC框架一般都有注册中心</u>，有丰富的监控管理。发布、下线接口、动态扩展等，对调用方来说是无感知、统一化的操作协议私密，安全性较高</li>
+<li>3、<u>RPC 协议更简单内容更小</u>，效率更高，服务化架构、服务化治理，RPC框架是一个强力的支撑。</li>
+</ul>
+<h3 id="GRPC是什么"><a href="#GRPC是什么" class="headerlink" title="GRPC是什么"></a>GRPC是什么</h3><p><strong>grpc的定义</strong></p>
+<p>gRPC是一种高性能、开源、通用的远程过程调用（RPC）框架，最初由Google开发。它使用Protocol Buffers作为接口描述语言（IDL）和数据序列化格式，并基于HTTP&#x2F;2协议进行通信，提供了诸如双向流、流控、头部压缩等高级特性，可以在客户端和服务端之间快速、高效地传输数据和调用远程服务。</p>
+<p>在Go语言中，gRPC提供了对Go的支持，使开发者可以方便地使用gRPC来构建高效的分布式系统。gRPC提供了自动生成的客户端和服务端的代码，以及相应的API，可以大大简化开发过程。同时，Go的并发特性和轻量级的协程模型也使得gRPC在Go语言中得到了广泛的应用。</p>
+<p><strong>grpc的架构</strong></p>
+<p>gRPC 的架构基于 RPC（Remote Procedure Call）模式，它由以下几个主要的组件构成：</p>
+<ol>
+<li><strong>服务定义（Service Definition）</strong>：使用 Protocol Buffers（一种语言无关的数据序列化格式）定义服务接口，包括服务名称、方法名称、参数和返回值等信息。服务定义文件采用 .proto 后缀名。</li>
+<li><strong>服务器（Server）</strong>：实现服务定义中定义的接口，处理客户端请求并提供服务。</li>
+<li><strong>客户端（Client）</strong>：使用服务定义中定义的接口与服务器进行通信，发送请求并接收响应。</li>
+<li><strong>通信协议（Communication Protocol）</strong>：gRPC 使用 HTTP&#x2F;2 协议进行通信，HTTP&#x2F;2 支持双向流、流控、头部压缩等特性，可以提高网络传输效率。</li>
+<li><strong>序列化和反序列化（Serialization and Deserialization）</strong>：gRPC 使用 Protocol Buffers 进行数据序列化和反序列化，可以高效地压缩和传输数据。</li>
+</ol>
+<p>在 gRPC 的架构中，服务定义是核心组件，它定义了客户端和服务器之间的通信接口。客户端和服务器通过通信协议进行通信，并使用序列化和反序列化来传输数据。服务器实现了服务定义中定义的接口，处理客户端请求并提供服务。客户端使用服务定义中定义的接口与服务器进行通信，发送请求并接收响应。</p>
+<p><strong>grpc的原理</strong></p>
+<p>gRPC 的原理可以概括为以下几点：</p>
+<ol>
+<li>定义服务接口：使用 Protocol Buffers 语言定义服务接口，包括服务名称、方法名称、参数和返回值等信息。</li>
+<li>自动生成代码：根据服务接口定义生成客户端和服务端的代码，包括数据结构和方法。</li>
+<li>序列化数据：客户端将请求数据序列化为二进制格式，通过网络发送给服务端。</li>
+<li>反序列化数据：服务端接收请求数据后进行反序列化，将二进制数据转化为数据结构。</li>
+<li>执行服务方法：服务端根据方法名称和参数调用相应的服务方法，返回结果给客户端。</li>
+<li>序列化响应数据：服务端将返回结果序列化为二进制格式，通过网络发送给客户端。</li>
+<li>反序列化响应数据：客户端接收响应数据后进行反序列化，将二进制数据转化为数据结构。</li>
+<li>处理结果：客户端根据响应数据处理结果。</li>
+</ol>
+<p>gRPC 的原理基于 RPC（Remote Procedure Call）模式，它使用 Protocol Buffers 作为接口描述语言和数据序列化格式，并基于 HTTP&#x2F;2 协议进行通信。客户端和服务端通过生成的代码进行交互，客户端将请求数据序列化为二进制格式，服务端进行反序列化后调用相应的服务方法，返回结果也是经过序列化的。由于使用了高效的数据序列化和网络传输协议，gRPC 可以在客户端和服务端之间快速、高效地传输数据和调用远程服务。</p>
+<p><strong>grpc的流程与例子</strong></p>
+<p>*<u>流程</u>*：</p>
+<p>如果前端使用 gRPC 发送了一个请求给后端，gRPC 框架会按照以下步骤进行处理：</p>
+<ol>
+<li>客户端调用：前端调用客户端生成的 gRPC 方法，并传入相应的参数。</li>
+<li>序列化和发送请求：客户端将请求数据序列化为二进制格式，并使用 HTTP&#x2F;2 协议发送请求数据给后端。</li>
+<li>接收和反序列化请求：后端接收请求数据，并对请求数据进行反序列化，将二进制数据转化为数据结构。</li>
+<li>执行服务方法：后端根据方法名称和参数调用相应的服务方法，处理请求并返回结果。</li>
+<li>序列化和发送响应：后端将返回结果序列化为二进制格式，并使用 HTTP&#x2F;2 协议发送响应数据给前端。</li>
+<li>接收和反序列化响应：前端接收响应数据，并对响应数据进行反序列化，将二进制数据转化为数据结构。</li>
+<li>处理结果：前端根据响应数据处理结果，完成调用。</li>
+</ol>
+<p>以上是 gRPC 处理前端请求的基本流程。在这个过程中，<strong>gRPC 框架会自动处理序列化、反序列化和通信协议等细节</strong>，开发者<strong>只需要专注于服务方法的实现即可</strong>。</p>
+<p>*<u>例子</u>*：</p>
+<p>假设前端需要查询用户信息，后端提供了一个 <code>GetUserInfo</code> 的 gRPC 服务方法，该方法需要接收一个 <code>UserID</code> 参数，返回一个 <code>UserInfo</code> 对象。具体流程如下：</p>
+<ol>
+<li>客户端调用：前端调用 <code>GetUserInfo</code> 方法，并传入 <code>UserID</code> 参数。</li>
+<li>序列化和发送请求：客户端使用 Protocol Buffers 序列化请求数据为二进制格式，并使用 HTTP&#x2F;2 协议发送请求数据给后端。</li>
+<li>接收和反序列化请求：后端接收请求数据，并使用 Protocol Buffers 反序列化请求数据，将二进制数据转化为 <code>UserID</code> 参数。</li>
+<li>执行服务方法：后端调用 <code>GetUserInfo</code> 方法，根据 <code>UserID</code> 参数查询用户信息，并返回 <code>UserInfo</code> 对象。</li>
+<li>序列化和发送响应：后端使用 Protocol Buffers 序列化 <code>UserInfo</code> 对象为二进制格式，并使用 HTTP&#x2F;2 协议发送响应数据给前端。</li>
+<li>接收和反序列化响应：前端接收响应数据，并使用 Protocol Buffers 反序列化响应数据，将二进制数据转化为 <code>UserInfo</code> 对象。</li>
+<li>处理结果：前端根据 <code>UserInfo</code> 对象处理结果，完成调用。</li>
+</ol>
+<p>在这个过程中，gRPC 框架会自动处理序列化、反序列化和通信协议等细节，开发者只需要实现 <code>GetUserInfo</code> 方法，以及定义 <code>UserID</code> 和 <code>UserInfo</code> 的数据结构即可。</p>
+<p><strong>grpc的Quick start</strong>：<a target="_blank" rel="noopener" href="https://grpc.io/docs/languages/go/quickstart/">Quick start | Go | gRPC</a></p>
+<p><strong>grpc学习路线概述</strong>：</p>
+<ol>
+<li>了解 gRPC 的基本概念和原理，可以查看官方文档或者其他资料进行学习。</li>
+<li>学习如何使用 protobuf 定义服务和消息，掌握 protobuf 的基本语法和使用方式。</li>
+<li>编写一个简单的 gRPC 服务端和客户端，并进行通信测试。可以使用任意一种 gRPC 支持的语言，如 Go、Java、Python 等。</li>
+<li>学习如何使用 gRPC 的拦截器、流式 RPC、错误处理等高级特性。</li>
+<li>学习如何使用 gRPC 的安全认证机制，包括 SSL&#x2F;TLS、Token、OAuth2 等。</li>
+<li>学习如何使用 gRPC 的负载均衡、服务发现、集群部署等高级特性，例如使用 Consul、Etcd、Kubernetes 等工具实现服务发现和负载均衡。</li>
+<li>学习如何使用 gRPC 的代码生成器，例如 protoc 和插件，以及如何生成多语言的客户端和服务端代码。</li>
+<li>学习如何使用 gRPC 的测试框架，例如使用 grpcurl 进行手动测试，使用 grpc-testing 进行自动化测试等。</li>
+</ol>
+<h3 id="Gin-框架和-gRPC-框架混用的概念"><a href="#Gin-框架和-gRPC-框架混用的概念" class="headerlink" title="Gin 框架和 gRPC 框架混用的概念"></a>Gin 框架和 gRPC 框架混用的概念</h3><p><strong>概念</strong></p>
+<p>Gin 框架和 gRPC 框架可以混用。Gin 框架主要用于开发 Web 应用程序，而 gRPC 框架主要用于开发分布式系统中的服务通信。在实际的应用场景中，常常需要将 Web 应用程序和分布式服务结合起来，这时候就需要使用 Gin 和 gRPC 框架进行混用。</p>
+<p>具体来说，可以使用 Gin 框架作为 Web 应用程序的前端，接收 HTTP 请求，并将请求转发给后端的 gRPC 服务。在后端，可以使用 gRPC 框架处理 gRPC 请求，并将处理结果返回给前端的 Gin 应用程序。</p>
+<p>为了实现 Gin 和 gRPC 框架的混用，需要在 Gin 应用程序中使用 gRPC 的客户端库调用 gRPC 服务。同时，还需要在 gRPC 服务中实现相应的接口，并将 gRPC 服务注册到 gRPC 的服务器中。最后，在 Gin 应用程序中处理 HTTP 请求，并将请求转发给 gRPC 服务。</p>
+<p><strong>例子</strong></p>
+<p>假设有一个 Web 应用程序，需要查询用户信息，并向用户发送邮件。其中，查询用户信息的服务使用 gRPC 框架实现，发送邮件的服务使用 Gin 框架实现。具体流程如下：</p>
+<ol>
+<li>前端调用：用户在 Web 应用程序中输入用户 ID，点击查询按钮，触发 HTTP 请求。</li>
+<li>Gin 应用程序处理 HTTP 请求：Gin 应用程序接收到 HTTP 请求，并根据用户 ID 调用 gRPC 客户端，向 gRPC 服务请求用户信息。</li>
+<li>gRPC 服务处理请求：gRPC 服务接收到来自 Gin 应用程序的请求，根据用户 ID 查询用户信息，并将查询结果封装成 Protocol Buffers 格式的消息返回给 Gin 应用程序。</li>
+<li>Gin 应用程序处理响应：Gin 应用程序接收到来自 gRPC 服务的响应，将查询到的用户信息发送给用户的邮箱。</li>
+</ol>
+<p>在这个过程中，Gin 框架和 gRPC 框架实现了服务之间的协作，实现了查询用户信息和发送邮件的功能。在 Gin 应用程序中，使用 gRPC 客户端库调用 gRPC 服务，实现了查询用户信息的功能；在 gRPC 服务中，实现了相应的接口，并将服务注册到 gRPC 服务器中，实现了服务的发布和调用。</p>
+<h3 id="consul和grpc混用的概念"><a href="#consul和grpc混用的概念" class="headerlink" title="consul和grpc混用的概念"></a>consul和grpc混用的概念</h3><p><strong>概念</strong></p>
+<p>Consul 可以与 gRPC 框架混用。Consul 是一种分布式服务发现和配置管理工具，而 gRPC 是一种高性能的 RPC 框架，可以实现分布式系统中的服务通信。通过将 Consul 和 gRPC 框架结合起来使用，可以实现更加灵活和高效的分布式系统。</p>
+<p>具体来说，可以<strong>使用 Consul 注册和发现 gRPC 服务，让客户端通过 Consul 进行服务发现和负载均衡</strong>。在 gRPC 服务端，可以使用 Consul 客户端库将服务注册到 Consul 中心，以便客户端进行发现。在 gRPC 客户端，可以使用 Consul 客户端库进行服务发现，并根据 Consul 返回的负载均衡策略选择服务实例进行调用。</p>
+<p><strong>例子</strong></p>
+<p>假设我们有一个分布式电商系统，其中包含多个 gRPC 服务，包括订单服务、商品服务和用户服务。这些服务之间需要相互调用，同时还需要向外部提供接口，让其他客户端可以调用。</p>
+<p>在这种情况下，我们可以使用 Consul 进行服务注册和发现，具体的流程如下：</p>
+<ol>
+<li>gRPC 服务端注册服务：在每个 gRPC 服务启动时，使用 Consul 客户端库将服务注册到 Consul 中心。</li>
+<li>gRPC 客户端发现服务：在客户端启动时，使用 Consul 客户端库进行服务发现，获取可用的服务实例列表，并根据负载均衡策略选择服务实例进行调用。</li>
+<li>gRPC 服务互相调用：在服务之间调用时，可以使用 gRPC 的客户端库进行调用，直接通过服务名称和 Consul 返回的服务地址和端口进行通信。例如，当订单服务需要获取商品信息时，可以通过商品服务的名称和 Consul 返回的地址和端口进行调用。</li>
+<li>外部客户端调用：对于外部客户端，可以使用 gRPC 的反向代理（如 nginx）或者 HTTP 转 gRPC 网关（如 grpc-gateway）进行调用。这些代理或网关可以通过 Consul 进行服务发现，从而可以找到可用的服务实例进行调用。例如，当客户端需要查询订单信息时，可以通过 nginx 反向代理进行调用，nginx 可以通过 Consul 获取订单服务的可用实例并进行负载均衡。</li>
+</ol>
+<h2 id="consul的概念"><a href="#consul的概念" class="headerlink" title="consul的概念"></a>consul的概念</h2><h3 id="consul是什么"><a href="#consul是什么" class="headerlink" title="consul是什么"></a>consul是什么</h3><p>Consul是一种开源的服务发现和配置管理工具，由HashiCorp开发。它提供了<strong>一个集中式的服务注册和发现系统</strong>，可以帮助分布式应用程序自动化地发现和管理服务。<strong>Consul还提供了一种分布式键值存储</strong>，用于存储和检索应用程序的配置数据。在Go语言中，Consul提供了一组API，使开发人员可以轻松地将其集成到其应用程序中。</p>
+<p>举例来说，假设你正在构建一个分布式系统，该系统由多个微服务组成。每个微服务都运行在不同的主机上，它们之间需要相互通信以完成某些任务。在这种情况下，你需要一种方式来发现每个微服务的位置和可用性。</p>
+<p>这时候，你可以使用Consul。通过将每个微服务注册到Consul中，Consul就能够维护一个服务目录，并为你提供一个服务发现机制。当一个微服务需要与另一个微服务通信时，它可以向Consul查询目标微服务的位置和端口号，并使用该信息与目标微服务建立连接。</p>
+<p>此外，Consul还提供了一种分布式键值存储，用于存储和检索应用程序的配置数据。例如，你可以将应用程序的数据库连接字符串存储在Consul中，并在需要时从Consul中检索该信息。这使得应用程序的配置管理变得更加灵活和可扩展。</p>
+<p>综上所述，Consul为分布式系统提供了一种可靠的服务发现和配置管理解决方案，帮助开发人员更轻松地构建和维护分布式系统。</p>
+<h1 id="二、Hello-World-gRPC"><a href="#二、Hello-World-gRPC" class="headerlink" title="二、Hello World gRPC"></a>二、Hello World gRPC</h1><h2 id="1-安装-gRPC-和-protobuf"><a href="#1-安装-gRPC-和-protobuf" class="headerlink" title="1.安装 gRPC 和 protobuf"></a>1.安装 gRPC 和 protobuf</h2><p>进入文件夹，创建一个新的mod项目</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go mod init test_grpc</span><br><span class="line">go mod tidy</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在项目目录下打开终端，进行安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go get -u google.golang.org/grpc</span><br><span class="line">$ go get -u google.golang.org/protobuf/cmd/protoc-gen-go</span><br></pre></td></tr></table></figure>
+
+<p>其中，第一条命令用于安装 gRPC，第二条命令用于安装 protobuf 的 Go 插件 protoc-gen-go。</p>
+<p>然后我们还需要去官网安装protoc的编译器（选最新的protoc）：<a target="_blank" rel="noopener" href="https://protobuf.dev/downloads/">Downloads | Protocol Buffers Documentation (protobuf.dev)</a></p>
+<p>并配置protoc的环境变量(不同操作系统配置的方法不一样)：<code>export PATH=&quot;$PATH:/path/to/protoc/bin&quot;</code></p>
+<p>实际上，安装 <code>google.golang.org/protobuf/cmd/protoc-gen-go</code> 只是安装了 <code>protoc-gen-go</code> 这个 Go 插件，它是 Protocol Buffers 编译器 <code>protoc</code> 的一个插件，可以将 <code>.proto</code> 文件编译成 Go 语言的代码。因此，在安装 <code>google.golang.org/grpc</code> 和 <code>google.golang.org/protobuf/cmd/protoc-gen-go</code> 后，您还需要安装 <code>protoc</code> 编译器才能将 <code>.proto</code> 文件编译成所需的目标代码。</p>
+<h2 id="2-编写-proto-文件-定义服务与消息"><a href="#2-编写-proto-文件-定义服务与消息" class="headerlink" title="2.编写 proto 文件:定义服务与消息"></a>2.编写 proto 文件:定义服务与消息</h2><p><strong>使用 protobuf 定义服务和消息</strong>。创建一个名为 <code>helloworld.proto</code> 的文件，输入以下内容：</p>
+<p>这个文件使用的是 Protocol Buffers（简称 protobuf）语言。protobuf 是一种轻量级的数据交换格式，可用于序列化结构化数据。protobuf 文件通常以 <code>.proto</code> 为扩展名，用于定义消息类型、服务、枚举等内容。gRPC 使用 protobuf 作为默认的消息序列化和反序列化格式。</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> helloworld;</span><br><span class="line"></span><br><span class="line"><span class="keyword">option</span> go_package = <span class="string">&quot;test_grpc/helloworld&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个 HelloRequest 消息类型，包含一个字符串类型的 name 字段</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloRequest</span> &#123;</span><br><span class="line">  <span class="type">string</span> name = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个 HelloResponse 消息类型，包含一个字符串类型的 message 字段</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloResponse</span> &#123;</span><br><span class="line">  <span class="type">string</span> message = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个 Greeter 服务，包含一个 SayHello 方法，该方法接收一个 HelloRequest 消息类型的参数，返回一个 HelloReply 消息类型的响应</span></span><br><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloResponse)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>rpc说明</strong>：</p>
+<p>在 Protocol Buffers 中，可以通过两种方式来定义一个 <code>rpc</code> 方法，即“简写”和“完整写法”。</p>
+<p>第一种方式是“简写”，例如：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloResponse) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种写法中，<code>HelloRequest</code> 和 <code>HelloResponse</code> 是消息类型的名字，由于 <code>rpc</code> 方法中只有一个参数和一个返回值，所以可以省略掉这些消息类型的名称和外层的大括号。</p>
+<p>第二种方式是“完整写法”，例如：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloResponse)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这种写法中，消息类型的名字被写在括号内，并使用分号来结束这个语句。由于这种写法没有使用外层的大括号，因此看起来更加紧凑。</p>
+<p><strong>option go_package 说明</strong></p>
+<p>这里的路径是指生成的 Go 代码的包路径，可以是你的 Go 项目的任何有效路径。如果你正在使用 Go Modules，你可以选择一个与你的 Go Module 名称相同的路径，但这不是必需的。例如，如果你的 Go 项目的 Module 名称为 “example.com&#x2F;myproject”，你可以将 “go_package” 设置为 “example.com&#x2F;myproject&#x2F;helloworld” 或 “myproject&#x2F;helloworld”，或者任何其他有效的包路径。</p>
+<p>如果你还没有创建任何的go文件与go包，那么你可以自由地指定路径名。<strong>你可以将其看作是你将来可能会使用的包路径</strong>，可以根据你的项目需要自由命名。需要注意的是，路径名需要符合go的包名规范，即全部小写字母、可以包含数字和下划线、不能以数字开头、不能与go的保留字冲突。</p>
+<h2 id="3-生成代码"><a href="#3-生成代码" class="headerlink" title="3.生成代码"></a>3.生成代码</h2><p>使用 protoc 编译器生成 Go 语言的代码。<u>在命令行中执行以下命令</u>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ protoc --go_out=plugins=grpc:. helloworld.proto</span><br></pre></td></tr></table></figure>
+
+<p>该命令将会在<code>option go_package</code>目录下生成一个名为 <code>helloworld.pb.go</code> 的文件，包含了生成的 Go 语言代码。</p>
+<p>如果<code>option go_package</code>是<code>test_grpc/helloworld</code>，此时的目录结构为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">D:\PROJECT_FILE\GOLANGVEDIO\CODE\DEMOS\GRPC_DEMO</span><br><span class="line">│  go.mod</span><br><span class="line">│  go.sum</span><br><span class="line">│  helloworld.proto</span><br><span class="line">│  main.go</span><br><span class="line">│</span><br><span class="line">└─test_grpc</span><br><span class="line">    └─helloworld</span><br><span class="line">            helloworld.pb.go</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>说明</strong>：</p>
+<p>这个命令是使用 Protocol Buffers 编译器（<code>protoc</code>）来生成 Go 语言的代码。具体来说，<code>--go_out</code> 选项指定了生成的代码类型为 Go 语言，并且使用 <code>plugins=grpc</code> 参数来指定同时生成支持 gRPC 的代码。<code>:</code> 后面的路径则指定了生成的代码存放的位置和文件名。</p>
+<p>在这个命令中，<code>helloworld.proto</code> 文件是作为编译器的输入，编译器会根据这个文件中定义的消息类型、服务等信息，自动生成对应的 Go 语言代码文件。这些生成的代码文件包括了消息类型的定义、序列化和反序列化的代码、gRPC 服务端和客户端的接口定义等内容，方便开发人员在 Go 语言中使用 gRPC 进行通信。</p>
+<p>需要注意的是，<code>protoc</code> 命令需要安装 Protocol Buffers 编译器，并且需要安装相应的插件来支持生成 gRPC 相关的代码。在本命令中，使用了 <code>go_out</code> 插件来生成 Go 语言代码，并且使用了 <code>grpc</code> 插件来生成支持 gRPC 的代码。</p>
+<p><strong>生成代码正确语法</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1.0</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ protoc --go_out=. --go-grpc_out=. helloworld.proto</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-编写服务端代码"><a href="#4-编写服务端代码" class="headerlink" title="4.编写服务端代码"></a>4.编写服务端代码</h2><p>创建一个名为server的文件夹，里面创建文件<code>server.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;context&quot;</span></span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;net&quot;</span></span><br><span class="line"></span><br><span class="line">	pb <span class="string">&quot;test_grpc/test_grpc/helloworld&quot;</span> <span class="comment">// 导入生成的 helloworld.pb.go 文件</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;google.golang.org/grpc&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	port = <span class="string">&quot;:50051&quot;</span> <span class="comment">// 端口号</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"> <span class="comment">// 定义 gRPC 服务的 server</span></span><br><span class="line"><span class="keyword">type</span> server <span class="keyword">struct</span>&#123;</span><br><span class="line">    pb.UnimplementedHelloServiceServer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现 SayHello 方法，接受客户端的请求，返回 HelloResponse 响应</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span></span> SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, <span class="type">error</span>) &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;pb.HelloResponse&#123;Message: <span class="string">&quot;Hello &quot;</span> + req.Name&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	lis, err := net.Listen(<span class="string">&quot;tcp&quot;</span>, port) <span class="comment">// 监听 TCP 端口</span></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">&quot;failed to listen: %v&quot;</span>, err) <span class="comment">// 如果监听失败，则退出程序并打印错误信息</span></span><br><span class="line">	&#125;</span><br><span class="line">	s := grpc.NewServer()                  <span class="comment">// 创建一个 gRPC 服务实例</span></span><br><span class="line">	pb.RegisterGreeterServer(s, &amp;server&#123;&#125;) <span class="comment">// 注册服务，把实现服务的 server 结构体绑定到 gRPC 服务实例中</span></span><br><span class="line">	log.Printf(<span class="string">&quot;start gRPC server on port %s\n&quot;</span>, port)</span><br><span class="line">	<span class="keyword">if</span> err := s.Serve(lis); err != <span class="literal">nil</span> &#123; <span class="comment">// 开始监听</span></span><br><span class="line">		log.Fatalf(<span class="string">&quot;failed to serve: %v&quot;</span>, err) <span class="comment">// 开始监听，如果监听失败，则退出程序并打印错误信息</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这段代码用于启动一个 gRPC 服务。它首先调用 <code>net.Listen()</code> 监听指定的 TCP 端口，如果监听失败，则会退出程序并打印错误信息。然后，它创建一个 gRPC 服务实例，通过调用 <code>pb.RegisterGreeterServer()</code> 注册服务，把实现服务的 server 结构体绑定到 gRPC 服务实例中。最后，它通过调用 <code>s.Serve(lis)</code> 开始监听，并在监听失败时退出程序并打印错误信息。</p>
+<h2 id="5-编写客户端代码"><a href="#5-编写客户端代码" class="headerlink" title="5.编写客户端代码"></a>5.编写客户端代码</h2><p>创建一个名为client的文件夹，里面创建文件,创建一个<code>client.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;context&quot;</span></span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line"></span><br><span class="line">	pb <span class="string">&quot;test_grpc/test_grpc/helloworld&quot;</span> <span class="comment">// 这里修改为实际的 proto 文件路径</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;google.golang.org/grpc&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	address     = <span class="string">&quot;localhost:50051&quot;</span></span><br><span class="line">	defaultName = <span class="string">&quot;world&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">&quot;did not connect: %v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> conn.Close()</span><br><span class="line">	c := pb.NewGreeterClient(conn)</span><br><span class="line"></span><br><span class="line">	name := defaultName</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(os.Args) &gt; <span class="number">1</span> &#123;</span><br><span class="line">		name = os.Args[<span class="number">1</span>]</span><br><span class="line">	&#125;</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second)</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line">	r, err := c.SayHello(ctx, &amp;pb.HelloRequest&#123;Name: name&#125;)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">&quot;could not greet: %v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Printf(<span class="string">&quot;Greeting: %s&quot;</span>, r.Message)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这段代码是一个 gRPC 的客户端，用来向服务端发送请求并接收响应。代码中首先通过 Dial() 方法连接到了一个名为 <code>address</code> 的服务端。如果连接成功，将会调用 SayHello() 方法向服务端发送请求，参数为一个 HelloRequest 类型的消息，其中包含一个名为 <code>name</code> 的字段。请求发送成功后，客户端会等待服务端返回响应，将响应中的 <code>Message</code> 字段打印出来。在代码的最后，通过 defer 关键字关闭了连接。</p>
+<h2 id="6-分别运行"><a href="#6-分别运行" class="headerlink" title="6.分别运行"></a>6.分别运行</h2><p>现在可以运行服务端和客户端程序，看看是否能够正常工作。首先运行服务端程序：</p>
+<p>进入server下面的终端</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run server.go</span><br></pre></td></tr></table></figure>
+
+<p>进行client下面的终端</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run client.go</span><br></pre></td></tr></table></figure>
+
+<p>客户端将会输出类似以下内容的信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2023/04/04 17:19:42 Greeting: Hello world</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="三、Hello-World-consul"><a href="#三、Hello-World-consul" class="headerlink" title="三、Hello World consul"></a>三、Hello World consul</h1><h2 id="1-安装concul"><a href="#1-安装concul" class="headerlink" title="1. 安装concul"></a>1. 安装concul</h2><p><a target="_blank" rel="noopener" href="https://developer.hashicorp.com/consul/downloads">Install | Consul | HashiCorp Developer</a></p>
+<p>下载到你想要的目录，然后配置环境变量</p>
+<h2 id="2-创建demo项目目录"><a href="#2-创建demo项目目录" class="headerlink" title="2.创建demo项目目录"></a>2.创建demo项目目录</h2><p>进项目文件夹，新建mod项目</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go mod init test_consul</span><br></pre></td></tr></table></figure>
+
+<p>项目目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">demo/</span><br><span class="line">├── main.go</span><br><span class="line">├── go.mod</span><br><span class="line">├── go.sum</span><br><span class="line">└── consul.go</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-编写Consul客户端"><a href="#3-编写Consul客户端" class="headerlink" title="3.编写Consul客户端"></a>3.编写Consul客户端</h2><p>在<code>consul.go</code>文件中，你需要编写一个Consul客户端，用于向Consul服务注册和发现服务。下面是一个简单的实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	consulapi <span class="string">&quot;github.com/hashicorp/consul/api&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ConsulClient <span class="keyword">struct</span> &#123;</span><br><span class="line">	client *consulapi.Client</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewConsulClient</span><span class="params">()</span></span> (*ConsulClient, <span class="type">error</span>) &#123;</span><br><span class="line">	config := consulapi.DefaultConfig()</span><br><span class="line">	client, err := consulapi.NewClient(config)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> &amp;ConsulClient&#123;client: client&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// RegisterService 将服务注册到 Consul 中。</span></span><br><span class="line"><span class="comment">// serviceID：服务 ID，必须唯一。</span></span><br><span class="line"><span class="comment">// serviceName：服务名称。</span></span><br><span class="line"><span class="comment">// serviceHost：服务主机名或 IP 地址。</span></span><br><span class="line"><span class="comment">// servicePort：服务端口号。</span></span><br><span class="line"><span class="comment">// 返回值：错误对象，如果成功则为 nil。</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConsulClient)</span></span> RegisterService(serviceID, serviceName, serviceHost <span class="type">string</span>, servicePort <span class="type">int</span>) <span class="type">error</span> &#123;</span><br><span class="line">	<span class="comment">// 创建服务对象</span></span><br><span class="line">    service := &amp;consulapi.AgentServiceRegistration&#123;</span><br><span class="line">		ID:   serviceID,</span><br><span class="line">		Name: serviceName,</span><br><span class="line">		Address: serviceHost,</span><br><span class="line">		Port: servicePort,</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">// 调用 Consul API 将服务注册到 Consul 中</span></span><br><span class="line">	<span class="keyword">return</span> c.client.Agent().ServiceRegister(service)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// DiscoverService 根据服务名称从 Consul 中发现服务。</span></span><br><span class="line"><span class="comment">// serviceName：服务名称。</span></span><br><span class="line"><span class="comment">// 返回值：</span></span><br><span class="line"><span class="comment">//     - string：服务地址，格式为 &quot;host:port&quot;。</span></span><br><span class="line"><span class="comment">//     - error：错误对象，如果成功则为 nil。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ConsulClient)</span></span> DiscoverService(serviceName <span class="type">string</span>) (<span class="type">string</span>, <span class="type">error</span>) &#123;</span><br><span class="line">	services, _, err := c.client.Catalog().Service(serviceName, <span class="string">&quot;&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(services) == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, fmt.Errorf(<span class="string">&quot;service not found&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">&quot;%s:%d&quot;</span>, services[<span class="number">0</span>].ServiceAddress, services[<span class="number">0</span>].ServicePort), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个客户端使用Consul Go语言API提供的功能，可以向Consul注册服务和发现服务。<code>NewConsulClient</code>函数用于创建一个新的Consul客户端实例，<code>RegisterService</code>函数用于向Consul注册一个新的服务，<code>DiscoverService</code>函数用于发现一个指定名称的服务。这里我们只实现了最简单的功能，你可以根据自己的需求进一步扩展。</p>
+<h2 id="4-编写main函数"><a href="#4-编写main函数" class="headerlink" title="4.编写main函数"></a>4.编写main函数</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 创建Consul客户端</span></span><br><span class="line">	consulClient, err := NewConsulClient()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 注册服务</span></span><br><span class="line">	serviceID := <span class="string">&quot;demo-service&quot;</span></span><br><span class="line">	serviceName := <span class="string">&quot;demo&quot;</span></span><br><span class="line">	serviceHost := <span class="string">&quot;localhost&quot;</span></span><br><span class="line">	servicePort := <span class="number">8080</span></span><br><span class="line">	err = consulClient.RegisterService(serviceID, serviceName, serviceHost, servicePort)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 发现服务</span></span><br><span class="line">	serviceAddr, err := consulClient.DiscoverService(serviceName)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 处理HTTP请求</span></span><br><span class="line">	http.HandleFunc(<span class="string">&quot;/&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">		fmt.Fprintf(w, <span class="string">&quot;Hello World!&quot;</span>)</span><br><span class="line">	&#125;)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;Starting server at %s...\n&quot;</span>, serviceAddr)</span><br><span class="line">	err = http.ListenAndServe(serviceAddr, <span class="literal">nil</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-运行程序"><a href="#5-运行程序" class="headerlink" title="5.运行程序"></a>5.运行程序</h2><p>启动Consul Agent，默认端口是8500</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul agent -dev</span><br></pre></td></tr></table></figure>
+
+<p>运行consul与服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run main.go consul.go</span><br></pre></td></tr></table></figure>
+
+<p>如果一切正常，你应该能够在终端中看到类似下面的输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Starting server at localhost:8080...</span><br></pre></td></tr></table></figure>
+
+<p>现在，你可以在浏览器中访问<code>http://localhost:8080</code>，应该能够看到一个”Hello World!”字符串。</p>
+<blockquote>
+<p><strong>补充1：如何设置Consul Agent的ip与端口</strong></p>
+</blockquote>
+<p>Consul Agent 的 IP 地址和端口可以通过启动 Consul Agent 时的命令行参数来指定。具体来说，可以使用 <code>-bind</code> 和 <code>-client</code> 参数来设置 Consul Agent 的 IP 地址和端口。</p>
+<p>例如，要将 Consul Agent 的 IP 地址设置为 <code>192.168.1.100</code>，端口设置为 <code>8500</code>，可以使用以下命令启动 Consul Agent：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul agent -<span class="built_in">bind</span>=192.168.1.100 -client=0.0.0.0:8500</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>-bind</code> 参数指定 Consul Agent 绑定的 IP 地址，<code>-client</code> 参数指定 Consul Agent 监听的客户端地址和端口。</p>
+<p>如果要在程序中指定 Consul Agent 的地址和端口，可以在创建 Consul 客户端时传入一个 <code>consulapi.Config</code> 类型的对象，并设置该对象的 <code>Address</code> 字段。例如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">config := consulapi.DefaultConfig()</span><br><span class="line">config.Address = <span class="string">&quot;192.168.1.100:8500&quot;</span></span><br><span class="line"></span><br><span class="line">client, err := consulapi.NewClient(config)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatalf(<span class="string">&quot;Failed to create Consul client: %v&quot;</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码将创建一个 <code>consulapi.Config</code> 类型的对象，并将其地址设置为 <code>192.168.1.100:8500</code>，然后使用该对象创建一个 Consul 客户端。这样，客户端就会连接到指定的 Consul Agent。</p>
+<blockquote>
+<p><strong>补充2：如何停止运行consul</strong></p>
+</blockquote>
+<p>方式1：在终端ctrl +c</p>
+<p>方式2：使用 <code>consul leave</code> 命令离开 Consul 集群并停止 Consul Agent 的运行。</p>
+<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h2><p>至此，你已经成功地编写了一个使用Consul进行服务发现和注册的Go语言demo项目。这个项目只是一个最基础的示例，你可以根据自己的需求进一步扩展。同时，你还可以使用Consul的其他功能，如健康检查、分布式键值存储等，来更好地管理你的分布式系统。</p>
+<h1 id="四、Hello-world-consul-amp-grpc"><a href="#四、Hello-world-consul-amp-grpc" class="headerlink" title="四、Hello world consul &amp; grpc"></a>四、Hello world consul &amp; grpc</h1><h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p><u>接口A的实现需要调用接口B，但是接口A和接口B不在同一个服务器上</u>。这时候接口A想要调用接口B，接口A就需要知道接口B的<strong>ip</strong>和<strong>端口</strong>以及<strong>调用方式</strong>。</p>
+<blockquote>
+<p>专业名词</p>
+<p><strong>服务发现</strong>和<strong>服务注册</strong>：就是接口A怎么找到接口B的IP与Port,j以及接口B怎么让接口A知道自己的Ip与port</p>
+<p><strong>远程过程调用</strong>:这个就是在接口A知道接口B的IP与PORT的前提下，怎么调用接口B</p>
+</blockquote>
+<h4 id="①接口B-Ip与端口的获取"><a href="#①接口B-Ip与端口的获取" class="headerlink" title="①接口B Ip与端口的获取"></a>①接口B Ip与端口的获取</h4><p><strong>方式1：固定死接口B的IP与端口</strong></p>
+<p>​	假设提供接口B服务的服务器只有1台，且端口不变，那么只要接口A知道接口B的<strong>调用方式</strong></p>
+<p><strong>方式2：使用Consul获取接口B的IP与端口</strong></p>
+<p>​	如果接口A想要调用接口B，那么接口A与接口B之间需要达成<strong>共识</strong>，即接口B对它这个IP与Port提供的服务<strong>取一个服务名</strong>，每次接口A调用时只需要知道<strong>服务名</strong>，就能查询到这个<strong>服务名</strong>对应服务的<strong>IP与端口</strong>。那么接口A向谁查询呢？这时候就需要一个<strong>中介</strong>，<u>提供已知服务名，查询服务Ip与端口的功能</u>。</p>
+<p>​	<strong>这个中介就是Consul</strong>。接口B告诉Consul它提供的服务名称，接口IP与端口。接口A只需要知道Consul的Ip与端口，就能向Consul发送一个查询，查询参数是接口B的服务名称，查询返回结果是接口B的Ip与端口。</p>
+<h4 id="②调用方式"><a href="#②调用方式" class="headerlink" title="②调用方式"></a>②调用方式</h4><p>​	现在，已经知道了接口B的Ip与端口，但是怎么知道接口B的入参与响应呢？但是有可能接口A与接口B不是用同一个语言完成的，不同语言直接定义数据结构的方式不同，因此这时候就需要GRPC当做中介，告诉调用方（接口A）你应该怎么写才能调用接口B。所以大致步骤如下：</p>
+<ul>
+<li>接口B需要以一种通用的格式（proto格式）定义自己的接口（把这个写在一个proto文件里），即告诉GRPC自己的入参是什么，响应是什么。</li>
+<li>接口A需要拿到同样的一份接口定义文件(proto文件)，使用GRPC这个工具，根据proto文件，自动生成调用接口B的代码。</li>
+</ul>
+<h3 id="步骤总结"><a href="#步骤总结" class="headerlink" title="步骤总结"></a><strong>步骤总结</strong></h3><p>当使用 Consul 和 gRPC 混合时，需要完成以下步骤：</p>
+<ol>
+<li><p>在项目中引入 <code>consul</code> 和 <code>grpc</code> 相关的依赖包。</p>
+</li>
+<li><p>在代码中实现 gRPC 的服务接口，并在其中定义 gRPC 的服务方法。</p>
+</li>
+<li><p>启动Consul服务。</p>
+</li>
+<li><p>实现 gRPC 的服务端，并将服务接口注册到 gRPC 的服务端，Ip、端口与服务名注册到Consul 中。</p>
+</li>
+<li><p>实现基于 gRPC 的客户端，通过服务名在Consul中查询Ip与端口，接着再通过客户端调用 gRPC 服务。</p>
+</li>
+<li></li>
+</ol>
+<ol>
+<li>为什么用grpc（内部原理）为什么不用http</li>
+<li>为什么consul,同服务，多个服务器，如何选</li>
+<li>consul集群</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/consul/" rel="tag"># consul</a>
+              <a href="/tags/grpc/" rel="tag"># grpc</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/26/Consul%E7%AC%94%E8%AE%B0/" rel="prev" title="consul笔记">
+      <i class="fa fa-chevron-left"></i> consul笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/04/11/%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%99%BB%E5%BD%95%E5%8A%9F%E8%83%BD%E7%9A%84%E8%AE%BE%E8%AE%A1/" rel="next" title="登录功能的设计-JWT的各种使用">
+      登录功能的设计-JWT的各种使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">一、概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#grpc%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">grpc概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RPC%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.1.</span> <span class="nav-text">RPC是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GRPC%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.2.</span> <span class="nav-text">GRPC是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gin-%E6%A1%86%E6%9E%B6%E5%92%8C-gRPC-%E6%A1%86%E6%9E%B6%E6%B7%B7%E7%94%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.3.</span> <span class="nav-text">Gin 框架和 gRPC 框架混用的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#consul%E5%92%8Cgrpc%E6%B7%B7%E7%94%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.4.</span> <span class="nav-text">consul和grpc混用的概念</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#consul%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">consul的概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#consul%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.2.1.</span> <span class="nav-text">consul是什么</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Hello-World-gRPC"><span class="nav-number">2.</span> <span class="nav-text">二、Hello World gRPC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85-gRPC-%E5%92%8C-protobuf"><span class="nav-number">2.1.</span> <span class="nav-text">1.安装 gRPC 和 protobuf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BC%96%E5%86%99-proto-%E6%96%87%E4%BB%B6-%E5%AE%9A%E4%B9%89%E6%9C%8D%E5%8A%A1%E4%B8%8E%E6%B6%88%E6%81%AF"><span class="nav-number">2.2.</span> <span class="nav-text">2.编写 proto 文件:定义服务与消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">3.生成代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%BC%96%E5%86%99%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%BB%A3%E7%A0%81"><span class="nav-number">2.4.</span> <span class="nav-text">4.编写服务端代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%BC%96%E5%86%99%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BB%A3%E7%A0%81"><span class="nav-number">2.5.</span> <span class="nav-text">5.编写客户端代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%88%86%E5%88%AB%E8%BF%90%E8%A1%8C"><span class="nav-number">2.6.</span> <span class="nav-text">6.分别运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81Hello-World-consul"><span class="nav-number">3.</span> <span class="nav-text">三、Hello World consul</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85concul"><span class="nav-number">3.1.</span> <span class="nav-text">1. 安装concul</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%9B%E5%BB%BAdemo%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95"><span class="nav-number">3.2.</span> <span class="nav-text">2.创建demo项目目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BC%96%E5%86%99Consul%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">3.3.</span> <span class="nav-text">3.编写Consul客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%BC%96%E5%86%99main%E5%87%BD%E6%95%B0"><span class="nav-number">3.4.</span> <span class="nav-text">4.编写main函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">3.5.</span> <span class="nav-text">5.运行程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%80%BB%E7%BB%93"><span class="nav-number">3.6.</span> <span class="nav-text">6. 总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Hello-world-consul-amp-grpc"><span class="nav-number">4.</span> <span class="nav-text">四、Hello world consul &amp; grpc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-number">4.1.</span> <span class="nav-text">1. 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.1.1.</span> <span class="nav-text">使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A0%E6%8E%A5%E5%8F%A3B-Ip%E4%B8%8E%E7%AB%AF%E5%8F%A3%E7%9A%84%E8%8E%B7%E5%8F%96"><span class="nav-number">4.1.1.1.</span> <span class="nav-text">①接口B Ip与端口的获取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%91%A1%E8%B0%83%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.1.2.</span> <span class="nav-text">②调用方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4%E6%80%BB%E7%BB%93"><span class="nav-number">4.1.2.</span> <span class="nav-text">步骤总结</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="WenYa Yu"
+      src="/images/myPhoto.jpg">
+  <p class="site-author-name" itemprop="name">WenYa Yu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WenYa Yu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":"fasle"},"log":false});</script></body>
+</html>
