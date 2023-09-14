@@ -1,0 +1,1487 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>consul+grpc最佳实践 | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="consul+grpc最佳实践 | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+一、概述
+grpc概念
+官网：gRPC
+
+A high performance, open source universal RPC framework
+
+RPC是什么
+RPC是远程过程调用（Remote Procedure Call）。..." />
+    <meta name="keywords" content="go" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              consul+grpc最佳实践
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-04-04
+              </span>
+              <span>
+                56 min read
+              </span>
+              
+                <a href="https://yushen611.github.io/tag/TNz53VXY2/" class="post-tag">
+                  # go
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <meta name="referrer" content="no-referrer"/>
+<h1 id="一-概述">一、概述</h1>
+<h2 id="grpc概念">grpc概念</h2>
+<p>官网：<a href="https://grpc.io/">gRPC</a></p>
+<blockquote>
+<p><strong>A high performance, open source universal RPC framework</strong></p>
+</blockquote>
+<h3 id="rpc是什么">RPC是什么</h3>
+<p><strong><em>RPC</em>是远程过程调用（Remote Procedure Call）</strong>。 RPC 的主要功能目标是让构建分布式计算（应用）更容易，在提供强大的远程调用能力时不损失本地调用的语义简洁性。为实现该目标，<u>RPC 框架需提供一种透明调用机制，让使用者不必显式的区分本地调用和远程调用</u>。</p>
+<p><strong>常见的rpc框架</strong>：</p>
+<ul>
+<li><strong>Dubbo</strong>：国内最早开源的 RPC 框架，由阿里巴巴公司开发并于 2011 年末对外开源，仅支持 Java 语言。</li>
+<li><strong>Motan</strong>：微博内部使用的 RPC 框架，于 2016 年对外开源，仅支持 Java 语言。</li>
+<li><strong>Tars</strong>：腾讯内部使用的 RPC 框架，于 2017 年对外开源，仅支持 C++ 语言。</li>
+<li><strong>Spring Cloud</strong>：国外 Pivotal 公司 2014 年对外开源的 RPC 框架，提供了丰富的生态组件。</li>
+<li><strong>gRPC</strong>：Google 于 2015 年对外开源的跨语言 RPC 框架，支持多种语言。</li>
+<li><strong>Thrift</strong>：最初是由 Facebook 开发的内部系统跨语言的 RPC 框架，2007 年贡献给了 Apache 基金，成为Apache 开源项目之一，支持多种语言。</li>
+</ul>
+<p><strong>rpc框架特征</strong></p>
+<ul>
+<li>1、<u>RPC框架一般使用长链接</u>，不必每次通信都要3次握手，减少网络开销。</li>
+<li>2、<u>RPC框架一般都有注册中心</u>，有丰富的监控管理。发布、下线接口、动态扩展等，对调用方来说是无感知、统一化的操作协议私密，安全性较高</li>
+<li>3、<u>RPC 协议更简单内容更小</u>，效率更高，服务化架构、服务化治理，RPC框架是一个强力的支撑。</li>
+</ul>
+<h3 id="grpc是什么">GRPC是什么</h3>
+<p><strong>grpc的定义</strong></p>
+<p>gRPC是一种高性能、开源、通用的远程过程调用（RPC）框架，最初由Google开发。它使用Protocol Buffers作为接口描述语言（IDL）和数据序列化格式，并基于HTTP/2协议进行通信，提供了诸如双向流、流控、头部压缩等高级特性，可以在客户端和服务端之间快速、高效地传输数据和调用远程服务。</p>
+<p>在Go语言中，gRPC提供了对Go的支持，使开发者可以方便地使用gRPC来构建高效的分布式系统。gRPC提供了自动生成的客户端和服务端的代码，以及相应的API，可以大大简化开发过程。同时，Go的并发特性和轻量级的协程模型也使得gRPC在Go语言中得到了广泛的应用。</p>
+<p><strong>grpc的架构</strong></p>
+<p>gRPC 的架构基于 RPC（Remote Procedure Call）模式，它由以下几个主要的组件构成：</p>
+<ol>
+<li><strong>服务定义（Service Definition）</strong>：使用 Protocol Buffers（一种语言无关的数据序列化格式）定义服务接口，包括服务名称、方法名称、参数和返回值等信息。服务定义文件采用 .proto 后缀名。</li>
+<li><strong>服务器（Server）</strong>：实现服务定义中定义的接口，处理客户端请求并提供服务。</li>
+<li><strong>客户端（Client）</strong>：使用服务定义中定义的接口与服务器进行通信，发送请求并接收响应。</li>
+<li><strong>通信协议（Communication Protocol）</strong>：gRPC 使用 HTTP/2 协议进行通信，HTTP/2 支持双向流、流控、头部压缩等特性，可以提高网络传输效率。</li>
+<li><strong>序列化和反序列化（Serialization and Deserialization）</strong>：gRPC 使用 Protocol Buffers 进行数据序列化和反序列化，可以高效地压缩和传输数据。</li>
+</ol>
+<p>在 gRPC 的架构中，服务定义是核心组件，它定义了客户端和服务器之间的通信接口。客户端和服务器通过通信协议进行通信，并使用序列化和反序列化来传输数据。服务器实现了服务定义中定义的接口，处理客户端请求并提供服务。客户端使用服务定义中定义的接口与服务器进行通信，发送请求并接收响应。</p>
+<p><strong>grpc的原理</strong></p>
+<p>gRPC 的原理可以概括为以下几点：</p>
+<ol>
+<li>定义服务接口：使用 Protocol Buffers 语言定义服务接口，包括服务名称、方法名称、参数和返回值等信息。</li>
+<li>自动生成代码：根据服务接口定义生成客户端和服务端的代码，包括数据结构和方法。</li>
+<li>序列化数据：客户端将请求数据序列化为二进制格式，通过网络发送给服务端。</li>
+<li>反序列化数据：服务端接收请求数据后进行反序列化，将二进制数据转化为数据结构。</li>
+<li>执行服务方法：服务端根据方法名称和参数调用相应的服务方法，返回结果给客户端。</li>
+<li>序列化响应数据：服务端将返回结果序列化为二进制格式，通过网络发送给客户端。</li>
+<li>反序列化响应数据：客户端接收响应数据后进行反序列化，将二进制数据转化为数据结构。</li>
+<li>处理结果：客户端根据响应数据处理结果。</li>
+</ol>
+<p>gRPC 的原理基于 RPC（Remote Procedure Call）模式，它使用 Protocol Buffers 作为接口描述语言和数据序列化格式，并基于 HTTP/2 协议进行通信。客户端和服务端通过生成的代码进行交互，客户端将请求数据序列化为二进制格式，服务端进行反序列化后调用相应的服务方法，返回结果也是经过序列化的。由于使用了高效的数据序列化和网络传输协议，gRPC 可以在客户端和服务端之间快速、高效地传输数据和调用远程服务。</p>
+<p><strong>grpc的流程与例子</strong></p>
+<p><em><u>流程</u></em>：</p>
+<p>如果前端使用 gRPC 发送了一个请求给后端，gRPC 框架会按照以下步骤进行处理：</p>
+<ol>
+<li>客户端调用：前端调用客户端生成的 gRPC 方法，并传入相应的参数。</li>
+<li>序列化和发送请求：客户端将请求数据序列化为二进制格式，并使用 HTTP/2 协议发送请求数据给后端。</li>
+<li>接收和反序列化请求：后端接收请求数据，并对请求数据进行反序列化，将二进制数据转化为数据结构。</li>
+<li>执行服务方法：后端根据方法名称和参数调用相应的服务方法，处理请求并返回结果。</li>
+<li>序列化和发送响应：后端将返回结果序列化为二进制格式，并使用 HTTP/2 协议发送响应数据给前端。</li>
+<li>接收和反序列化响应：前端接收响应数据，并对响应数据进行反序列化，将二进制数据转化为数据结构。</li>
+<li>处理结果：前端根据响应数据处理结果，完成调用。</li>
+</ol>
+<p>以上是 gRPC 处理前端请求的基本流程。在这个过程中，<strong>gRPC 框架会自动处理序列化、反序列化和通信协议等细节</strong>，开发者<strong>只需要专注于服务方法的实现即可</strong>。</p>
+<p><em><u>例子</u></em>：</p>
+<p>假设前端需要查询用户信息，后端提供了一个 <code>GetUserInfo</code> 的 gRPC 服务方法，该方法需要接收一个 <code>UserID</code> 参数，返回一个 <code>UserInfo</code> 对象。具体流程如下：</p>
+<ol>
+<li>客户端调用：前端调用 <code>GetUserInfo</code> 方法，并传入 <code>UserID</code> 参数。</li>
+<li>序列化和发送请求：客户端使用 Protocol Buffers 序列化请求数据为二进制格式，并使用 HTTP/2 协议发送请求数据给后端。</li>
+<li>接收和反序列化请求：后端接收请求数据，并使用 Protocol Buffers 反序列化请求数据，将二进制数据转化为 <code>UserID</code> 参数。</li>
+<li>执行服务方法：后端调用 <code>GetUserInfo</code> 方法，根据 <code>UserID</code> 参数查询用户信息，并返回 <code>UserInfo</code> 对象。</li>
+<li>序列化和发送响应：后端使用 Protocol Buffers 序列化 <code>UserInfo</code> 对象为二进制格式，并使用 HTTP/2 协议发送响应数据给前端。</li>
+<li>接收和反序列化响应：前端接收响应数据，并使用 Protocol Buffers 反序列化响应数据，将二进制数据转化为 <code>UserInfo</code> 对象。</li>
+<li>处理结果：前端根据 <code>UserInfo</code> 对象处理结果，完成调用。</li>
+</ol>
+<p>在这个过程中，gRPC 框架会自动处理序列化、反序列化和通信协议等细节，开发者只需要实现 <code>GetUserInfo</code> 方法，以及定义 <code>UserID</code> 和 <code>UserInfo</code> 的数据结构即可。</p>
+<p><strong>grpc的Quick start</strong>：<a href="https://grpc.io/docs/languages/go/quickstart/">Quick start | Go | gRPC</a></p>
+<p><strong>grpc学习路线概述</strong>：</p>
+<ol>
+<li>了解 gRPC 的基本概念和原理，可以查看官方文档或者其他资料进行学习。</li>
+<li>学习如何使用 protobuf 定义服务和消息，掌握 protobuf 的基本语法和使用方式。</li>
+<li>编写一个简单的 gRPC 服务端和客户端，并进行通信测试。可以使用任意一种 gRPC 支持的语言，如 Go、Java、Python 等。</li>
+<li>学习如何使用 gRPC 的拦截器、流式 RPC、错误处理等高级特性。</li>
+<li>学习如何使用 gRPC 的安全认证机制，包括 SSL/TLS、Token、OAuth2 等。</li>
+<li>学习如何使用 gRPC 的负载均衡、服务发现、集群部署等高级特性，例如使用 Consul、Etcd、Kubernetes 等工具实现服务发现和负载均衡。</li>
+<li>学习如何使用 gRPC 的代码生成器，例如 protoc 和插件，以及如何生成多语言的客户端和服务端代码。</li>
+<li>学习如何使用 gRPC 的测试框架，例如使用 grpcurl 进行手动测试，使用 grpc-testing 进行自动化测试等。</li>
+</ol>
+<h3 id="gin-框架和-grpc-框架混用的概念">Gin 框架和 gRPC 框架混用的概念</h3>
+<p><strong>概念</strong></p>
+<p>Gin 框架和 gRPC 框架可以混用。Gin 框架主要用于开发 Web 应用程序，而 gRPC 框架主要用于开发分布式系统中的服务通信。在实际的应用场景中，常常需要将 Web 应用程序和分布式服务结合起来，这时候就需要使用 Gin 和 gRPC 框架进行混用。</p>
+<p>具体来说，可以使用 Gin 框架作为 Web 应用程序的前端，接收 HTTP 请求，并将请求转发给后端的 gRPC 服务。在后端，可以使用 gRPC 框架处理 gRPC 请求，并将处理结果返回给前端的 Gin 应用程序。</p>
+<p>为了实现 Gin 和 gRPC 框架的混用，需要在 Gin 应用程序中使用 gRPC 的客户端库调用 gRPC 服务。同时，还需要在 gRPC 服务中实现相应的接口，并将 gRPC 服务注册到 gRPC 的服务器中。最后，在 Gin 应用程序中处理 HTTP 请求，并将请求转发给 gRPC 服务。</p>
+<p><strong>例子</strong></p>
+<p>假设有一个 Web 应用程序，需要查询用户信息，并向用户发送邮件。其中，查询用户信息的服务使用 gRPC 框架实现，发送邮件的服务使用 Gin 框架实现。具体流程如下：</p>
+<ol>
+<li>前端调用：用户在 Web 应用程序中输入用户 ID，点击查询按钮，触发 HTTP 请求。</li>
+<li>Gin 应用程序处理 HTTP 请求：Gin 应用程序接收到 HTTP 请求，并根据用户 ID 调用 gRPC 客户端，向 gRPC 服务请求用户信息。</li>
+<li>gRPC 服务处理请求：gRPC 服务接收到来自 Gin 应用程序的请求，根据用户 ID 查询用户信息，并将查询结果封装成 Protocol Buffers 格式的消息返回给 Gin 应用程序。</li>
+<li>Gin 应用程序处理响应：Gin 应用程序接收到来自 gRPC 服务的响应，将查询到的用户信息发送给用户的邮箱。</li>
+</ol>
+<p>在这个过程中，Gin 框架和 gRPC 框架实现了服务之间的协作，实现了查询用户信息和发送邮件的功能。在 Gin 应用程序中，使用 gRPC 客户端库调用 gRPC 服务，实现了查询用户信息的功能；在 gRPC 服务中，实现了相应的接口，并将服务注册到 gRPC 服务器中，实现了服务的发布和调用。</p>
+<h3 id="consul和grpc混用的概念">consul和grpc混用的概念</h3>
+<p><strong>概念</strong></p>
+<p>Consul 可以与 gRPC 框架混用。Consul 是一种分布式服务发现和配置管理工具，而 gRPC 是一种高性能的 RPC 框架，可以实现分布式系统中的服务通信。通过将 Consul 和 gRPC 框架结合起来使用，可以实现更加灵活和高效的分布式系统。</p>
+<p>具体来说，可以<strong>使用 Consul 注册和发现 gRPC 服务，让客户端通过 Consul 进行服务发现和负载均衡</strong>。在 gRPC 服务端，可以使用 Consul 客户端库将服务注册到 Consul 中心，以便客户端进行发现。在 gRPC 客户端，可以使用 Consul 客户端库进行服务发现，并根据 Consul 返回的负载均衡策略选择服务实例进行调用。</p>
+<p><strong>例子</strong></p>
+<p>假设我们有一个分布式电商系统，其中包含多个 gRPC 服务，包括订单服务、商品服务和用户服务。这些服务之间需要相互调用，同时还需要向外部提供接口，让其他客户端可以调用。</p>
+<p>在这种情况下，我们可以使用 Consul 进行服务注册和发现，具体的流程如下：</p>
+<ol>
+<li>gRPC 服务端注册服务：在每个 gRPC 服务启动时，使用 Consul 客户端库将服务注册到 Consul 中心。</li>
+<li>gRPC 客户端发现服务：在客户端启动时，使用 Consul 客户端库进行服务发现，获取可用的服务实例列表，并根据负载均衡策略选择服务实例进行调用。</li>
+<li>gRPC 服务互相调用：在服务之间调用时，可以使用 gRPC 的客户端库进行调用，直接通过服务名称和 Consul 返回的服务地址和端口进行通信。例如，当订单服务需要获取商品信息时，可以通过商品服务的名称和 Consul 返回的地址和端口进行调用。</li>
+<li>外部客户端调用：对于外部客户端，可以使用 gRPC 的反向代理（如 nginx）或者 HTTP 转 gRPC 网关（如 grpc-gateway）进行调用。这些代理或网关可以通过 Consul 进行服务发现，从而可以找到可用的服务实例进行调用。例如，当客户端需要查询订单信息时，可以通过 nginx 反向代理进行调用，nginx 可以通过 Consul 获取订单服务的可用实例并进行负载均衡。</li>
+</ol>
+<h2 id="consul的概念">consul的概念</h2>
+<h3 id="consul是什么">consul是什么</h3>
+<p>Consul是一种开源的服务发现和配置管理工具，由HashiCorp开发。它提供了<strong>一个集中式的服务注册和发现系统</strong>，可以帮助分布式应用程序自动化地发现和管理服务。<strong>Consul还提供了一种分布式键值存储</strong>，用于存储和检索应用程序的配置数据。在Go语言中，Consul提供了一组API，使开发人员可以轻松地将其集成到其应用程序中。</p>
+<p>举例来说，假设你正在构建一个分布式系统，该系统由多个微服务组成。每个微服务都运行在不同的主机上，它们之间需要相互通信以完成某些任务。在这种情况下，你需要一种方式来发现每个微服务的位置和可用性。</p>
+<p>这时候，你可以使用Consul。通过将每个微服务注册到Consul中，Consul就能够维护一个服务目录，并为你提供一个服务发现机制。当一个微服务需要与另一个微服务通信时，它可以向Consul查询目标微服务的位置和端口号，并使用该信息与目标微服务建立连接。</p>
+<p>此外，Consul还提供了一种分布式键值存储，用于存储和检索应用程序的配置数据。例如，你可以将应用程序的数据库连接字符串存储在Consul中，并在需要时从Consul中检索该信息。这使得应用程序的配置管理变得更加灵活和可扩展。</p>
+<p>综上所述，Consul为分布式系统提供了一种可靠的服务发现和配置管理解决方案，帮助开发人员更轻松地构建和维护分布式系统。</p>
+<h1 id="二-hello-world-grpc">二、Hello World gRPC</h1>
+<blockquote>
+<p>对应代码：<a href="https://github.com/yushen611/StudyDemo/tree/main/grpc_consul__stduy_demo/grpc_demo">StudyDemo/grpc_consul__stduy_demo/grpc_demo at main · yushen611/StudyDemo (github.com)</a></p>
+</blockquote>
+<h2 id="1安装-grpc-和-protobuf">1.安装 gRPC 和 protobuf</h2>
+<p>进入文件夹，创建一个新的mod项目</p>
+<pre><code class="language-bash">go mod init test_grpc
+go mod tidy
+</code></pre>
+<p>在项目目录下打开终端，进行安装</p>
+<pre><code class="language-bash">$ go get -u google.golang.org/grpc
+$ go get -u google.golang.org/protobuf/cmd/protoc-gen-go
+</code></pre>
+<p>其中，第一条命令用于安装 gRPC，第二条命令用于安装 protobuf 的 Go 插件 protoc-gen-go。</p>
+<p>然后我们还需要去官网安装protoc的编译器（选最新的protoc）：<a href="https://protobuf.dev/downloads/">Downloads | Protocol Buffers Documentation (protobuf.dev)</a></p>
+<p>并配置protoc的环境变量(不同操作系统配置的方法不一样)：<code>export PATH=&quot;$PATH:/path/to/protoc/bin&quot;</code></p>
+<p>实际上，安装 <code>google.golang.org/protobuf/cmd/protoc-gen-go</code> 只是安装了 <code>protoc-gen-go</code> 这个 Go 插件，它是 Protocol Buffers 编译器 <code>protoc</code> 的一个插件，可以将 <code>.proto</code> 文件编译成 Go 语言的代码。因此，在安装 <code>google.golang.org/grpc</code> 和 <code>google.golang.org/protobuf/cmd/protoc-gen-go</code> 后，您还需要安装 <code>protoc</code> 编译器才能将 <code>.proto</code> 文件编译成所需的目标代码。</p>
+<h2 id="2编写-proto-文件定义服务与消息">2.编写 proto 文件:定义服务与消息</h2>
+<p><strong>使用 protobuf 定义服务和消息</strong>。创建一个名为 <code>helloworld.proto</code> 的文件，输入以下内容：</p>
+<p>这个文件使用的是 Protocol Buffers（简称 protobuf）语言。protobuf 是一种轻量级的数据交换格式，可用于序列化结构化数据。protobuf 文件通常以 <code>.proto</code> 为扩展名，用于定义消息类型、服务、枚举等内容。gRPC 使用 protobuf 作为默认的消息序列化和反序列化格式。</p>
+<pre><code class="language-protobuf">syntax = &quot;proto3&quot;;
+
+package helloworld;
+
+option go_package = &quot;test_grpc/helloworld&quot;;
+
+// 定义一个 HelloRequest 消息类型，包含一个字符串类型的 name 字段
+message HelloRequest {
+  string name = 1;
+}
+
+// 定义一个 HelloResponse 消息类型，包含一个字符串类型的 message 字段
+message HelloResponse {
+  string message = 1;
+}
+
+// 定义一个 Greeter 服务，包含一个 SayHello 方法，该方法接收一个 HelloRequest 消息类型的参数，返回一个 HelloReply 消息类型的响应
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloResponse);
+}
+
+
+</code></pre>
+<p><strong>rpc说明</strong>：</p>
+<p>在 Protocol Buffers 中，可以通过两种方式来定义一个 <code>rpc</code> 方法，即“简写”和“完整写法”。</p>
+<p>第一种方式是“简写”，例如：</p>
+<pre><code class="language-protobuf">rpc SayHello (HelloRequest) returns (HelloResponse) {}
+</code></pre>
+<p>这种写法中，<code>HelloRequest</code> 和 <code>HelloResponse</code> 是消息类型的名字，由于 <code>rpc</code> 方法中只有一个参数和一个返回值，所以可以省略掉这些消息类型的名称和外层的大括号。</p>
+<p>第二种方式是“完整写法”，例如：</p>
+<pre><code class="language-protobuf">rpc SayHello (HelloRequest) returns (HelloResponse);
+</code></pre>
+<p>这种写法中，消息类型的名字被写在括号内，并使用分号来结束这个语句。由于这种写法没有使用外层的大括号，因此看起来更加紧凑。</p>
+<p><strong>option go_package 说明</strong></p>
+<p>这里的路径是指生成的 Go 代码的包路径，可以是你的 Go 项目的任何有效路径。如果你正在使用 Go Modules，你可以选择一个与你的 Go Module 名称相同的路径，但这不是必需的。例如，如果你的 Go 项目的 Module 名称为 &quot;example.com/myproject&quot;，你可以将 &quot;go_package&quot; 设置为 &quot;example.com/myproject/helloworld&quot; 或 &quot;myproject/helloworld&quot;，或者任何其他有效的包路径。</p>
+<p>如果你还没有创建任何的go文件与go包，那么你可以自由地指定路径名。<strong>你可以将其看作是你将来可能会使用的包路径</strong>，可以根据你的项目需要自由命名。需要注意的是，路径名需要符合go的包名规范，即全部小写字母、可以包含数字和下划线、不能以数字开头、不能与go的保留字冲突。</p>
+<h2 id="3生成代码">3.生成代码</h2>
+<p>使用 protoc 编译器生成 Go 语言的代码。<u>在命令行中执行以下命令</u>：</p>
+<pre><code class="language-bash">$ protoc --go_out=plugins=grpc:. helloworld.proto
+</code></pre>
+<p>该命令将会在<code>option go_package</code>目录下生成一个名为 <code>helloworld.pb.go</code> 的文件，包含了生成的 Go 语言代码。</p>
+<p>如果<code>option go_package</code>是<code>test_grpc/helloworld</code>，此时的目录结构为：</p>
+<pre><code class="language-bash">D:\PROJECT_FILE\GOLANGVEDIO\CODE\DEMOS\GRPC_DEMO
+│  go.mod
+│  go.sum
+│  helloworld.proto
+│  main.go
+│
+└─test_grpc
+    └─helloworld
+            helloworld.pb.go
+</code></pre>
+<p><strong>说明</strong>：</p>
+<p>这个命令是使用 Protocol Buffers 编译器（<code>protoc</code>）来生成 Go 语言的代码。具体来说，<code>--go_out</code> 选项指定了生成的代码类型为 Go 语言，并且使用 <code>plugins=grpc</code> 参数来指定同时生成支持 gRPC 的代码。<code>:</code> 后面的路径则指定了生成的代码存放的位置和文件名。</p>
+<p>在这个命令中，<code>helloworld.proto</code> 文件是作为编译器的输入，编译器会根据这个文件中定义的消息类型、服务等信息，自动生成对应的 Go 语言代码文件。这些生成的代码文件包括了消息类型的定义、序列化和反序列化的代码、gRPC 服务端和客户端的接口定义等内容，方便开发人员在 Go 语言中使用 gRPC 进行通信。</p>
+<p>需要注意的是，<code>protoc</code> 命令需要安装 Protocol Buffers 编译器，并且需要安装相应的插件来支持生成 gRPC 相关的代码。在本命令中，使用了 <code>go_out</code> 插件来生成 Go 语言代码，并且使用了 <code>grpc</code> 插件来生成支持 gRPC 的代码。</p>
+<p><strong>生成代码正确语法</strong></p>
+<pre><code class="language-bash">go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1.0
+</code></pre>
+<pre><code class="language-bash">$ protoc --go_out=. --go-grpc_out=. helloworld.proto
+</code></pre>
+<h2 id="4编写服务端代码">4.编写服务端代码</h2>
+<p>创建一个名为server的文件夹，里面创建文件<code>server.go</code></p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;net&quot;
+
+	pb &quot;test_grpc/test_grpc/helloworld&quot; // 导入生成的 helloworld.pb.go 文件
+
+	&quot;google.golang.org/grpc&quot;
+)
+
+const (
+	port = &quot;:50051&quot; // 端口号
+)
+
+ // 定义 gRPC 服务的 server
+type server struct{
+    pb.UnimplementedHelloServiceServer
+}
+
+// 实现 SayHello 方法，接受客户端的请求，返回 HelloResponse 响应
+func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+	return &amp;pb.HelloResponse{Message: &quot;Hello &quot; + req.Name}, nil
+}
+
+func main() {
+	lis, err := net.Listen(&quot;tcp&quot;, port) // 监听 TCP 端口
+	if err != nil {
+		log.Fatalf(&quot;failed to listen: %v&quot;, err) // 如果监听失败，则退出程序并打印错误信息
+	}
+	s := grpc.NewServer()                  // 创建一个 gRPC 服务实例
+	pb.RegisterGreeterServer(s, &amp;server{}) // 注册服务，把实现服务的 server 结构体绑定到 gRPC 服务实例中
+	log.Printf(&quot;start gRPC server on port %s\n&quot;, port)
+	if err := s.Serve(lis); err != nil { // 开始监听
+		log.Fatalf(&quot;failed to serve: %v&quot;, err) // 开始监听，如果监听失败，则退出程序并打印错误信息
+	}
+}
+
+</code></pre>
+<p>这段代码用于启动一个 gRPC 服务。它首先调用 <code>net.Listen()</code> 监听指定的 TCP 端口，如果监听失败，则会退出程序并打印错误信息。然后，它创建一个 gRPC 服务实例，通过调用 <code>pb.RegisterGreeterServer()</code> 注册服务，把实现服务的 server 结构体绑定到 gRPC 服务实例中。最后，它通过调用 <code>s.Serve(lis)</code> 开始监听，并在监听失败时退出程序并打印错误信息。</p>
+<h2 id="5编写客户端代码">5.编写客户端代码</h2>
+<p>创建一个名为client的文件夹，里面创建文件,创建一个<code>client.go</code></p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;os&quot;
+	&quot;time&quot;
+
+	pb &quot;test_grpc/test_grpc/helloworld&quot; // 这里修改为实际的 proto 文件路径
+
+	&quot;google.golang.org/grpc&quot;
+)
+
+const (
+	address     = &quot;localhost:50051&quot;
+	defaultName = &quot;world&quot;
+)
+
+func main() {
+	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf(&quot;did not connect: %v&quot;, err)
+	}
+	defer conn.Close()
+	c := pb.NewGreeterClient(conn)
+
+	name := defaultName
+	if len(os.Args) &gt; 1 {
+		name = os.Args[1]
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := c.SayHello(ctx, &amp;pb.HelloRequest{Name: name})
+	if err != nil {
+		log.Fatalf(&quot;could not greet: %v&quot;, err)
+	}
+	log.Printf(&quot;Greeting: %s&quot;, r.Message)
+}
+
+</code></pre>
+<p>这段代码是一个 gRPC 的客户端，用来向服务端发送请求并接收响应。代码中首先通过 Dial() 方法连接到了一个名为 <code>address</code> 的服务端。如果连接成功，将会调用 SayHello() 方法向服务端发送请求，参数为一个 HelloRequest 类型的消息，其中包含一个名为 <code>name</code> 的字段。请求发送成功后，客户端会等待服务端返回响应，将响应中的 <code>Message</code> 字段打印出来。在代码的最后，通过 defer 关键字关闭了连接。</p>
+<h2 id="6分别运行">6.分别运行</h2>
+<p>现在可以运行服务端和客户端程序，看看是否能够正常工作。首先运行服务端程序：</p>
+<p>进入server下面的终端</p>
+<pre><code class="language-bash">go run server.go
+</code></pre>
+<p>进行client下面的终端</p>
+<pre><code class="language-bash">go run client.go
+</code></pre>
+<p>客户端将会输出类似以下内容的信息：</p>
+<pre><code class="language-bash">2023/04/04 17:19:42 Greeting: Hello world
+</code></pre>
+<h1 id="三-hello-world-consul">三、Hello World consul</h1>
+<blockquote>
+<p>对应代码：<a href="https://github.com/yushen611/StudyDemo/tree/main/grpc_consul__stduy_demo/consul_demo">StudyDemo/grpc_consul__stduy_demo/consul_demo at main · yushen611/StudyDemo (github.com)</a></p>
+</blockquote>
+<h2 id="1-安装concul">1. 安装concul</h2>
+<p><a href="https://developer.hashicorp.com/consul/downloads">Install | Consul | HashiCorp Developer</a></p>
+<p>下载到你想要的目录，然后配置环境变量</p>
+<h2 id="2创建demo项目目录">2.创建demo项目目录</h2>
+<p>进项目文件夹，新建mod项目</p>
+<pre><code class="language-bash">go mod init test_consul
+</code></pre>
+<p>项目目录</p>
+<pre><code class="language-bash">demo/
+├── main.go
+├── go.mod
+├── go.sum
+└── consul.go
+
+</code></pre>
+<h2 id="3编写consul客户端">3.编写Consul客户端</h2>
+<p>在<code>consul.go</code>文件中，你需要编写一个Consul客户端，用于向Consul服务注册和发现服务。下面是一个简单的实现：</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	consulapi &quot;github.com/hashicorp/consul/api&quot;
+)
+
+type ConsulClient struct {
+	client *consulapi.Client
+}
+
+func NewConsulClient() (*ConsulClient, error) {
+	config := consulapi.DefaultConfig()
+	client, err := consulapi.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+	return &amp;ConsulClient{client: client}, nil
+}
+
+// RegisterService 将服务注册到 Consul 中。
+// serviceID：服务 ID，必须唯一。
+// serviceName：服务名称。
+// serviceHost：服务主机名或 IP 地址。
+// servicePort：服务端口号。
+// 返回值：错误对象，如果成功则为 nil。
+
+func (c *ConsulClient) RegisterService(serviceID, serviceName, serviceHost string, servicePort int) error {
+	// 创建服务对象
+    service := &amp;consulapi.AgentServiceRegistration{
+		ID:   serviceID,
+		Name: serviceName,
+		Address: serviceHost,
+		Port: servicePort,
+	}
+    // 调用 Consul API 将服务注册到 Consul 中
+	return c.client.Agent().ServiceRegister(service)
+}
+
+
+// DiscoverService 根据服务名称从 Consul 中发现服务。
+// serviceName：服务名称。
+// 返回值：
+//     - string：服务地址，格式为 &quot;host:port&quot;。
+//     - error：错误对象，如果成功则为 nil。
+func (c *ConsulClient) DiscoverService(serviceName string) (string, error) {
+	services, _, err := c.client.Catalog().Service(serviceName, &quot;&quot;, nil)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	if len(services) == 0 {
+		return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+	}
+	return fmt.Sprintf(&quot;%s:%d&quot;, services[0].ServiceAddress, services[0].ServicePort), nil
+}
+
+</code></pre>
+<p>这个客户端使用Consul Go语言API提供的功能，可以向Consul注册服务和发现服务。<code>NewConsulClient</code>函数用于创建一个新的Consul客户端实例，<code>RegisterService</code>函数用于向Consul注册一个新的服务，<code>DiscoverService</code>函数用于发现一个指定名称的服务。这里我们只实现了最简单的功能，你可以根据自己的需求进一步扩展。</p>
+<h2 id="4编写main函数">4.编写main函数</h2>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;net/http&quot;
+)
+
+func main() {
+	// 创建Consul客户端
+	consulClient, err := NewConsulClient()
+	if err != nil {
+		panic(err)
+	}
+	// 注册服务
+	serviceID := &quot;demo-service&quot;
+	serviceName := &quot;demo&quot;
+	serviceHost := &quot;localhost&quot;
+	servicePort := 8080
+	err = consulClient.RegisterService(serviceID, serviceName, serviceHost, servicePort)
+	if err != nil {
+		panic(err)
+	}
+
+	// 发现服务
+	serviceAddr, err := consulClient.DiscoverService(serviceName)
+	if err != nil {
+		panic(err)
+	}
+
+	// 处理HTTP请求
+	http.HandleFunc(&quot;/&quot;, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, &quot;Hello World!&quot;)
+	})
+	fmt.Printf(&quot;Starting server at %s...\n&quot;, serviceAddr)
+	err = http.ListenAndServe(serviceAddr, nil)
+	if err != nil {
+		panic(err)
+	}
+}
+
+</code></pre>
+<h2 id="5运行程序">5.运行程序</h2>
+<p>启动Consul Agent，默认端口是8500</p>
+<pre><code class="language-bash">consul agent -dev
+</code></pre>
+<p>运行consul与服务</p>
+<pre><code class="language-bash">go run main.go consul.go
+</code></pre>
+<p>如果一切正常，你应该能够在终端中看到类似下面的输出：</p>
+<pre><code class="language-bash">Starting server at localhost:8080...
+</code></pre>
+<p>现在，你可以在浏览器中访问<code>http://localhost:8080</code>，应该能够看到一个&quot;Hello World!&quot;字符串。</p>
+<blockquote>
+<p><strong>补充1：如何设置Consul Agent的ip与端口</strong></p>
+</blockquote>
+<p>Consul Agent 的 IP 地址和端口可以通过启动 Consul Agent 时的命令行参数来指定。具体来说，可以使用 <code>-bind</code> 和 <code>-client</code> 参数来设置 Consul Agent 的 IP 地址和端口。</p>
+<p>例如，要将 Consul Agent 的 IP 地址设置为 <code>192.168.1.100</code>，端口设置为 <code>8500</code>，可以使用以下命令启动 Consul Agent：</p>
+<pre><code class="language-bash">consul agent -bind=192.168.1.100 -client=0.0.0.0:8500
+</code></pre>
+<p>其中，<code>-bind</code> 参数指定 Consul Agent 绑定的 IP 地址，<code>-client</code> 参数指定 Consul Agent 监听的客户端地址和端口。</p>
+<p>如果要在程序中指定 Consul Agent 的地址和端口，可以在创建 Consul 客户端时传入一个 <code>consulapi.Config</code> 类型的对象，并设置该对象的 <code>Address</code> 字段。例如：</p>
+<pre><code class="language-go">config := consulapi.DefaultConfig()
+config.Address = &quot;192.168.1.100:8500&quot;
+
+client, err := consulapi.NewClient(config)
+if err != nil {
+    log.Fatalf(&quot;Failed to create Consul client: %v&quot;, err)
+}
+</code></pre>
+<p>这段代码将创建一个 <code>consulapi.Config</code> 类型的对象，并将其地址设置为 <code>192.168.1.100:8500</code>，然后使用该对象创建一个 Consul 客户端。这样，客户端就会连接到指定的 Consul Agent。</p>
+<blockquote>
+<p><strong>补充2：如何停止运行consul</strong></p>
+</blockquote>
+<p>方式1：在终端ctrl +c</p>
+<p>方式2：使用 <code>consul leave</code> 命令离开 Consul 集群并停止 Consul Agent 的运行。</p>
+<h2 id="6-总结">6. 总结</h2>
+<p>至此，你已经成功地编写了一个使用Consul进行服务发现和注册的Go语言demo项目。这个项目只是一个最基础的示例，你可以根据自己的需求进一步扩展。同时，你还可以使用Consul的其他功能，如健康检查、分布式键值存储等，来更好地管理你的分布式系统。</p>
+<h1 id="四-hello-world-consul-grpc">四、Hello world consul &amp; grpc</h1>
+<blockquote>
+<p>对应代码：<a href="https://github.com/yushen611/StudyDemo/tree/main/grpc_consul__stduy_demo/consul_grpc_demo">StudyDemo/grpc_consul__stduy_demo/consul_grpc_demo at main · yushen611/StudyDemo (github.com)</a></p>
+</blockquote>
+<h2 id="1-概述">1. 概述</h2>
+<h3 id="使用场景">使用场景</h3>
+<p><u>接口A的实现需要调用接口B，但是接口A和接口B不在同一个服务器上</u>。这时候接口A想要调用接口B，接口A就需要知道接口B的<strong>ip</strong>和<strong>端口</strong>以及<strong>调用方式</strong>。</p>
+<blockquote>
+<p>专业名词</p>
+<p><strong>服务发现</strong>和<strong>服务注册</strong>：就是接口A怎么找到接口B的IP与Port,j以及接口B怎么让接口A知道自己的Ip与port</p>
+<p><strong>远程过程调用</strong>:这个就是在接口A知道接口B的IP与PORT的前提下，怎么调用接口B</p>
+</blockquote>
+<h4 id="1接口b-ip与端口的获取">①接口B Ip与端口的获取</h4>
+<p><strong>方式1：固定死接口B的IP与端口</strong></p>
+<p>​	假设提供接口B服务的服务器只有1台，且端口不变，那么只要接口A知道接口B的<strong>调用方式</strong></p>
+<p><strong>方式2：使用Consul获取接口B的IP与端口</strong></p>
+<p>​	如果接口A想要调用接口B，那么接口A与接口B之间需要达成<strong>共识</strong>，即接口B对它这个IP与Port提供的服务<strong>取一个服务名</strong>，每次接口A调用时只需要知道<strong>服务名</strong>，就能查询到这个<strong>服务名</strong>对应服务的<strong>IP与端口</strong>。那么接口A向谁查询呢？这时候就需要一个<strong>中介</strong>，<u>提供已知服务名，查询服务Ip与端口的功能</u>。</p>
+<p>​	<strong>这个中介就是Consul</strong>。接口B告诉Consul它提供的服务名称，接口IP与端口。接口A只需要知道Consul的Ip与端口，就能向Consul发送一个查询，查询参数是接口B的服务名称，查询返回结果是接口B的Ip与端口。</p>
+<h4 id="2调用方式">②调用方式</h4>
+<p>​	现在，已经知道了接口B的Ip与端口，但是怎么知道接口B的入参与响应呢？但是有可能接口A与接口B不是用同一个语言完成的，不同语言直接定义数据结构的方式不同，因此这时候就需要GRPC当做中介，告诉调用方（接口A）你应该怎么写才能调用接口B。所以大致步骤如下：</p>
+<ul>
+<li>接口B需要以一种通用的格式（proto格式）定义自己的接口（把这个写在一个proto文件里），即告诉GRPC自己的入参是什么，响应是什么。</li>
+<li>接口A需要拿到同样的一份接口定义文件(proto文件)，使用GRPC这个工具，根据proto文件，自动生成调用接口B的代码。</li>
+</ul>
+<h3 id="步骤总结"><strong>步骤总结</strong></h3>
+<p>当使用 Consul 和 gRPC 混合时，需要完成以下步骤：</p>
+<ol>
+<li>在项目中引入 <code>consul</code> 和 <code>grpc</code> 相关的依赖包。</li>
+<li>在代码中实现 gRPC 的服务接口，并在其中定义 gRPC 的服务方法。</li>
+<li>启动Consul服务。</li>
+<li>实现 gRPC 的服务端，并将服务接口注册到 gRPC 的服务端，Ip、端口与服务名注册到Consul 中。</li>
+<li>实现基于 gRPC 的客户端，通过服务名在Consul中查询Ip与端口，接着再通过客户端调用 gRPC 服务。</li>
+</ol>
+<h2 id="2服务端代码">2.服务端代码</h2>
+<blockquote>
+<p>服务端:GRPC接口定义与consul服务发现</p>
+</blockquote>
+<p><strong>服务端项目目录</strong>如下：</p>
+<pre><code class="language-bash">D:.
+│  Dockerfile
+│  go.mod
+│  go.sum
+│  server.go
+│
+├─consul
+│      consul.go
+│
+└─proto
+    │  helloworld.proto
+    │
+    └─server
+            helloworld.pb.go
+            helloworld_grpc.pb.go
+</code></pre>
+<p>其中用到了<code>go mod init server</code>新建项目</p>
+<p><strong>helloworld.proto GRPC接口文件如下</strong>：（这个与客户端的需要相同）</p>
+<pre><code class="language-protobuf">syntax = &quot;proto3&quot;;
+
+package hello;
+
+option go_package = &quot;./server&quot;;
+
+service HelloService {
+    rpc SayHello (HelloRequest) returns (HelloResponse) {}
+}
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloResponse {
+    string message = 1;
+}
+
+</code></pre>
+<p>在proto目录下使用如下命令即可生成对应的go语言接口代码</p>
+<pre><code class="language-bash">protoc --go_out=. --go-grpc_out=. helloworld.proto
+</code></pre>
+<p><strong>consul.go</strong>里面封装了服务注册与服务发现的两个代码（这个客户端复制一份一样的也行）：</p>
+<pre><code class="language-go">package consul
+
+import (
+	&quot;fmt&quot;
+	&quot;math/rand&quot;
+
+	consulapi &quot;github.com/hashicorp/consul/api&quot;
+)
+
+type ConsulClient struct {
+	client *consulapi.Client
+}
+
+func NewConsulClient() (*ConsulClient, error) {
+	config := consulapi.DefaultConfig()
+	client, err := consulapi.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+	return &amp;ConsulClient{client: client}, nil
+}
+
+//服务注册
+func (c *ConsulClient) RegisterService(serviceID, serviceName, serviceHost string, servicePort int) error {
+	service := &amp;consulapi.AgentServiceRegistration{
+		ID:      serviceID,
+		Name:    serviceName,
+		Address: serviceHost,
+		Port:    servicePort,
+	}
+	return c.client.Agent().ServiceRegister(service)
+}
+
+//服务发现
+func (c *ConsulClient) DiscoverService(serviceName string) (string, error) {
+	// services, _, err := c.client.Catalog().Service(serviceName, &quot;&quot;, nil)
+	services, _, err := c.client.Health().Service(serviceName, &quot;&quot;, true, nil)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	if len(services) == 0 {
+		return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+	}
+	// 随机选择一个服务实例
+	if len(services) &gt; 0 {
+		index := rand.Intn(len(services))
+		service := services[index].Service
+		address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+		return address, nil
+	}
+
+	return &quot;&quot;, fmt.Errorf(&quot;no healthy instances found for service %s&quot;, serviceName)
+}
+
+</code></pre>
+<p><strong>server.go</strong>里是整个提供服务端的主函数</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;net&quot;
+
+	cs &quot;server/consul&quot;
+	pb &quot;server/proto/server&quot;
+
+	&quot;google.golang.org/grpc&quot;
+)
+
+// 定义 实现 gRPC 服务的 server结构体
+
+type serverImp struct {
+	pb.UnimplementedHelloServiceServer
+}
+
+// 实现 SayHello 方法，接受客户端的请求，返回 HelloResponse 响应
+func (s *serverImp) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+	return &amp;pb.HelloResponse{Message: &quot;Hello &quot; + req.Name}, nil
+}
+
+func main() {
+
+	//Consul-1 创建Consul客户端
+	consulClient, err := cs.NewConsulClient()
+	if err != nil {
+		log.Fatalf(&quot;failed to Connect consul: %v&quot;, err)
+		panic(err)
+	}
+	//Consul-2 注册服务
+	serviceID := &quot;demo-service&quot;
+	serviceName := &quot;demo&quot;
+	serviceHost := &quot;127.0.0.1&quot;
+	servicePort := 50051
+	err = consulClient.RegisterService(serviceID, serviceName, serviceHost, servicePort)
+	if err != nil {
+		log.Fatalf(&quot;failed to RegisterService: %v&quot;, err)
+		panic(err)
+	}
+
+	//grpc-1.定义服务启动端口
+	port := &quot;:50051&quot;
+	lis, err := net.Listen(&quot;tcp&quot;, port) // 监听 TCP 端口
+	if err != nil {
+		log.Fatalf(&quot;failed to listen: %v&quot;, err) // 如果监听失败，则退出程序并打印错误信息
+	}
+
+	//grpc-2. 创建一个 gRPC 服务实例
+	s := grpc.NewServer()
+
+	//grpc-3.把实现的服务结构体 与 gRPC 服务实例绑定
+	pb.RegisterHelloServiceServer(s, &amp;serverImp{}) // 注册服务，把实现服务的 server 结构体绑定到 gRPC 服务实例中
+
+	log.Printf(&quot;start gRPC server on port %s\n&quot;, port)
+
+	//grpc-4:启动gRPC服务
+	err = s.Serve(lis)
+
+	if err != nil { // 开始监听
+		log.Fatalf(&quot;failed to serve: %v&quot;, err) // 开始监听，如果监听失败，则退出程序并打印错误信息
+	}
+}
+
+</code></pre>
+<h2 id="3客户端代码">3.客户端代码</h2>
+<blockquote>
+<p>客户端主要是调用服务端的代码：服务发现与GRPC调用</p>
+</blockquote>
+<p>客户端项目目录如下：</p>
+<pre><code class="language-go">D:.
+│  client.go        
+│  go.mod
+│  go.sum
+│
+├─consul
+│      consul.go    
+│
+└─proto
+        helloworld.pb.go
+        helloworld.proto
+        helloworld_grpc.pb.go
+</code></pre>
+<p>其中需要用到<code>go mod init client</code>创建项目</p>
+<p>其中<strong>consul.go</strong> 文件以及<strong>helloworld.proto</strong>文件与服务端一致</p>
+<p>因此在把proto文件生成对应代码后，剩下需要说明的就是<strong>client.go</strong> ，也就是项目的主函数。</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;time&quot;
+
+	cs &quot;client/consul&quot;
+	pb &quot;client/proto&quot;
+
+	&quot;google.golang.org/grpc&quot;
+)
+
+func main() {
+	//使用consul获取指定服务的ip与端口
+	//consul-1:连接至consul服务中心
+	consulClient, err := cs.NewConsulClient()
+	if err != nil {
+		panic(err)
+	}
+	//consul-2:发现指定服务名称的服务地址
+	serviceName := &quot;demo&quot;
+	serviceAddr, err := consulClient.DiscoverService(serviceName)
+	if err != nil {
+		panic(err)
+	}
+	// grpc-1.连接到指定ip,端口的grpc服务器
+
+	// serviceAddr := &quot;localhost:50051&quot;
+	conn, err := grpc.Dial(serviceAddr, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf(&quot;did not connect: %v&quot;, err)
+	}
+	defer conn.Close()
+
+	// grpc-2.初始化HelloService服务客户端
+	client := pb.NewHelloServiceClient(conn)
+
+	//grpc-3.初始化上下文，设置请求超时时间为1秒
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	//grpc-4.调用远程的grpc方法
+	response, err := client.SayHello(ctx, &amp;pb.HelloRequest{Name: &quot;Yu Gambler&quot;})
+	if err != nil {
+		log.Fatalf(&quot;could not greet: %v&quot;, err)
+	}
+	log.Printf(&quot;Greeting: %s&quot;, response.GetMessage())
+}
+
+</code></pre>
+<h2 id="4运行服务端与客户端">4.运行服务端与客户端</h2>
+<p>运行顺序如下：</p>
+<ol>
+<li>
+<p>先把consul运行起来</p>
+<ol>
+<li><code>consul agent -dev</code>,默认启动本地127.0.0.1:8500</li>
+<li>再网站输入<code>127.0.0.1:8500</code>可以看到Consul的UI界面</li>
+</ol>
+</li>
+<li>
+<p>再把服务端跑起来</p>
+<p>运行成功会提示:</p>
+<pre><code class="language-bash">2023/04/12 22:59:06 start gRPC server on port :50051
+</code></pre>
+</li>
+<li>
+<p>最后运行客户端调用接口</p>
+</li>
+</ol>
+<p>​	调用成功会提示:<code>2023/04/12 23:00:07 Greeting: Hello Yu Gambler</code></p>
+<h2 id="5dockerfile编写注意事项">5.Dockerfile编写注意事项</h2>
+<p>如果你想把服务端写个dockerfile进行部署，下面是一个参考dockerfile。</p>
+<pre><code class="language-do">FROM golang:1.20
+
+WORKDIR /app/server
+
+# 设置环境变量
+ENV BUILD_ENV local
+
+# 暴露端口
+EXPOSE 50051
+
+# 复制应用程序到工作目录
+ADD . .
+
+RUN ls
+
+# 编译应用程序
+RUN go build -o server server.go
+
+# RUN go build -ldflags &quot;-w -X main.version=${VERSION}&quot; -o /nats
+
+# 运行应用程序
+CMD [&quot;./server&quot;]
+</code></pre>
+<p>虽然dockerfile没有问题，但是你按这个镜像跑会提示连接不上consul。原因事在consul.go里默认是连接<code>localhost：8500</code>的接口来连接consul。但是这个镜像里运行这个代码，就不是连接你电脑里的localhost，而是镜像里的localhost了，所以<strong>consul.go</strong>里用于连接的代码，需要单独配置consul的ip与端口。</p>
+<pre><code class="language-go">func NewConsulClient() (*ConsulClient, error) {
+	config := consulapi.DefaultConfig()
+	config.Address = &quot;192.168.3.2:8500&quot; // 指定 Consul 地址，192.168.3.2是你运行consul的电脑的ip地址
+	client, err := consulapi.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+	return &amp;ConsulClient{client: client}, nil
+}
+</code></pre>
+<h1 id="五-一些问题">五、一些问题</h1>
+<h2 id="1为什么用grpc内部原理为什么不用http">1.为什么用grpc（内部原理）为什么不用http</h2>
+<blockquote>
+<p>如果您的应用程序需要高效的数据传输，以及支持流式处理和多语言支持，那么选择gRPC可能更加合适。另外，如果您需要更强的类型约束和更好的错误检测，也应该优先考虑gRPC。</p>
+<p>另一方面，如果您的应用程序需要与旧的系统集成，这些系统可能只支持HTTP协议，那么选择HTTP可能是更好的选择。此外，如果您的应用程序需要向外部网络发出请求，而该网络只支持HTTP，那么HTTP也是更好的选择。</p>
+<ol>
+<li>传输效率</li>
+</ol>
+<p>gRPC使用基于二进制的协议缓冲区（Protocol Buffers）来序列化数据，比HTTP使用的文本格式更加高效。这意味着gRPC可以更快地传输数据，同时也更节省网络带宽。</p>
+<ol start="2">
+<li>支持多语言</li>
+</ol>
+<p>gRPC支持多种编程语言，包括Java、Python、C++、Go等，而HTTP只是一个通用的协议，没有特定的编程语言要求。这使得gRPC可以在不同的编程语言之间更容易地交互和通信。</p>
+<ol start="3">
+<li>支持流式处理</li>
+</ol>
+<p>gRPC支持流式处理，可以在单个连接上进行多个请求和响应，而HTTP只支持一个请求和一个响应。这使得gRPC更适合实时通信，如聊天应用、在线游戏等。</p>
+<ol start="4">
+<li>强类型约束</li>
+</ol>
+<p>gRPC使用Protocol Buffers来定义数据类型和接口规范，这意味着可以进行强类型约束，更容易地检测和处理错误。而HTTP只是一个文本协议，没有强类型约束。</p>
+<p>综上所述，gRPC相对于HTTP来说，在性能、多语言支持、流式处理和强类型约束方面具有一定的优势，因此在需要<strong>高效、实时、多语言的场景中，选择使用gRPC可能更加合适</strong>。</p>
+</blockquote>
+<h2 id="2consul同服务多个服务器时如何选consul选择一个服务实例时有哪些策略">2.consul,同服务，多个服务器时，如何选?/consul选择一个服务实例时有哪些策略</h2>
+<h3 id="1随机策略">1.随机策略</h3>
+<p>随机策略会随机选择一个可用的服务实例进行通信。这种策略相对简单，但不适合高并发的场景。</p>
+<p>以下是随机选择一个服务实例策略的代码，请仿照这个函数写出采用轮询策略时的DiscoverService代码</p>
+<pre><code class="language-go">func (c *ConsulClient) DiscoverService(serviceName string) (string, error) {
+	// services, _, err := c.client.Catalog().Service(serviceName, &quot;&quot;, nil)
+	services, _, err := c.client.Health().Service(serviceName, &quot;&quot;, true, nil)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	if len(services) == 0 {
+		return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+	}
+	// 随机选择一个服务实例
+	if len(services) &gt; 0 {
+		index := rand.Intn(len(services))
+		service := services[index].Service
+		address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+		return address, nil
+	}
+
+	return &quot;&quot;, fmt.Errorf(&quot;no healthy instances found for service %s&quot;, serviceName)
+
+}
+</code></pre>
+<h3 id="2轮询策略">2.轮询策略</h3>
+<p>轮询策略会依次选择每个可用的服务实例进行通信。当所有的服务实例都被选择过一次后，再从头开始进行轮询。这种策略适合在不同服务实例的负载差异不大的情况下使用。</p>
+<pre><code class="language-go">func (c *ConsulClient) DiscoverService(serviceName string) (string, error) {
+	// services, _, err := c.client.Catalog().Service(serviceName, &quot;&quot;, nil)
+	services, _, err := c.client.Health().Service(serviceName, &quot;&quot;, true, nil)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	if len(services) == 0 {
+		return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+	}
+
+	// 从缓存中获取上一次选择的服务实例索引
+	index, err := c.getIndexFromCache(serviceName)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+
+	// 选择下一个服务实例
+	nextIndex := (index + 1) % len(services)
+	for i := 0; i &lt; len(services); i++ {
+		service := services[nextIndex].Service
+		address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+		if err = c.updateIndexToCache(serviceName, nextIndex); err != nil {
+			return &quot;&quot;, err
+		}
+		nextIndex = (nextIndex + 1) % len(services)
+	}
+
+	return &quot;&quot;, fmt.Errorf(&quot;no healthy instances found for service %s&quot;, serviceName)
+}
+
+</code></pre>
+<p>其中读缓存.写缓存这两个函数 <code>getIndexFromCache</code>与<code>updateIndexToCache</code>,需要自己去实现</p>
+<pre><code class="language-go">func (c *ConsulClient) getIndexFromCache(serviceName string) (int, error) {
+    // 从缓存中获取上一次选择的服务实例索引
+	// 如果缓存中不存在，则返回默认值 0
+    cacheKey := fmt.Sprintf(&quot;%s_index&quot;, serviceName)
+    result, err := c.redisClient.Get(cacheKey).Result()
+    if err != nil {
+        if err == redis.Nil {
+            return 0, nil
+        }
+        return 0, err
+    }
+
+    index, err := strconv.Atoi(result)
+    if err != nil {
+        return 0, err
+    }
+
+    return index, nil
+}
+
+
+func (c *ConsulClient) updateIndexToCache(serviceName string, index int) error {
+	// 以 serviceName 为 key，将 index 保存到缓存中，例如使用 Redis 实现
+	redisKey := fmt.Sprintf(&quot;consul:index:%s&quot;, serviceName)
+	err := c.redisClient.Set(redisKey, index, 0).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+</code></pre>
+<p>实际上，您需要根据您的具体需求和环境，实现一个适合您自己的缓存方案。常见的缓存方案包括使用 Redis、Memcached 或者在应用程序中使用内存缓存等。</p>
+<h3 id="3加权轮询策略">3.加权轮询策略</h3>
+<p>加权轮询策略会根据服务实例的权重来进行轮询。权重越高的服务实例会被选择的概率越大。这种策略适合在不同服务实例的负载差异较大的情况下使用。</p>
+<p>Consul中的加权轮询策略与一般的加权轮询策略基本相同，主要包括以下几个步骤：</p>
+<ol>
+<li>
+<p>获取服务实例列表：通过Consul API获取指定服务的所有健康实例列表。</p>
+</li>
+<li>
+<p>获取上一次选择的实例索引和权重信息：从缓存中获取上一次已经选择的服务实例索引以及每个服务实例对应的权重信息。如果没有缓存，则默认从第一个实例开始选择。</p>
+</li>
+<li>
+<p>计算权重总和：计算所有服务实例的权重总和。</p>
+</li>
+<li>
+<p>选择下一个服务实例：根据加权轮询算法选择下一个服务实例。</p>
+<p>a. 从上一次选择的实例开始依次轮询所有服务实例，如果当前服务实例权重大于0，则选择该实例。</p>
+<p>b. 如果所有实例权重均为0，则表示没有健康实例可供选择。</p>
+</li>
+<li>
+<p>更新缓存：将选择的服务实例索引以及更新后的权重信息更新到缓存中，以便下一次选择服务实例时使用。</p>
+</li>
+<li>
+<p>返回选择的服务实例地址：将选择的服务实例的地址（IP地址和端口号）作为结果返回给调用方。</p>
+</li>
+</ol>
+<p>需要注意的是，Consul中的加权轮询策略还可以添加权重重置的功能，即当所有服务实例的权重都为0时，重新将所有实例的权重值重置为原始权重值，从而保证每个实例都有机会被选择。</p>
+<pre><code class="language-go">func (c *ConsulClient) DiscoverService(serviceName string) (string, error) {
+    // services, _, err := c.client.Catalog().Service(serviceName, &quot;&quot;, nil)
+    services, _, err := c.client.Health().Service(serviceName, &quot;&quot;, true, nil)
+    if err != nil {
+        return &quot;&quot;, err
+    }
+    if len(services) == 0 {
+        return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+    }
+    
+    // 从缓存中获取上一次选择的服务实例索引和权重信息
+    index, weights, err := c.getIndexAndWeightsFromCache(serviceName, len(services))
+    if err != nil {
+        return &quot;&quot;, err
+    }
+    
+    // 选择下一个服务实例
+    for i := 0; i &lt; len(services); i++ {
+        index = (index + 1) % len(services)
+        if weights[index] &gt; 0 {
+            service := services[index].Service
+            address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+            if err = c.updateIndexAndWeightsToCache(serviceName, index, weights); err != nil {
+                return &quot;&quot;, err
+            }
+            weights[index] -= 1
+            return address, nil
+        }
+    }
+
+    // 如果所有的权重都为0,就重置所有服务实例的权重，并重新计算总权重
+    for i := 0; i &lt; len(services); i++ {
+        weights[i] = initialWeight
+    }
+    
+    
+    // 重新选择服务实例
+    for i := 0; i &lt; len(services); i++ {
+        index = (index + 1) % len(services)
+        if weights[index] &gt; 0 {
+            service := services[index].Service
+            address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+            if err = c.updateIndexAndWeightsToCache(serviceName, index, weights); err != nil {
+                return &quot;&quot;, err
+            }
+            weights[index] -= 1
+            return address, nil
+        }
+    }
+    
+    return &quot;&quot;, fmt.Errorf(&quot;no healthy instances found for service %s&quot;, serviceName)
+}
+
+
+
+</code></pre>
+<p>其中，<code>getIndexAndWeightsFromCache</code>和<code>updateIndexAndWeightsToCache</code>分别用于从缓存中获取上一次选择的服务实例索引和权重信息以及更新缓存中的索引和权重信息。需要根据具体的缓存方案进行实现。</p>
+<pre><code class="language-go">import (
+    &quot;encoding/json&quot;
+    &quot;errors&quot;
+    &quot;fmt&quot;
+    &quot;math/rand&quot;
+    &quot;strconv&quot;
+    &quot;strings&quot;
+    &quot;time&quot;
+
+    &quot;github.com/go-redis/redis&quot;
+    &quot;github.com/hashicorp/consul/api&quot;
+)
+
+
+func (c *ConsulClient) getIndexAndWeightsFromCache(serviceName string) (int, []int, error) {
+	// 从缓存中获取服务实例索引和权重列表
+	indexStr, err := c.redisClient.Get(fmt.Sprintf(&quot;%s:index&quot;, serviceName)).Result()
+	if err != nil {
+		return 0, nil, err
+	}
+	weightsStr, err := c.redisClient.Get(fmt.Sprintf(&quot;%s:weights&quot;, serviceName)).Result()
+	if err != nil {
+		return 0, nil, err
+	}
+
+	// 解析索引和权重列表
+	index, err := strconv.Atoi(indexStr)
+	if err != nil {
+		return 0, nil, err
+	}
+	weights := make([]int, 0)
+	if err = json.Unmarshal([]byte(weightsStr), &amp;weights); err != nil {
+		return 0, nil, err
+	}
+
+	return index, weights, nil
+}
+/*getIndexAndWeightsFromCache 函数会从 Redis 缓存中获取指定服务的实例索引和权重列表，并将它们解析出来返回。如果在获取缓存值或解析值时发生错误，函数将返回一个错误。注意，这里返回的权重列表是一个 []int 类型的切片，表示每个服务实例的权重值。*/
+
+
+func (c *ConsulClient) updateIndexAndWeightsToCache(serviceName string, index int, weights []int) error {
+	// Connect to Redis
+	conn, err := redis.DialURL(c.redisAddr)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	// Convert the weights slice to a comma-separated string
+	weightsStr := &quot;&quot;
+	for _, w := range weights {
+		weightsStr += strconv.Itoa(w) + &quot;,&quot;
+	}
+	weightsStr = strings.TrimSuffix(weightsStr, &quot;,&quot;)
+
+	// Set the index and weights in Redis
+	key := &quot;service:&quot; + serviceName
+	_, err = conn.Do(&quot;SET&quot;, key, fmt.Sprintf(&quot;%d:%s&quot;, index, weightsStr))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+</code></pre>
+<h3 id="4随机加权策略">4.随机加权策略</h3>
+<p>随机加权策略会随机选择一个可用的服务实例，并根据服务实例的权重来进行选择。权重越高的服务实例会被选择的概率越大。这种策略适合在不同服务实例的负载差异较大的情况下使用。</p>
+<p>Consul中的随机加权轮询算法（Randomized Weighted Round-Robin，RWRR）是加权轮询算法的一种改进，它可以避免加权轮询算法的权重累加问题，同时也可以实现动态权重调整。具体步骤如下：</p>
+<ol>
+<li>首先从Consul中获取所有健康的服务实例，并获取它们的权重值。</li>
+<li>计算所有服务实例的权重之和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>W</mi></mrow><annotation encoding="application/x-tex">W</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span></span></span></span>。</li>
+<li>随机生成一个初始值<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>，取值范围为[0, <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>W</mi></mrow><annotation encoding="application/x-tex">W</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span></span></span></span>]。</li>
+<li>依次遍历所有服务实例，对每个实例的权重值<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>w</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">w_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02691em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>进行判断。</li>
+<li>如果<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>w</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">w_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02691em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>大于等于<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>，则选择该服务实例，并将<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>减去<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>w</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">w_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02691em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>的值。</li>
+<li>如果<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>w</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">w_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.02691em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>小于<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>，则跳过该服务实例，继续遍历下一个服务实例。</li>
+<li>如果所有服务实例都遍历完了还没有选出任何一个实例，则将<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>重置为初始值，并再次执行步骤4-6。</li>
+<li>当选出一个服务实例时，将该实例的权重值减去1，并将更新后的权重值保存到Consul的KV存储中。</li>
+<li>返回选出的服务实例的地址。</li>
+<li>等待下一次请求，重复执行上述步骤。</li>
+</ol>
+<p>通过随机生成<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span>的方式，RWRR算法可以保证服务实例的选择是随机的，并且可以根据实际的权重值进行调整。同时，当所有服务实例的权重值都为0时，RWRR算法也会自动将权重值重置为初始值，从而避免了加权轮询算法的问题。</p>
+<pre><code class="language-go">func (c *ConsulClient) DiscoverService(serviceName string) (string, error) {
+    services, _, err := c.client.Health().Service(serviceName, &quot;&quot;, true, nil)
+    if err != nil {
+        return &quot;&quot;, err
+    }
+    if len(services) == 0 {
+        return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+    }
+
+    // 从缓存中获取上一次选择的服务实例索引和权重信息
+    index, weights, err := c.getIndexAndWeightsFromCache(serviceName, len(services))
+    if err != nil {
+        return &quot;&quot;, err
+    }
+
+    // 选择下一个服务实例
+    totalWeight := sum(weights)
+    rand.Seed(time.Now().UnixNano())
+    for i := 0; i &lt; len(services); i++ {
+        index = rand.Intn(len(services))
+        if weights[index] &gt; 0 {
+            service := services[index].Service
+            address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+            if err = c.updateIndexAndWeightsToCache(serviceName, index, weights); err != nil {
+                return &quot;&quot;, err
+            }
+            weights[index] -= 1
+            return address, nil
+        }
+    }
+    
+    // 如果所有的权重都为0,就重置所有服务实例的权重，并重新计算总权重
+    for i := 0; i &lt; len(services); i++ {
+        weights[i] = initialWeight
+    }
+    // 重新选择服务实例
+    for i := 0; i &lt; len(services); i++ {
+        index = rand.Intn(len(services))
+        if weights[index] &gt; 0 {
+            service := services[index].Service
+            address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+            if err = c.updateIndexAndWeightsToCache(serviceName, index, weights); err != nil {
+                return &quot;&quot;, err
+            }
+            weights[index] -= 1
+            return address, nil
+        }
+    }
+
+    return &quot;&quot;, fmt.Errorf(&quot;no healthy instances found for service %s&quot;, serviceName)
+}
+
+</code></pre>
+<h3 id="5最近最少使用策略">5.最近最少使用策略</h3>
+<p>最近最少使用策略会选择最近使用最少的服务实例进行通信。这种策略适合在服务实例的响应时间不同的情况下使用，可以确保请求会被分配到响应时间最短的服务实例上。</p>
+<p>最近最少使用（Least Recently Used, LRU）策略是一种基于使用频率来淘汰缓存中的数据的算法。在应用到服务发现中，可以将服务实例的使用次数作为权重，每次选择权重最小的服务实例。实现Consul的DiscoverService函数的LUR策略，可以按照以下步骤进行：</p>
+<ol>
+<li>从Consul中获取服务实例列表。</li>
+<li>从缓存中获取上一次选择的服务实例索引和使用次数列表。</li>
+<li>计算当前所有服务实例使用次数的最小值minCount。</li>
+<li>遍历服务实例列表，找到使用次数等于minCount的实例集合，并在该集合中选择一个实例。</li>
+<li>如果选择的实例与上一次选择的实例不同，则更新缓存中的服务实例索引和使用次数列表，将选择的实例使用次数加1，并返回该实例的地址。</li>
+</ol>
+<pre><code class="language-go">func (c *ConsulClient) DiscoverService(serviceName string) (string, error) {
+    // services, _, err := c.client.Catalog().Service(serviceName, &quot;&quot;, nil)
+    services, _, err := c.client.Health().Service(serviceName, &quot;&quot;, true, nil)
+    if err != nil {
+        return &quot;&quot;, err
+    }
+    if len(services) == 0 {
+        return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+    }
+
+    // 从缓存中获取上一次选择的服务实例索引和使用次数列表
+    index, counts, err := c.getIndexAndCountsFromCache(serviceName, len(services))
+    if err != nil {
+        return &quot;&quot;, err
+    }
+
+    // 计算使用次数的最小值
+    minCount := math.MaxInt32
+    for _, count := range counts {
+        if count &lt; minCount {
+            minCount = count
+        }
+    }
+
+    // 选择使用次数等于minCount的服务实例
+    var candidates []int
+    for i, count := range counts {
+        if count == minCount {
+            candidates = append(candidates, i)
+        }
+    }
+    index = candidates[rand.Intn(len(candidates))]
+
+    // 更新缓存中的服务实例索引和使用次数列表
+    if err = c.updateIndexAndCountsToCache(serviceName, index, counts); err != nil {
+        return &quot;&quot;, err
+    }
+    counts[index]++
+
+    // 返回选择的服务实例的地址
+    service := services[index].Service
+    address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+    return address, nil
+}
+
+</code></pre>
+<p>需要注意的是，此实现中的缓存可以采用本地内存或者分布式缓存，更新缓存的过程需要使用分布式锁保证操作的原子性。</p>
+<h3 id="6ip哈希策略">6.IP哈希策略</h3>
+<p>IP哈希策略会根据客户端的IP地址来选择一个服务实例。这种策略适合在需要将请求分配到同一服务实例的情况下使用，例如需要保持用户会话状态的场景。具体实现中，将客户端IP地址进行哈希运算，得到一个哈希值，然后使用该哈希值选择一个后端服务器。</p>
+<pre><code class="language-go">func (c *ConsulClient) DiscoverService(serviceName string, clientIP string) (string, error) {
+    // services, _, err := c.client.Catalog().Service(serviceName, &quot;&quot;, nil)
+    services, _, err := c.client.Health().Service(serviceName, &quot;&quot;, true, nil)
+    if err != nil {
+        return &quot;&quot;, err
+    }
+    if len(services) == 0 {
+        return &quot;&quot;, fmt.Errorf(&quot;service not found&quot;)
+    }
+    
+    // 将客户端IP地址进行哈希运算，得到一个哈希值
+    h := fnv.New32a()
+    h.Write([]byte(clientIP))
+    hash := h.Sum32()
+    
+    // 根据哈希值选择一个后端服务器
+    index := int(hash) % len(services)
+    service := services[index].Service
+    address := fmt.Sprintf(&quot;%v:%v&quot;, service.Address, service.Port)
+    return address, nil
+}
+
+</code></pre>
+<p>在这个实现中，我们使用了Go语言标准库中的hash/fnv包来进行哈希运算。对于每个客户端IP地址，我们都会将其哈希成一个32位整数，并使用该整数对服务实例列表进行取模，从而得到要访问的服务实例。</p>
+<h2 id="3如果consul负载大成为性能瓶颈时如何处理">3.如果consul负载大成为性能瓶颈时如何处理？</h2>
+<p>当Consul的负载增加到一定程度时，可能会成为系统的性能瓶颈。为了解决这个问题，可以考虑以下几个方面：</p>
+<ol>
+<li>增加节点/<strong>consul集群</strong>：通过增加Consul节点数量，将负载分摊到更多的节点上，从而提高整体性能。</li>
+<li>增加数据中心：如果服务规模足够大，可以考虑在不同地理位置或网络分区内部署不同的Consul数据中心，从而减少单一数据中心的负载压力。</li>
+<li>升级硬件：升级Consul服务器和客户端的硬件，如增加CPU、内存等，可以提高性能。</li>
+<li>优化查询：可以优化Consul查询，如减少查询频率、合并查询、使用更快的网络等，来提高性能。</li>
+<li>使用缓存：可以使用缓存来减轻Consul的负载，如将服务发现结果缓存在本地，避免每次查询都需要访问Consul。</li>
+<li>采用更快的数据存储方案：可以考虑使用更快的数据存储方案，如使用Redis等内存数据库来存储服务发现结果，从而提高查询速度和整体性能。</li>
+</ol>
+<p>以上是一些常见的提高Consul性能的方法，具体需要根据实际情况选择最适合的方法。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E6%A6%82%E8%BF%B0">一、概述</a>
+<ul>
+<li><a href="#grpc%E6%A6%82%E5%BF%B5">grpc概念</a>
+<ul>
+<li><a href="#rpc%E6%98%AF%E4%BB%80%E4%B9%88">RPC是什么</a></li>
+<li><a href="#grpc%E6%98%AF%E4%BB%80%E4%B9%88">GRPC是什么</a></li>
+<li><a href="#gin-%E6%A1%86%E6%9E%B6%E5%92%8C-grpc-%E6%A1%86%E6%9E%B6%E6%B7%B7%E7%94%A8%E7%9A%84%E6%A6%82%E5%BF%B5">Gin 框架和 gRPC 框架混用的概念</a></li>
+<li><a href="#consul%E5%92%8Cgrpc%E6%B7%B7%E7%94%A8%E7%9A%84%E6%A6%82%E5%BF%B5">consul和grpc混用的概念</a></li>
+</ul>
+</li>
+<li><a href="#consul%E7%9A%84%E6%A6%82%E5%BF%B5">consul的概念</a>
+<ul>
+<li><a href="#consul%E6%98%AF%E4%BB%80%E4%B9%88">consul是什么</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-hello-world-grpc">二、Hello World gRPC</a>
+<ul>
+<li><a href="#1%E5%AE%89%E8%A3%85-grpc-%E5%92%8C-protobuf">1.安装 gRPC 和 protobuf</a></li>
+<li><a href="#2%E7%BC%96%E5%86%99-proto-%E6%96%87%E4%BB%B6%E5%AE%9A%E4%B9%89%E6%9C%8D%E5%8A%A1%E4%B8%8E%E6%B6%88%E6%81%AF">2.编写 proto 文件:定义服务与消息</a></li>
+<li><a href="#3%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81">3.生成代码</a></li>
+<li><a href="#4%E7%BC%96%E5%86%99%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%BB%A3%E7%A0%81">4.编写服务端代码</a></li>
+<li><a href="#5%E7%BC%96%E5%86%99%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BB%A3%E7%A0%81">5.编写客户端代码</a></li>
+<li><a href="#6%E5%88%86%E5%88%AB%E8%BF%90%E8%A1%8C">6.分别运行</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-hello-world-consul">三、Hello World consul</a>
+<ul>
+<li><a href="#1-%E5%AE%89%E8%A3%85concul">1. 安装concul</a></li>
+<li><a href="#2%E5%88%9B%E5%BB%BAdemo%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95">2.创建demo项目目录</a></li>
+<li><a href="#3%E7%BC%96%E5%86%99consul%E5%AE%A2%E6%88%B7%E7%AB%AF">3.编写Consul客户端</a></li>
+<li><a href="#4%E7%BC%96%E5%86%99main%E5%87%BD%E6%95%B0">4.编写main函数</a></li>
+<li><a href="#5%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F">5.运行程序</a></li>
+<li><a href="#6-%E6%80%BB%E7%BB%93">6. 总结</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9B%9B-hello-world-consul-grpc">四、Hello world consul &amp; grpc</a>
+<ul>
+<li><a href="#1-%E6%A6%82%E8%BF%B0">1. 概述</a>
+<ul>
+<li><a href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF">使用场景</a>
+<ul>
+<li><a href="#1%E6%8E%A5%E5%8F%A3b-ip%E4%B8%8E%E7%AB%AF%E5%8F%A3%E7%9A%84%E8%8E%B7%E5%8F%96">①接口B Ip与端口的获取</a></li>
+<li><a href="#2%E8%B0%83%E7%94%A8%E6%96%B9%E5%BC%8F">②调用方式</a></li>
+</ul>
+</li>
+<li><a href="#%E6%AD%A5%E9%AA%A4%E6%80%BB%E7%BB%93"><strong>步骤总结</strong></a></li>
+</ul>
+</li>
+<li><a href="#2%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%BB%A3%E7%A0%81">2.服务端代码</a></li>
+<li><a href="#3%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BB%A3%E7%A0%81">3.客户端代码</a></li>
+<li><a href="#4%E8%BF%90%E8%A1%8C%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF">4.运行服务端与客户端</a></li>
+<li><a href="#5dockerfile%E7%BC%96%E5%86%99%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">5.Dockerfile编写注意事项</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%94-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98">五、一些问题</a>
+<ul>
+<li><a href="#1%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8grpc%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8http">1.为什么用grpc（内部原理）为什么不用http</a></li>
+<li><a href="#2consul%E5%90%8C%E6%9C%8D%E5%8A%A1%E5%A4%9A%E4%B8%AA%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%B6%E5%A6%82%E4%BD%95%E9%80%89consul%E9%80%89%E6%8B%A9%E4%B8%80%E4%B8%AA%E6%9C%8D%E5%8A%A1%E5%AE%9E%E4%BE%8B%E6%97%B6%E6%9C%89%E5%93%AA%E4%BA%9B%E7%AD%96%E7%95%A5">2.consul,同服务，多个服务器时，如何选?/consul选择一个服务实例时有哪些策略</a>
+<ul>
+<li><a href="#1%E9%9A%8F%E6%9C%BA%E7%AD%96%E7%95%A5">1.随机策略</a></li>
+<li><a href="#2%E8%BD%AE%E8%AF%A2%E7%AD%96%E7%95%A5">2.轮询策略</a></li>
+<li><a href="#3%E5%8A%A0%E6%9D%83%E8%BD%AE%E8%AF%A2%E7%AD%96%E7%95%A5">3.加权轮询策略</a></li>
+<li><a href="#4%E9%9A%8F%E6%9C%BA%E5%8A%A0%E6%9D%83%E7%AD%96%E7%95%A5">4.随机加权策略</a></li>
+<li><a href="#5%E6%9C%80%E8%BF%91%E6%9C%80%E5%B0%91%E4%BD%BF%E7%94%A8%E7%AD%96%E7%95%A5">5.最近最少使用策略</a></li>
+<li><a href="#6ip%E5%93%88%E5%B8%8C%E7%AD%96%E7%95%A5">6.IP哈希策略</a></li>
+</ul>
+</li>
+<li><a href="#3%E5%A6%82%E6%9E%9Cconsul%E8%B4%9F%E8%BD%BD%E5%A4%A7%E6%88%90%E4%B8%BA%E6%80%A7%E8%83%BD%E7%93%B6%E9%A2%88%E6%97%B6%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86">3.如果consul负载大成为性能瓶颈时如何处理？</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1070 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>python数据分析与机器学习 | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="python数据分析与机器学习 | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+PART1:数据分析
+导入常用库
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+
+读取与保存数据
+读取数据
+import pandas as..." />
+    <meta name="keywords" content="python" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              python数据分析与机器学习
+            </h2>
+            <div class="post-info">
+              <span>
+                2022-09-19
+              </span>
+              <span>
+                21 min read
+              </span>
+              
+                <a href="https://yushen611.github.io/tag/-Ra3_3Uau/" class="post-tag">
+                  # python
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <meta name="referrer" content="no-referrer"/>
+<h1 id="part1数据分析">PART1:数据分析</h1>
+<h2 id="导入常用库">导入常用库</h2>
+<pre><code class="language-py">import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+</code></pre>
+<h2 id="读取与保存数据">读取与保存数据</h2>
+<p>读取数据</p>
+<pre><code class="language-py">import pandas as pd
+data=pd.read_csv('./Datas/XXX.csv')
+</code></pre>
+<p>展示数据</p>
+<pre><code class="language-py">data.head(5)
+data.tail(5)
+data.info()
+data.describe()
+data.dtypes # Show the data type of each column.
+data.columns # Show all the column labels of the dataframe.
+</code></pre>
+<p>数据值分布计数</p>
+<pre><code class="language-py"># return each categorical variable's number
+print(churn.Gender.value_counts())
+print(churn.Education_Level.value_counts())
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311113118651.png" alt="image-20230311113118651" style="zoom:80%;" />
+<p>dataframe改列名</p>
+<pre><code class="language-py"># (a) Change the following columns header: ‘Region label’ to ‘Region’, ‘Area label’ to ‘Area’
+# and ‘Urban label’ to ‘Urban’.
+data_3_1a = data
+data_3_1a = data_3_1a.rename(columns={&quot;Region_label&quot;: &quot;Region&quot;, &quot;Area_label&quot;: &quot;Area&quot;,&quot;Urban_label&quot;:&quot;Urban&quot;})
+print(data_3_1a.columns)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311194059824.png" alt="image-20230311194059824" style="zoom:80%;" />
+<p>dataframe深拷贝</p>
+<pre><code class="language-py">data1 = data.copy()
+</code></pre>
+<p>保存数据</p>
+<pre><code class="language-python">data.to_csv(&quot;xxx.csv&quot;)
+</code></pre>
+<h2 id="离散值处理">离散值处理</h2>
+<p>convert strings to integers</p>
+<pre><code class="language-py"># convert strings to integers
+attrition = {'Existing Customer': 0, 'Attrited Customer': 1}
+gender = {'M': 0, &quot;F&quot;: 1}
+education = {'Uneducated': 1, 'High School': 2, 'College': 3, 'Graduate': 4, 'Post-Graduate': 5, 'Doctorate': 6, 'Unknown': 7}
+martial = {'Single': 1, 'Married': 2, 'Divorced': 3, 'Unknown': 4}
+income = {'Less than $40K': 1, '$40K - $60K': 2, '$60K - $80K': 3, '$80K - $120K': 4, '$120K +': 5, 'Unknown': 6}
+card = {'Blue': 9436, 'Silver': 555, 'Gold': 116, 'Platinum': 20}
+
+churn.Attrition_Flag = [attrition[item] for item in churn.Attrition_Flag]
+churn.Gender = [gender[item] for item in churn.Gender]
+churn.Education_Level = [education[item] for item in churn.Education_Level]
+churn.Marital_Status = [martial[item] for item in churn.Marital_Status]
+churn.Income_Category = [income[item] for item in churn.Income_Category]
+churn.Card_Category = [card[item] for item in churn.Card_Category]
+</code></pre>
+<h2 id="标准化与归一化preprocess_pipeline">标准化与归一化(preprocess_pipeline)</h2>
+<p>例子1</p>
+<pre><code class="language-pytho">#特征处理 选择连续的数据项进行归一化
+NumData = data[[&quot;Opnprc&quot;,&quot;Hiprc&quot;,&quot;Loprc&quot;,&quot;Clsprc&quot;,&quot;Dnshrtrd&quot;,&quot;ChangeRatio&quot;,]]
+#z-score标准化
+NumData = (NumData-NumData.mean())/(NumData.std())  
+#min-max归一化
+NumData = (NumData-NumData.min())/(NumData.max()-NumData.min())
+</code></pre>
+<p>例子2：利用PipeLine进行 <strong>Drop null values &amp; Standardize values</strong></p>
+<p>PipeLine原理：有模型的时候当模型来用，没模型的时候当transformer来用</p>
+<ol>
+<li><strong>连续值的pipeline</strong></li>
+</ol>
+<pre><code class="language-py">from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn import set_config
+
+set_config(display='diagram') # shows the pipeline structure graphically
+
+num_pipeline = Pipeline([
+        (&quot;imputer&quot;, SimpleImputer(strategy=&quot;median&quot;)),
+        (&quot;scaler&quot;, StandardScaler())
+    ])
+</code></pre>
+<ol start="2">
+<li>
+<p><strong>离散值处理</strong></p>
+<pre><code class="language-py">from sklearn.preprocessing import OneHotEncoder
+cat_pipeline = Pipeline([
+        (&quot;imputer&quot;, SimpleImputer(strategy=&quot;most_frequent&quot;)),
+        (&quot;cat_encoder&quot;, OneHotEncoder(sparse=False, drop=&quot;first&quot;))
+    ])
+</code></pre>
+</li>
+<li>
+<p><strong>pipeline分类别合并</strong></p>
+</li>
+</ol>
+<p>num与cat参数的构建的两种方式</p>
+<p>方式1</p>
+<pre><code class="language-py">from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler
+
+num_attribs = [&quot;Customer_Age&quot;, &quot;Dependent_count&quot;, &quot;Months_on_book&quot;, 
+               &quot;Total_Relationship_Count&quot;, &quot;Months_Inactive_12_mon&quot;,
+               &quot;Contacts_Count_12_mon&quot;, &quot;Credit_Limit&quot;, &quot;Total_Revolving_Bal&quot;,
+               &quot;Avg_Open_To_Buy&quot;, &quot;Total_Amt_Chng_Q4_Q1&quot;, &quot;Total_Trans_Amt&quot;,
+               &quot;Total_Trans_Ct&quot;, &quot;Total_Ct_Chng_Q4_Q1&quot;, &quot;Avg_Utilization_Ratio&quot;]
+cat_attribs = [&quot;Gender&quot;, &quot;Education_Level&quot;, &quot;Marital_Status&quot;, &quot;Income_Category&quot;,
+               &quot;Card_Category&quot;]
+</code></pre>
+<p>方式2</p>
+<pre><code class="language-py">from sklearn.compose import  make_column_selector
+num_attribs = make_column_selector(dtype_include=np.number)
+cat_attribs = make_column_selector(dtype_include='object')
+</code></pre>
+<p>pipeline合并</p>
+<pre><code class="language-py">
+
+# The following step patches SimpleImputer to produce feature names
+SimpleImputer.get_feature_names_out = StandardScaler.get_feature_names_out
+
+preprocess_pipeline = ColumnTransformer([ # handle each type of column with appropriate pipeline
+        (&quot;num&quot;, num_pipeline, num_attribs),
+        (&quot;cat&quot;, cat_pipeline, cat_attribs),])
+
+preprocess_pipeline
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311101254435.png" alt="image-20230311101254435" loading="lazy"></figure>
+<h2 id="缺失值重复值处理">缺失值/重复值处理</h2>
+<p>空值检测</p>
+<pre><code class="language-py"># 检查数据中是否有缺失值
+print(data.isnull().any())
+data.isna().sum()
+</code></pre>
+<pre><code class="language-py">import missingno as msno
+msno.matrix(data)
+msno.matrix(data)
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311152054694.png" alt="image-20230311152054694" loading="lazy"></figure>
+<pre><code class="language-python">#删除包含缺失值的行
+data.dropna(how='any', axis=0, inplace=True)
+#去除重复值
+data.drop_duplicates(inplace=True)
+</code></pre>
+<p>去除指定标识值</p>
+<pre><code class="language-py"># drop unknown records
+unknown_rows = churn[(churn['Education_Level'] == 'Unknown') | 
+                     (churn['Marital_Status'] == 'Unknown') | 
+                     (churn['Income_Category'] == 'Unknown')].index
+churn = churn.drop(unknown_rows)
+</code></pre>
+<p>去除指定行的空值</p>
+<pre><code class="language-py">null_rows_idx = housing[&quot;total_bedrooms&quot;].isnull()
+housing[null_rows_idx] 
+</code></pre>
+<pre><code class="language-py">data.dropna(subset=['DISTRICT', 'DISTRICT_NAME', 'STREET'], inplace=True)
+</code></pre>
+<p>填充空值</p>
+<pre><code class="language-py">data[&quot;Rate&quot;].fillna(0,inplace=True)
+</code></pre>
+<h2 id="数值统计">数值统计</h2>
+<pre><code class="language-py">data.Age.mean() # 统计Age的均值
+data.Age.max() # 统计Age的最大值
+data.Age.min() # 统计Age的最大值
+data.Age.count() # 统计Age的数量
+data.Age.unique() # 统计Age的非重复数量
+</code></pre>
+<p>按某列进行排序</p>
+<pre><code class="language-py">data.sort_values(by=&quot;Age&quot; , inplace=True, ascending=False)  #按Age这列进行降序
+</code></pre>
+<h2 id="数据筛选">数据筛选</h2>
+<p><strong>dataframe.query()</strong></p>
+<pre><code class="language-py">data_query = data.query(&quot;Salary &lt; 120000 and Year &lt; 12&quot;)
+print(data_query)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311001057195.png" alt="image-20230311001057195" style="zoom:70%;" />
+<p><strong>中括号查询</strong></p>
+<p>&amp;</p>
+<pre><code class="language-py">crime2022_tidy = crime2022_tidy[(crime2022_tidy.Lat != 0.000000) &amp; (crime2022_tidy.Long != 0.000000) &amp; (crime2022_tidy.Location != (0, 0))]
+</code></pre>
+<p>|</p>
+<pre><code class="language-py">data_2_2_c=data[(data[&quot;Region_label&quot;] == &quot;Nelson&quot;) | (data[&quot;Urban_label&quot;] == &quot;Nelson&quot;)]
+</code></pre>
+<p>contains</p>
+<pre><code class="language-py">accidents[accidents['Date'].str.contains('2019')].head(5)
+</code></pre>
+<p><strong>dataframe.iloc()</strong> 定位</p>
+<pre><code class="language-py"> # Show the 100-110th elements of the column ‘Region label’. (Include 100th and 110th,counted from 1)
+data[&quot;Region_label&quot;].iloc[100:111]
+</code></pre>
+<p>datafram按某列排序</p>
+<pre><code class="language-py">data.sort_values(by=&quot;Rate&quot;,axis=0,ascending=False,inplace=True)
+</code></pre>
+<h2 id="离群值检测">离群值检测</h2>
+<pre><code class="language-py">def detect_outliers(lineDataArr,threshold=3):
+    mean_d = np.mean(lineDataArr)
+    std_d = np.std(lineDataArr)
+    outliers = []
+
+    for i in range(len(lineDataArr)):
+        y = lineDataArr[i]
+        z_score= (y - mean_d)/std_d 
+        if np.abs(z_score) &gt; threshold:
+            outliers.append(i)
+    return outliers
+def detect_outliers_byname(data,columename):
+    res = detect_outliers(data[columename])
+    return res
+def detect_outliers_bylist(columenames):
+    for name in columenames:
+        res = detect_outliers_byname(data,name)
+        print(&quot;name:{},num:{}&quot;.format(name,len(res)))
+</code></pre>
+<h2 id="初步可视化">初步可视化</h2>
+<h3 id="x-y折线图"><strong>X-Y折线图</strong></h3>
+<p>dataframe折线图</p>
+<pre><code class="language-python">#初步可视化
+NumData[[&quot;ChangeRatio&quot;,&quot;Opnprc&quot;]].plot()
+NumData[[&quot;ChangeRatio&quot;,&quot;Hiprc&quot;]].plot()
+NumData[[&quot;ChangeRatio&quot;,&quot;Loprc&quot;]].plot()
+NumData[[&quot;ChangeRatio&quot;,&quot;Clsprc&quot;]].plot()
+NumData[[&quot;ChangeRatio&quot;,&quot;Dnshrtrd&quot;]].plot()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310223906262.png" alt="image-20230310223906262" style="zoom:63%;" />
+<p>plt折线图</p>
+<pre><code class="language-py">sum_data = new_data.groupby(['year']).sum()
+year_names = list(set(new_data['year']))
+year_names.sort()
+    
+X=year_names
+Y=sum_data['data_val'] 
+fig = plt.figure()
+plt.plot(X,Y,color=&quot;blue&quot;)
+plt.title(&quot;Total gas emissions in each year&quot;)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310235520189.png" alt="image-20230310235520189" style="zoom:80%;" />
+<h3 id="散点图"><strong>散点图</strong></h3>
+<p><strong>例子0：dataframe自带的plot</strong></p>
+<pre><code class="language-py">data.plot(kind=&quot;scatter&quot;,x=&quot;LIMIT_BAL&quot;,y=&quot;default payment next month&quot;,alpha=0.1)
+</code></pre>
+<figure data-type="image" tabindex="3"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311005748312.png" alt="image-20230311005748312" loading="lazy"></figure>
+<pre><code class="language-py">housing.plot(kind=&quot;scatter&quot;, x=&quot;longitude&quot;, y=&quot;latitude&quot;, grid=True, alpha=0.1)
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311114259332.png" alt="image-20230311114259332" style="zoom:80%;" />
+<p><strong>例子1</strong></p>
+<pre><code class="language-py">#数据分布初步可视化
+x1 = data['年份']
+y1 = data['地方预算内财政收入Y']
+
+x2 = data['年份']
+y2 = data['国内生产总值(GDP)X']
+
+plt.scatter(x1,y1, label='local income', color='blue', s=25, marker=&quot;o&quot;)
+plt.scatter(x2,y2, label='GDP', color='yellow', s=25, marker=&quot;o&quot;)
+
+plt.xlabel('year')
+plt.ylabel('local income /GDP')
+
+plt.title('local income /GDP by year',fontsize=20,color='black')
+plt.legend()
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310232942410.png" alt="image-20230310232942410" style="zoom:50%;" />
+<p><strong>例子2</strong></p>
+<pre><code class="language-py">changeRatio = NumData['ChangeRatio']
+x_name_list = [&quot;Opnprc&quot;,&quot;Hiprc&quot;,&quot;Loprc&quot;,&quot;Clsprc&quot;,&quot;Dnshrtrd&quot;]
+colors = ['c', 'b', 'g', 'r', 'm', 'y', 'k', 'w']
+for index,x_name in enumerate(x_name_list):
+    plt.scatter(NumData[x_name],changeRatio, label=x_name, color=colors[index], s=25, marker=&quot;o&quot;)
+    plt.title('Scatter plot '+ 'Outcome  vs'+ x_name,fontsize=20,color='black')
+    plt.legend()
+    plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310224444526.png" alt="image-20230310224444526" style="zoom:67%;" />
+<p>例子3 散点图矩阵</p>
+<pre><code class="language-py">import numpy as np
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+X = df[['SepalLengthCm','SepalWidthCm','PetalLengthCm','PetalWidthCm']]
+Y = df[['Cluster','Species']]
+
+#可视化展现
+grr=pd.plotting.scatter_matrix(X,c=np.squeeze(Y[['Cluster']]),figsize=(8,8),marker=&quot;o&quot;,hist_kwds={'bins':20},s=60,alpha=.8,cmap=plt.cm.Paired)
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311003805226.png" alt="image-20230311003805226" style="zoom:67%;" />
+<h3 id="子图">子图</h3>
+<p>例子1</p>
+<pre><code class="language-py">#c Split array, plot two in same figure
+
+import matplotlib.pyplot as plt
+
+plt.figure()
+
+y1 = i(1800,1810)
+y2 = i(1900,1910)
+y=[y1,y2]
+color = ['r','b']
+titles=['1800','1900']
+
+for plt_index in range(1,3):
+    
+    plt.subplot(1, 2, plt_index)
+    
+    plt.title(titles[plt_index-1])
+    
+    plt.plot(y[plt_index-1],color[plt_index-1])
+
+#e save
+plt.show()
+plt.savefig('pic-c.png')
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310232644543.png" alt="image-20230310232644543" style="zoom:67%;" />
+<p>例子2</p>
+<pre><code class="language-py">import matplotlib.pyplot as plt
+import numpy as np
+#创建自定义图像
+fig = plt.figure()
+#第一个子图 1行2列
+ax1 = fig.add_subplot(1, 2, 1)
+#第二个子图 1行2列
+ax2 = fig.add_subplot(1, 2, 2)
+#设置图1
+ax1.hist(np.random.randn(100), bins=20, color='K')
+#设置图2
+ax2.scatter(np.arange(30), np.arange(30) + 3 * np.random.randn(30))
+plt.show()
+</code></pre>
+<figure data-type="image" tabindex="4"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311000328984.png" alt="image-20230311000328984" loading="lazy"></figure>
+<p>例子3</p>
+<pre><code class="language-py">sort_meanFiles = film_means.sort_values(by=&quot;fee&quot;,ascending=False)
+plt.subplot(211)
+plt.bar(film_means['name'], film_means['fee'])
+plt.subplot(212)
+plt.bar(sort_meanFiles['name'], sort_meanFiles['fee'])
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311000403797.png" alt="image-20230311000403797" style="zoom:80%;" />
+<h3 id="饼图">饼图</h3>
+<pre><code class="language-py">weeks = np.array(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'])
+plt.pie(books[:7], labels=weeks)
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310235143901.png" alt="image-20230310235143901" style="zoom:80%;" />
+<h3 id="柱状图">柱状图</h3>
+<p>例子0：dataframe自带的画图</p>
+<pre><code class="language-py">dataframe.plot.bar()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311190124188.png" alt="image-20230311190124188" style="zoom:80%;" />
+<p>例子1</p>
+<pre><code class="language-py">plt.bar(film_means['name'], film_means['fee'])
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311000018189.png" alt="image-20230311000018189" style="zoom:80%;" />
+<p>例子2</p>
+<pre><code class="language-py">sum_data = new_data.groupby(['region']).sum()
+region_names = list(set(new_data['region']))
+region_names.sort()
+    
+X=region_names
+Y=sum_data['data_val'] 
+fig = plt.figure()
+plt.bar(X,Y,0.4,color=&quot;blue&quot;)
+plt.xticks(rotation=300)
+plt.title(&quot;2021 greenhouse gas emissions&quot;) 
+plt.show()  
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310235324609.png" alt="image-20230310235324609" style="zoom:67%;" />
+<p>例子3：水平与垂直柱状图</p>
+<pre><code class="language-py">#随机生成6组 每组4项的数据
+df = pd.DataFrame(np.random.rand(6, 4), index=['one', 'two', 'three', 'four', 'five', 'six'],columns=pd.Index(['A', 'B','C','D']))
+#水平柱状图
+df.plot.bar()
+#垂直柱状图
+df.plot.barh(stacked=True, alpha=0.5)
+#显示图像
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311000146693.png" alt="image-20230311000146693" style="zoom:80%;" />
+<p>例子4：分类变量的柱状图</p>
+<pre><code class="language-py"># catplot of gender
+sns.catplot(x = 'Gender', hue = 'Attrition_Flag', data = churn, kind=&quot;count&quot;)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311110610380.png" alt="image-20230311110610380" style="zoom:80%;" />
+<pre><code class="language-py"># catplot of education
+sns.catplot(x = 'Education_Level', hue = 'Attrition_Flag', data = churn, 
+            kind=&quot;count&quot;, order = ['Uneducated', 'High School', 'College', 
+                                   'Graduate', 'Post-Graduate', 'Doctorate', 
+                                   'Unknown'], 
+            aspect = 1.5)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311110727635.png" alt="image-20230311110727635" style="zoom:67%;" />
+<h3 id="频率分布直方图">频率分布直方图</h3>
+<pre><code class="language-python">#histograms
+data.hist(color='r', alpha=0.5, bins=50)
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311001415999.png" alt="image-20230311001415999" style="zoom:67%;" />
+<pre><code class="language-py"># Customer_Age
+# change graph type (area/distribution)
+plt.figure(figsize=(12, 6))
+axis_name=&quot;percentage of customers&quot;
+gp_age = churn.groupby(&quot;Customer_Age&quot;)[&quot;Attrition_Flag&quot;].value_counts()/len(churn)
+gp_age = gp_age.to_frame().rename({&quot;Attrition_Flag&quot;: axis_name}, axis=1).reset_index()
+sns.barplot(x='Customer_Age', y= axis_name, hue='Attrition_Flag', data=gp_age)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311112923289.png" alt="image-20230311112923289" style="zoom:80%;" />
+<h3 id="相关矩阵">相关矩阵</h3>
+<p>相关系数矩阵</p>
+<pre><code class="language-py">corr = data.corr() # Compute the correlation matrix 
+sns.heatmap(corr, cmap='RdBu', vmin=-1, vmax=1)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311110257616.png" alt="image-20230311110257616" style="zoom:67%;" />
+<p>相关矩阵</p>
+<pre><code class="language-py">from pandas.plotting import scatter_matrix
+plt.clf()
+attributes = [&quot;median_house_value&quot;, &quot;median_income&quot;, &quot;total_rooms&quot;,
+              &quot;housing_median_age&quot;]
+scatter_matrix(housing[attributes], figsize=(12, 10))
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311114441094.png" alt="image-20230311114441094" style="zoom:67%;" />
+<p>相关性图片</p>
+<pre><code class="language-py">sns.pairplot(data,hue='TenYearCHD')
+</code></pre>
+<figure data-type="image" tabindex="5"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311190413258.png" alt="image-20230311190413258" loading="lazy"></figure>
+<h3 id="箱线图">箱线图</h3>
+<pre><code class="language-py">sns.boxplot(x = 'Attrition_Flag', y = 'Customer_Age', data = churn)
+</code></pre>
+<figure data-type="image" tabindex="6"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311110502811.png" alt="image-20230311110502811" loading="lazy"></figure>
+<h2 id="回归分析">回归分析</h2>
+<h3 id="ols">OLS</h3>
+<p>主要涉及<strong>statsmodels</strong>库的使用</p>
+<p><strong>Use</strong> <strong><code>statsmodels</code></strong> <strong>to regress mpg on all other variables. Note you can tell</strong> <strong><code>ols()</code></strong> <strong>to treat a variable as categorical by enclosing the variable in</strong> <strong><code>C()</code></strong></p>
+<p>OLS模型构建</p>
+<pre><code class="language-py">model3 = smf.ols(formula=&quot;mpg ~ cylinders + displacement + weight + acceleration +C(year) +origin&quot;, data=data).fit()
+</code></pre>
+<pre><code class="language-py">print(model3.params)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311002703177.png" alt="image-20230311002703177" style="zoom:67%;" />
+<pre><code class="language-py">print(model3.summary())
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311002848287.png" alt="image-20230311002848287" style="zoom:80%;" />
+<pre><code class="language-py">#回归结果
+fig = plt.figure(figsize=(15,8))
+fig = sm.graphics.plot_regress_exog(model3,&quot;origin&quot;, fig =fig)
+plt.show()
+</code></pre>
+<figure data-type="image" tabindex="7"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311003110639.png" alt="image-20230311003110639" loading="lazy"></figure>
+<p>plot_partregress_grid 绘制多元偏回归图，展示包括截距项在内对多个自变量与因变量间的关系。并同时加上线性拟合线展示对收盘价对影响。</p>
+<pre><code class="language-py">fig = plt.figure(figsize=(20,12))
+fig = sm.graphics.plot_partregress_grid(stock_models,  fig=fig)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311003328796.png" alt="image-20230311003328796" style="zoom:67%;" />
+<h3 id="vif">VIF</h3>
+<p><strong>Get the VIF of the independent variables</strong></p>
+<pre><code class="language-PY">from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+def getVifAndMulticoPredictors(x):
+    vif=[variance_inflation_factor(x.values,x.columns.get_loc(i)) for i in x.columns]
+    MulticoPredictors = []
+    for i in range(len(vif)):
+        if(vif[i]&gt;10):
+            MulticoPredictors.append(list(x.columns)[i])
+    return vif,MulticoPredictors
+X = boston_df[x_columns]
+vif,MulticoPredictors = getVifAndMulticoPredictors(X)
+vif
+</code></pre>
+<figure data-type="image" tabindex="8"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311200654137.png" alt="image-20230311200654137" loading="lazy"></figure>
+<h1 id="part2机器学习">PART2:机器学习</h1>
+<h2 id="常用库函数">常用库函数</h2>
+<pre><code class="language-python">#import lib
+import pandas as pd
+import pandas_datareader.data as web
+import numpy as np
+from datetime import datetime 
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from math import sqrt
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn import svm, datasets
+from sklearn.metrics import roc_curve, auc  ###计算roc和auc
+from sklearn import model_selection 
+from sklearn.metrics import roc_auc_score
+import warnings
+from pandas.core.common import SettingWithCopyWarning
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.tree import DecisionTreeClassifier 
+from sklearn.model_selection import cross_val_score 
+</code></pre>
+<pre><code class="language-py">plt.rcParams['axes.unicode_minus']=False #用来正常显示负号
+warnings.simplefilter(action=&quot;ignore&quot;, category=SettingWithCopyWarning)
+</code></pre>
+<h2 id="数据集划分">数据集划分</h2>
+<p>例子1</p>
+<pre><code class="language-py">x = np.array(NumData[[&quot;Opnprc&quot;,&quot;Dnshrtrd&quot;]])
+y = np.array(NumData['ChangeRatio'])
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.4)
+</code></pre>
+<p>例子2</p>
+<pre><code class="language-py">df_X = train_data.drop(&quot;Attrition_Flag&quot;, axis=1)
+df_y = train_data[&quot;Attrition_Flag&quot;]
+print(df_X.head())  # to check that 'y' isn't included
+
+X_train = preprocess_pipeline.fit_transform(df_X)
+y_train = df_y.values
+X_test = preprocess_pipeline.transform(test_data)
+y_test = test_data[&quot;Attrition_Flag&quot;]
+
+</code></pre>
+<p>补充 dataframe.drop()</p>
+<pre><code class="language-py">data.drop(columns=[&quot;Region_code&quot;,&quot;Area_code&quot;,&quot;Urban_code&quot;])
+</code></pre>
+<h2 id="模型构建与训练">模型构建与训练</h2>
+<p><strong>模型构建</strong></p>
+<p>单一model构建</p>
+<pre><code class="language-py">clf = LogisticRegression()
+clf = KNeighborsClassifier(n_neighbors=5)
+clf = RandomForestClassifier()
+</code></pre>
+<p>pipeline：结合transformer与model</p>
+<pre><code class="language-py">from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.pipeline import make_pipeline
+
+clf = make_pipeline(preprocess_pipeline, LogisticRegression())
+clf = make_pipeline(preprocess_pipeline, SVC(gamma=&quot;auto&quot;))
+clf = make_pipeline(preprocess_pipeline, RandomForestClassifier(n_estimators=100, random_state=42))
+clf = make_pipeline(preprocess_pipeline, DecisionTreeClassifier(random_state=42))
+</code></pre>
+<p>pipeline的另一种构建方式</p>
+<pre><code class="language-py">from sklearn.feature_selection import SequentialFeatureSelector
+
+selection_pipeline = Pipeline([
+    ('preprocessing', preprocess_pipeline),
+    ('select', SequentialFeatureSelector(LogisticRegression(), n_features_to_select=1.0)),
+])
+
+selection_pipeline
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311112338499.png" alt="image-20230311112338499" style="zoom:80%;" />
+<pre><code class="language-py">clf = make_pipeline(selection_pipeline, LogisticRegression())
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311112512105.png" alt="image-20230311112512105" style="zoom:67%;" />
+<p><strong>模型训练</strong></p>
+<pre><code class="language-py">clf.fit(X_train, y_train)
+</code></pre>
+<h2 id="模型参数调优">模型参数调优</h2>
+<p>例子1：</p>
+<p>只用单一模型，不使用pipeline时。以网格搜索为例。</p>
+<pre><code class="language-py">parameters = {
+    'max_depth':np.arange(5,14,2),
+    'min_samples_leaf':np.arange(1,3),
+    'criterion':['gini','entropy']
+}
+model = RandomForestClassifier()
+
+grid_search = GridSearchCV(model,parameters,scoring='roc_auc',cv=5)
+
+grid_search.fit(X1test, Y1test)
+
+grid_search.best_params_
+</code></pre>
+<p>【OUT】 : {'criterion': 'entropy', 'max_depth': 7, 'min_samples_leaf': 1}</p>
+<pre><code class="language-py">grid_search.best_score_
+</code></pre>
+<p>【OUT】: 0.618511781446462</p>
+<p><mark>例子2：pipeline model <strong>Grid Search</strong></mark></p>
+<p>首先需要看一下模型有哪些参数</p>
+<pre><code class="language-py">print(preprocess_pipeline.get_feature_names_out()) # check the column names produced by the pipeline
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311102645350.png" alt="image-20230311102645350" style="zoom:67%;" />
+<pre><code class="language-py">from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+
+full_pipeline = Pipeline([
+    (&quot;preprocessing&quot;, preprocess_pipeline),
+    (&quot;random_forest&quot;, RandomForestClassifier(n_estimators=100, random_state=42)),
+])
+param_grid = [ 
+    {'random_forest__max_depth': [2, 5, 10], 
+    'random_forest__min_samples_leaf': [2, 5, 10], }, 
+    ]
+grid_search = GridSearchCV(full_pipeline, param_grid, cv=3, scoring='balanced_accuracy')
+grid_search.fit(df_X, df_y)
+
+grid_search.best_estimator_
+cv_res = pd.DataFrame(grid_search.cv_results_)
+cv_res.sort_values(by=&quot;mean_test_score&quot;, ascending=False, inplace=True)
+cv_res.head()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311104517212.png" alt="image-20230311104517212" style="zoom:80%;" />
+<pre><code class="language-py">grid_search.best_params_
+</code></pre>
+<p>【OUT】：{'random_forest__max_depth': 10, 'random_forest__min_samples_leaf': 2}</p>
+<pre><code class="language-py">final_model = grid_search.best_estimator_  # includes preprocessing
+final_predictions = final_model.predict(X_test)
+</code></pre>
+<p>例子3：<strong>Random Search</strong></p>
+<p>由于网格搜索对每个参数都有搜索一遍，特别耗时，所以有了随机搜索</p>
+<pre><code class="language-py">from sklearn.model_selection import RandomizedSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from scipy.stats import randint
+
+full_pipeline = Pipeline([
+    (&quot;preprocessing&quot;, preprocess_pipeline),
+    (&quot;random_forest&quot;, RandomForestClassifier(n_estimators=100, random_state=42)),
+])
+param_distribs = [ 
+    {'random_forest__max_depth': randint(2, 100), 
+    'random_forest__min_samples_leaf': randint(2, 100), }, 
+    ]
+random_search = RandomizedSearchCV(full_pipeline, param_distribs, n_iter=20, cv=3, 
+                                 scoring='balanced_accuracy', random_state=42)
+random_search.fit(df_X, df_y)
+random_search.best_estimator_
+cv_res = pd.DataFrame(random_search.cv_results_)
+cv_res.sort_values(by=&quot;mean_test_score&quot;, ascending=False, inplace=True)
+cv_res.head()
+</code></pre>
+<figure data-type="image" tabindex="9"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311105127159.png" alt="image-20230311105127159" loading="lazy"></figure>
+<pre><code class="language-py">random_search.best_params_
+</code></pre>
+<p>【OUT】：{'random_forest__max_depth': 54, 'random_forest__min_samples_leaf': 3}</p>
+<pre><code class="language-py">final_model = random_search.best_estimator_  # includes preprocessing
+final_predictions = final_model.predict(X_test)
+</code></pre>
+<h2 id="模型预测">模型预测</h2>
+<pre><code class="language-py">y_pred = rf_clf.predict(X_test)
+</code></pre>
+<p>y_pred 与 y_test的<strong>对比可视化</strong></p>
+<p>例子1</p>
+<pre><code class="language-py">plt.title(u'预测值与实际值比较（一元线性回归）')
+plt.ylabel(u'日均票房收入\万元')
+plt.plot(range(len(y_pred)),y_pred,'red', linewidth=2.5,label=u&quot;预测值&quot;)
+plt.plot(range(len(y_test)),y_test,'green',label=u&quot;测试值&quot;)
+plt.legend(loc=2)
+#显示预测值与测试值曲线
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311000717755.png" alt="image-20230311000717755" style="zoom:80%;" />
+<p>例子2</p>
+<pre><code class="language-py">#模型预测结果可视化
+x1 = x_test
+y1 = y_test
+
+x2 = x_test
+y2 = y_pred
+
+plt.scatter(x1,y1, label='test', color='blue', s=25, marker=&quot;o&quot;)
+plt.scatter(x2,y2, label='predict', color='yellow', s=25, marker=&quot;o&quot;)
+
+plt.xlabel('local income')
+plt.ylabel('GDP')
+
+plt.title('GDP by local income',fontsize=20,color='black')
+plt.legend()
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310233058288.png" alt="image-20230310233058288" style="zoom:80%;" />
+<h2 id="模型评估">模型评估</h2>
+<h3 id="不同模型的比较箱型图">不同模型的比较箱型图</h3>
+<pre><code class="language-py">#分数的计算举例
+dt_scores = cross_val_score(clf, X_train, y_train, cv=10, scoring='balanced_accuracy')
+
+# 画图
+plt.figure(figsize=(8, 4))
+plt.plot([1]*10, svc_scores, &quot;.&quot;)
+plt.plot([2]*10, lr_scores, &quot;.&quot;)
+plt.plot([3]*10, knn_scores, &quot;.&quot;)
+plt.plot([4]*10, rf_scores, &quot;.&quot;)
+plt.plot([5]*10, dt_scores, &quot;.&quot;)
+
+plt.boxplot([svc_scores, lr_scores, knn_scores, rf_scores, dt_scores],
+            labels=(&quot;SVM&quot;, &quot;Logistic Regression&quot;, &quot;kNN&quot;, &quot;Random Forest&quot;, &quot;Decision Tree&quot;))
+plt.ylabel(&quot;Accuracy&quot;)
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311112005679.png" alt="image-20230311112005679" style="zoom:80%;" />
+<p>或者</p>
+<pre><code class="language-py">scores = {&quot;SVM&quot;: svc_scores, &quot;Logistic Regression&quot;: lr_scores, &quot;kNN&quot;: knn_scores, &quot;Random Forest&quot;: rf_scores, &quot;Decision Tree&quot;: dt_scores}
+scores_df = pd.DataFrame(data=scores)
+</code></pre>
+<pre><code class="language-py">sns.catplot(data=scores_df, kind='box', aspect=1.5, palette='Blues').set(title='Performance of different classifiers', ylabel='Accuracy')
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311112132147.png" alt="image-20230311112132147" style="zoom:80%;" />
+<h3 id="classification_report">classification_report</h3>
+<pre><code class="language-py">from sklearn.metrics import classification_report
+print(classification_report(y_test, y_pred))
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311111159042.png" alt="image-20230311111159042" style="zoom:67%;" />
+<h3 id="f1_scoreprecision_scorerecall_scoreaccuracy_score"><strong>f1_score</strong>,<strong>precision_score</strong>,<strong>recall_score</strong>,<strong>accuracy_score</strong></h3>
+<pre><code class="language-py"># Updates model score to f1_dict
+f1_dict[&quot;RandomForest&quot;] = f1_score(y_pred, y_test)
+precision_dict[&quot;RandomForest&quot;] = precision_score(y_pred, y_test)
+recall_dict[&quot;RandomForest&quot;] = recall_score(y_pred, y_test)
+accuracy_dict['RandomForest'] = accuracy_score(y_pred, y_test)
+</code></pre>
+<h3 id="交叉验证">交叉验证</h3>
+<pre><code class="language-py">from sklearn.model_selection import cross_val_score
+
+forest_scores = cross_val_score(forest_clf, X_train, y_train, cv=10, scoring='balanced_accuracy')
+forest_scores.mean().round(3)
+</code></pre>
+<h3 id="误差分析"><strong>误差分析</strong></h3>
+<pre><code class="language-pyth">#误差分析
+#Mean Absolute Error (MAE), Mean Squared Error
+# (MSE) and Root Mean Squared Error (RMSE). 
+y_pred = rf.predict(x_test)
+MAE = mean_absolute_error(y_test, y_pred)
+MSE = mean_squared_error(y_test, y_pred)
+RMSE = sqrt(MSE)
+print(&quot;MAE:{},MSE:{},RMSE:{}&quot;.format(MAE,MSE,RMSE))
+</code></pre>
+<h3 id="混淆矩阵"><strong>混淆矩阵</strong></h3>
+<p>例子1</p>
+<pre><code class="language-py">from sklearn.metrics import ConfusionMatrixDisplay
+
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred);
+</code></pre>
+<figure data-type="image" tabindex="10"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311111025073.png" alt="image-20230311111025073" loading="lazy"></figure>
+<p>例子2：自定义画图</p>
+<pre><code class="language-py">#混淆矩阵
+
+def continue2class(continue_y,coefficient):
+    assert(coefficient&gt;=0 and coefficient &lt;= 1 )
+    Max = np.max(continue_y)
+    Min = np.min(continue_y)
+    threshold = coefficient*(Max-Min) + Min
+    classy = []
+    for v in continue_y:
+        if v&gt;= threshold:
+            classy.append(1)
+        else:
+            classy.append(0)
+    return classy
+y_true = continue2class(y_test,0.5)
+y_pred = continue2class(y_pred,0.5)
+def ConfuseMatrix(y_pred,y_true):
+    C = confusion_matrix(y_true, y_pred) 
+
+    plt.matshow(C, cmap=plt.cm.Reds) # 根据最下面的图按自己需求更改颜色
+    # plt.colorbar()
+
+    for i in range(len(C)):
+        for j in range(len(C)):
+            plt.annotate(C[j, i], xy=(i, j), horizontalalignment='center', verticalalignment='center')
+
+    # plt.tick_params(labelsize=15) # 设置左边和上面的label类别如0,1,2,3,4的字体大小。
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    # plt.ylabel('True label', fontdict={'family': 'Times New Roman', 'size': 20}) # 设置字体大小。
+    # plt.xlabel('Predicted label', fontdict={'family': 'Times New Roman', 'size': 20})
+    # plt.xticks(range(0,5), labels=['a','b','c','d','e']) # 将x轴或y轴坐标，刻度 替换为文字/字符
+    # plt.yticks(range(0,5), labels=['a','b','c','d','e'])
+    plt.show()
+    
+</code></pre>
+<pre><code class="language-python">y_pred = y_pred 
+y_true = y_test
+# 对上面进行赋值
+ConfuseMatrix(y_true,y_pred)
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230310231008770.png" alt="image-20230310231008770" style="zoom:70%;" />
+<h3 id="roc曲线">ROC曲线</h3>
+<p>例子1</p>
+<pre><code class="language-py">from sklearn.metrics import RocCurveDisplay
+RocCurveDisplay.from_estimator(forest_clf, X_t, y_test);
+</code></pre>
+<figure data-type="image" tabindex="11"><img src="https://gitee.com/yushen611/img/raw/master/image-20230311111308994.png" alt="image-20230311111308994" loading="lazy"></figure>
+<p>例子2</p>
+<pre><code class="language-py">from sklearn.metrics import roc_curve
+fpr, tpr, thresholds_keras = roc_curve(y_test, y_pred1)
+plt.figure()
+plt.plot([0, 1], [0, 1], 'k--')
+plt.plot(fpr, tpr, label='(ROC curve )')
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title('ROC curve')
+plt.legend(loc='best')
+plt.show()
+</code></pre>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230311191158981.png" alt="image-20230311191158981" style="zoom:80%;" />
+<p>例子3：自己画ROC曲线</p>
+<pre><code class="language-py">#ROC曲线
+def acu_curve(y,prob):
+    fpr,tpr,threshold = roc_curve(y,prob) ###计算真正率和假正率
+    roc_auc = auc(fpr,tpr) ###计算auc的值
+ 
+    plt.figure()
+    lw = 2
+    plt.figure(figsize=(10,10))
+    plt.plot(fpr, tpr, color='darkorange',
+             lw=lw, label='ROC curve (area = %0.3f)' % roc_auc) ###假正率为横坐标，真正率为纵坐标做曲线
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic example')
+    plt.legend(loc=&quot;lower right&quot;)
+ 
+    plt.show()
+
+acu_curve(y_true,y_pred) #下面两张图分别是两个模型训练的结果
+</code></pre>
+<p><img src="https://gitee.com/yushen611/img/raw/master/image-20230310231206725.png" alt="image-20230310231206725" style="zoom:67%;" /><img src="https://gitee.com/yushen611/img/raw/master/image-20230310231248729.png" alt="image-20230310231248729" loading="lazy"></p>
+<p><img src="https://gitee.com/yushen611/img/raw/master/image-20230310231206725.png" alt="image-20230310231206725" style="zoom:67%;" /><img src="https://gitee.com/yushen611/img/raw/master/image-20230310231248729.png" alt="image-20230310231248729" loading="lazy"></p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#part1%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90">PART1:数据分析</a>
+<ul>
+<li><a href="#%E5%AF%BC%E5%85%A5%E5%B8%B8%E7%94%A8%E5%BA%93">导入常用库</a></li>
+<li><a href="#%E8%AF%BB%E5%8F%96%E4%B8%8E%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE">读取与保存数据</a></li>
+<li><a href="#%E7%A6%BB%E6%95%A3%E5%80%BC%E5%A4%84%E7%90%86">离散值处理</a></li>
+<li><a href="#%E6%A0%87%E5%87%86%E5%8C%96%E4%B8%8E%E5%BD%92%E4%B8%80%E5%8C%96preprocess_pipeline">标准化与归一化(preprocess_pipeline)</a></li>
+<li><a href="#%E7%BC%BA%E5%A4%B1%E5%80%BC%E9%87%8D%E5%A4%8D%E5%80%BC%E5%A4%84%E7%90%86">缺失值/重复值处理</a></li>
+<li><a href="#%E6%95%B0%E5%80%BC%E7%BB%9F%E8%AE%A1">数值统计</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E7%AD%9B%E9%80%89">数据筛选</a></li>
+<li><a href="#%E7%A6%BB%E7%BE%A4%E5%80%BC%E6%A3%80%E6%B5%8B">离群值检测</a></li>
+<li><a href="#%E5%88%9D%E6%AD%A5%E5%8F%AF%E8%A7%86%E5%8C%96">初步可视化</a>
+<ul>
+<li><a href="#x-y%E6%8A%98%E7%BA%BF%E5%9B%BE"><strong>X-Y折线图</strong></a></li>
+<li><a href="#%E6%95%A3%E7%82%B9%E5%9B%BE"><strong>散点图</strong></a></li>
+<li><a href="#%E5%AD%90%E5%9B%BE">子图</a></li>
+<li><a href="#%E9%A5%BC%E5%9B%BE">饼图</a></li>
+<li><a href="#%E6%9F%B1%E7%8A%B6%E5%9B%BE">柱状图</a></li>
+<li><a href="#%E9%A2%91%E7%8E%87%E5%88%86%E5%B8%83%E7%9B%B4%E6%96%B9%E5%9B%BE">频率分布直方图</a></li>
+<li><a href="#%E7%9B%B8%E5%85%B3%E7%9F%A9%E9%98%B5">相关矩阵</a></li>
+<li><a href="#%E7%AE%B1%E7%BA%BF%E5%9B%BE">箱线图</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90">回归分析</a>
+<ul>
+<li><a href="#ols">OLS</a></li>
+<li><a href="#vif">VIF</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#part2%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0">PART2:机器学习</a>
+<ul>
+<li><a href="#%E5%B8%B8%E7%94%A8%E5%BA%93%E5%87%BD%E6%95%B0">常用库函数</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E5%88%92%E5%88%86">数据集划分</a></li>
+<li><a href="#%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA%E4%B8%8E%E8%AE%AD%E7%BB%83">模型构建与训练</a></li>
+<li><a href="#%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98">模型参数调优</a></li>
+<li><a href="#%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B">模型预测</a></li>
+<li><a href="#%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0">模型评估</a>
+<ul>
+<li><a href="#%E4%B8%8D%E5%90%8C%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%AF%94%E8%BE%83%E7%AE%B1%E5%9E%8B%E5%9B%BE">不同模型的比较箱型图</a></li>
+<li><a href="#classification_report">classification_report</a></li>
+<li><a href="#f1_scoreprecision_scorerecall_scoreaccuracy_score"><strong>f1_score</strong>,<strong>precision_score</strong>,<strong>recall_score</strong>,<strong>accuracy_score</strong></a></li>
+<li><a href="#%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81">交叉验证</a></li>
+<li><a href="#%E8%AF%AF%E5%B7%AE%E5%88%86%E6%9E%90"><strong>误差分析</strong></a></li>
+<li><a href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><strong>混淆矩阵</strong></a></li>
+<li><a href="#roc%E6%9B%B2%E7%BA%BF">ROC曲线</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

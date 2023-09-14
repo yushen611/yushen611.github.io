@@ -1,0 +1,505 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>tgn基础 | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="tgn基础 | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+本文记录了学习tgn代码的过程。
+学习的代码是pyg实现tgn的代码例子：pytorch_geometric/examples/tgn.py at master · pyg-team/pytorch_geometric (github.c..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              tgn基础
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-08-26
+              </span>
+              <span>
+                11 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <meta name="referrer" content="no-referrer"/>
+<p>本文记录了学习tgn代码的过程。</p>
+<p>学习的代码是pyg实现tgn的代码例子：<a href="https://github.com/pyg-team/pytorch_geometric/blob/master/examples/tgn.py">pytorch_geometric/examples/tgn.py at master · pyg-team/pytorch_geometric (github.com)</a></p>
+<p>下面以工程的角度去拆分代码逻辑</p>
+<h1 id="tgn原理未完待续">TGN原理(未完待续)</h1>
+<h1 id="tgn代码实现pyg版本">TGN代码实现(pyg版本)</h1>
+<h2 id="step1导入依赖">step1:导入依赖</h2>
+<pre><code class="language-python">import os.path as osp
+import torch
+from sklearn.metrics import average_precision_score, roc_auc_score
+from torch.nn import Linear
+from torch_geometric.datasets import JODIEDataset
+from torch_geometric.loader import TemporalDataLoader
+from torch_geometric.nn import TGNMemory, TransformerConv
+from torch_geometric.nn.models.tgn import (
+    IdentityMessage,
+    LastAggregator,
+    LastNeighborLoader,
+)
+</code></pre>
+<ol>
+<li><code>TemporalDataLoader</code>与<code>dataloader</code>的不同</li>
+</ol>
+<blockquote>
+<p><code>TemporalDataLoader</code> 类是用于加载时序图数据的数据加载器。</p>
+<p>时序图数据指的是图数据的时间序列版本，例如在社交网络中，节点和边可能随着时间的推移而变化。<code>TemporalDataLoader</code> 的目的是将这种时序图数据加载到 PyTorch 的张量中，以便进行训练和分析。</p>
+</blockquote>
+<ol start="2">
+<li>时序图数据是什么</li>
+</ol>
+<blockquote>
+<p>时序图数据是指在图结构中考虑了时间维度的图数据。<strong>在时序图中，节点和边可能会随着时间的推移而变化</strong>。下面是一个简单的示例，展示了一个时序图数据的数据结构：</p>
+<p>假设我们有一个社交网络，其中用户是节点，他们之间的互动是边。我们将考虑不同时间点的图快照，其中<strong>节点和边的状态可能随着时间而变化</strong>。</p>
+</blockquote>
+<h2 id="step2导入数据集并划分">step2:导入数据集并划分</h2>
+<pre><code class="language-python">device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'JODIE')
+dataset = JODIEDataset(path, name='wikipedia')
+data = dataset[0]
+
+# For small datasets, we can put the whole dataset on GPU and thus avoid
+# expensive memory transfer costs for mini-batches:
+data = data.to(device)
+</code></pre>
+<ol>
+<li>这里为什么要<code>data = dataset[0]</code>,因此这个dataset只有一个数据</li>
+</ol>
+<figure data-type="image" tabindex="1"><img src="https://gitee.com/yushen611/img/raw/master/image-20230827183258533.png" alt="image-20230827183258533" loading="lazy"></figure>
+<ol start="2">
+<li><code>data</code>的类型是什么：<code>TemporalData</code></li>
+</ol>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230827183618147.png" alt="image-20230827183618147" style="zoom:90%;" />
+<p>官方文档：<a href="https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.data.TemporalData.html">torch_geometric.data.TemporalData — pytorch_geometric documentation (pytorch-geometric.readthedocs.io)</a></p>
+<p>官方源码：<a href="https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/data/temporal.html">torch_geometric.data.temporal — pytorch_geometric documentation (pytorch-geometric.readthedocs.io)</a></p>
+<pre><code class="language-python">from torch import Tensor
+from torch_geometric.data import TemporalData
+
+events = TemporalData(
+    src=Tensor([1,2,3,4]),
+    dst=Tensor([2,3,4,5]),
+    t=Tensor([1000,1010,1100,2000]),
+    msg=Tensor([1,1,0,0])
+)
+
+# Add additional arguments to `events`:
+events.y = Tensor([1,1,0,0])
+
+# It is also possible to set additional arguments in the constructor
+events = TemporalData(
+    ...,
+    y=Tensor([1,1,0,0])
+)
+
+# Get the number of events:
+events.num_events
+&gt;&gt;&gt; 4
+
+# Analyzing the graph structure:
+events.num_nodes
+&gt;&gt;&gt; 5
+
+# PyTorch tensor functionality:
+events = events.pin_memory()
+events = events.to('cuda:0', non_blocking=True)
+</code></pre>
+<p>参数：</p>
+<ul>
+<li><strong>src</strong> (<a href="https://pytorch.org/docs/master/tensors.html#torch.Tensor"><em>torch.Tensor</em></a><em>,</em> <em>optional</em>) – A list of source nodes for the events with shape <code>[num_events]</code>. (default: <a href="https://docs.python.org/3/library/constants.html#None"><code>None</code></a>)</li>
+<li><strong>dst</strong> (<a href="https://pytorch.org/docs/master/tensors.html#torch.Tensor"><em>torch.Tensor</em></a><em>,</em> <em>optional</em>) – A list of destination nodes for the events with shape <code>[num_events]</code>. (default: <a href="https://docs.python.org/3/library/constants.html#None"><code>None</code></a>)</li>
+<li><strong>t</strong> (<a href="https://pytorch.org/docs/master/tensors.html#torch.Tensor"><em>torch.Tensor</em></a><em>,</em> <em>optional</em>) – The timestamps for each event with shape <code>[num_events]</code>. (default: <a href="https://docs.python.org/3/library/constants.html#None"><code>None</code></a>)</li>
+<li><strong>msg</strong> (<a href="https://pytorch.org/docs/master/tensors.html#torch.Tensor"><em>torch.Tensor</em></a><em>,</em> <em>optional</em>) – Messages feature matrix with shape <code>[num_events, num_msg_features]</code>. (default: <a href="https://docs.python.org/3/library/constants.html#None"><code>None</code></a>)</li>
+<li>*<strong>*kwargs</strong> (<em>optional</em>) – Additional attributes.</li>
+</ul>
+<blockquote>
+<p><mark>个人理解</mark>：</p>
+<p>这个TemporalData就是在Data的基础上，加了一个t表示每个节点的时间戳。在TemporalData中<strong>边与边之间的关</strong>系称之为<strong>事件</strong>，<strong>每个事件都有一个时间戳</strong>。<strong>事件的特征向量</strong>被记为<strong>msg</strong>。如果事件有其他属性，还可以自行添加。</p>
+</blockquote>
+<pre><code class="language-python"># 数据集划分
+train_data, val_data, test_data = data.train_val_test_split(
+    val_ratio=0.15, test_ratio=0.15)
+
+train_loader = TemporalDataLoader(
+    train_data,
+    batch_size=200,
+    neg_sampling_ratio=1.0,
+)
+val_loader = TemporalDataLoader(
+    val_data,
+    batch_size=200,
+    neg_sampling_ratio=1.0,
+)
+test_loader = TemporalDataLoader(
+    test_data,
+    batch_size=200,
+    neg_sampling_ratio=1.0,
+)
+neighbor_loader = LastNeighborLoader(data.num_nodes, size=10, device=device)
+</code></pre>
+<ul>
+<li><code>TemporalDataLoader</code>是什么</li>
+</ul>
+<p>源码：<a href="https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/loader/temporal_dataloader.html">torch_geometric.loader.temporal_dataloader — pytorch_geometric documentation (pytorch-geometric.readthedocs.io)</a></p>
+<p>文档：<a href="https://pytorch-geometric.readthedocs.io/en/latest/modules/loader.html">torch_geometric.loader — pytorch_geometric documentation (pytorch-geometric.readthedocs.io)</a></p>
+<blockquote>
+<p><code>TemporalDataLoader</code>:A data loader which merges succesive events of a <a href="https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.data.TemporalData.html#torch_geometric.data.TemporalData"><code>torch_geometric.data.TemporalData</code></a> to a mini-batch.</p>
+</blockquote>
+<ul>
+<li><code>LastNeighborLoader</code>是什么</li>
+</ul>
+<p>官方源码：<a href="https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/loader/link_neighbor_loader.html">torch_geometric.loader.link_neighbor_loader — pytorch_geometric documentation (pytorch-geometric.readthedocs.io)</a></p>
+<p>官方文档：在官方文档页面有个<code>doc</code>，点击就能看到文档了<a href="https://pytorch-geometric.readthedocs.io/en/latest/modules/loader.html#torch_geometric.loader.LinkNeighborLoader">torch_geometric.loader — pytorch_geometric documentation (pytorch-geometric.readthedocs.io)</a></p>
+<p><code>LastNeighborLoader</code>是从节点为基础的 <code>torch_geometric.loader.NeighborLoader</code> 扩展而来。这个加载器<strong>允许在无法进行完全批量训练的大规模图上进行小批量训练的操作</strong>。</p>
+<p>简单来说，这个加载器的<strong>目标</strong>是在<strong>大规模图上进行训练时，通过对边进行采样，并构建邻居子图来实现小批量训练</strong>。这使得<strong>在无法进行完全批量训练的情况下</strong>，仍然可以高效地进行图神经网络的训练。</p>
+<h2 id="step3创建模型及其组件">step3:创建模型及其组件</h2>
+<pre><code class="language-python">class GraphAttentionEmbedding(torch.nn.Module):
+    def __init__(self, in_channels, out_channels, msg_dim, time_enc):
+        super().__init__()
+        self.time_enc = time_enc
+        edge_dim = msg_dim + time_enc.out_channels
+        self.conv = TransformerConv(in_channels, out_channels // 2, heads=2,
+                                    dropout=0.1, edge_dim=edge_dim)
+
+    def forward(self, x, last_update, edge_index, t, msg):
+        rel_t = last_update[edge_index[0]] - t
+        rel_t_enc = self.time_enc(rel_t.to(x.dtype))
+        edge_attr = torch.cat([rel_t_enc, msg], dim=-1)
+        return self.conv(x, edge_index, edge_attr)
+
+
+class LinkPredictor(torch.nn.Module):
+    def __init__(self, in_channels):
+        super().__init__()
+        self.lin_src = Linear(in_channels, in_channels)
+        self.lin_dst = Linear(in_channels, in_channels)
+        self.lin_final = Linear(in_channels, 1)
+
+    def forward(self, z_src, z_dst):
+        h = self.lin_src(z_src) + self.lin_dst(z_dst)
+        h = h.relu()
+        return self.lin_final(h)
+
+
+memory_dim = time_dim = embedding_dim = 100
+
+memory = TGNMemory(
+    data.num_nodes,
+    data.msg.size(-1),
+    memory_dim,
+    time_dim,
+    message_module=IdentityMessage(data.msg.size(-1), memory_dim, time_dim),
+    aggregator_module=LastAggregator(),
+).to(device)
+
+gnn = GraphAttentionEmbedding(
+    in_channels=memory_dim,
+    out_channels=embedding_dim,
+    msg_dim=data.msg.size(-1),
+    time_enc=memory.time_enc,
+).to(device)
+
+link_pred = LinkPredictor(in_channels=embedding_dim).to(device)
+</code></pre>
+<p>总结这段代码，其实就是在干如下几件事：</p>
+<ol>
+<li>创建<code>GraphAttentionEmbedding</code>层，作为<code>gnn</code>（其实就是用了一个<code>TransformerConv</code>）</li>
+<li>创建<code>LinkPredictor</code>层,作为全连接层</li>
+<li>创建了一个<code>TGNMemory</code>对象</li>
+</ol>
+<p><code>TGNMemory</code>介绍（目前不是很懂原理）</p>
+<blockquote>
+<p><code>TGNMemory</code> 是 PyTorch Geometric（PyG）中的一个类，用于实现时间序列图神经网络（Time-Graph Neural Network，TGN）的记忆模块。TGN 是一种用于处理时间序列图数据的神经网络，它能够有效地对节点和边在时间上的演化进行建模。</p>
+<p>记忆模块在 TGN 中扮演着重要的角色，它可以捕获节点和边的状态随时间的变化，从而帮助网络进行时间序列的预测和建模。<code>TGNMemory</code> 类的主要功能是维护图中节点的状态，以及它们在时间序列中的变化情况。</p>
+<p>具体而言，<code>TGNMemory</code> 类可以执行以下功能：</p>
+<ul>
+<li>为每个节点维护一个记忆状态，用于捕获节点在时间上的状态变化。</li>
+<li>在给定的时间戳上更新节点的记忆状态。</li>
+<li>提供查询接口，使得模型可以获取某个节点在给定时间戳上的状态。</li>
+</ul>
+<p>通过使用 <code>TGNMemory</code>，TGN 网络可以更好地理解节点和边的时间演化特性，从而更准确地进行时间序列预测、链接预测等任务。</p>
+</blockquote>
+<h2 id="step4训练前的代码准备">step4:训练前的代码准备</h2>
+<pre><code class="language-python"># 定义损失函数与优化器
+optimizer = torch.optim.Adam(
+    set(memory.parameters()) | set(gnn.parameters())
+    | set(link_pred.parameters()), lr=0.0001)
+criterion = torch.nn.BCEWithLogitsLoss()
+#assoc 张量定义
+assoc = torch.empty(data.num_nodes, dtype=torch.long, device=device)
+</code></pre>
+<ol>
+<li><code>assoc</code>：简单来说，就是帮你快速获取节点的索引的，后面训练时用的到</li>
+</ol>
+<blockquote>
+<p>创建一个名为 <code>assoc</code> 的张量，用于将全局节点索引映射到本地索引。在时间序列图数据中，节点索引通常是全局唯一的，而在每个小批量训练中，您可能需要将这些全局索引映射到当前小批量中的局部索引。</p>
+<p>具体来说，<code>assoc</code> 张量的长度为 <code>data.num_nodes</code>，这意味着它有足够的元素来映射数据集中的每个节点。这个张量的目的是为每个节点分配一个本地索引，使得在当前小批量训练中可以使用这些本地索引来获取对应的节点特征或其他信息。</p>
+</blockquote>
+<ol start="2">
+<li><code>torch.empty</code></li>
+</ol>
+<blockquote>
+<p><code>torch.empty</code> 是 PyTorch 中的一个函数，用于创建一个未初始化的张量（tensor），并分配内存空间。未初始化的张量意味着它的元素值在创建时没有被明确初始化，因此这些值可能是任意的，取决于内存中的随机数据</p>
+</blockquote>
+<p>定义 <code>train</code> 函数与<code>test</code>函数进行训练与测试</p>
+<pre><code class="language-python">def train():
+    memory.train()
+    gnn.train()
+    link_pred.train()
+
+    memory.reset_state()  # Start with a fresh memory.
+    neighbor_loader.reset_state()  # Start with an empty graph.
+
+    total_loss = 0
+    for batch in train_loader:
+        optimizer.zero_grad()
+        batch = batch.to(device)
+
+        n_id, edge_index, e_id = neighbor_loader(batch.n_id)
+        assoc[n_id] = torch.arange(n_id.size(0), device=device)
+
+        # Get updated memory of all nodes involved in the computation.
+        z, last_update = memory(n_id)
+        z = gnn(z, last_update, edge_index, data.t[e_id].to(device),
+                data.msg[e_id].to(device))
+        pos_out = link_pred(z[assoc[batch.src]], z[assoc[batch.dst]])
+        neg_out = link_pred(z[assoc[batch.src]], z[assoc[batch.neg_dst]])
+
+        loss = criterion(pos_out, torch.ones_like(pos_out))
+        loss += criterion(neg_out, torch.zeros_like(neg_out))
+
+        # Update memory and neighbor loader with ground-truth state.
+        memory.update_state(batch.src, batch.dst, batch.t, batch.msg)
+        neighbor_loader.insert(batch.src, batch.dst)
+
+        loss.backward()
+        optimizer.step()
+        memory.detach()
+        total_loss += float(loss) * batch.num_events
+
+    return total_loss / train_data.num_events
+
+
+@torch.no_grad()
+def test(loader):
+    memory.eval()
+    gnn.eval()
+    link_pred.eval()
+
+    torch.manual_seed(12345)  # Ensure deterministic sampling across epochs.
+
+    aps, aucs = [], []
+    for batch in loader:
+        batch = batch.to(device)
+
+        n_id, edge_index, e_id = neighbor_loader(batch.n_id)
+        assoc[n_id] = torch.arange(n_id.size(0), device=device)
+
+        z, last_update = memory(n_id)
+        z = gnn(z, last_update, edge_index, data.t[e_id].to(device),
+                data.msg[e_id].to(device))
+        pos_out = link_pred(z[assoc[batch.src]], z[assoc[batch.dst]])
+        neg_out = link_pred(z[assoc[batch.src]], z[assoc[batch.neg_dst]])
+
+        y_pred = torch.cat([pos_out, neg_out], dim=0).sigmoid().cpu()
+        y_true = torch.cat(
+            [torch.ones(pos_out.size(0)),
+             torch.zeros(neg_out.size(0))], dim=0)
+
+        aps.append(average_precision_score(y_true, y_pred))
+        aucs.append(roc_auc_score(y_true, y_pred))
+
+        memory.update_state(batch.src, batch.dst, batch.t, batch.msg)
+        neighbor_loader.insert(batch.src, batch.dst)
+    return float(torch.tensor(aps).mean()), float(torch.tensor(aucs).mean())
+</code></pre>
+<p><mark>TODO</mark>: 这里有关于memory的不是很懂，之后看完原理回来填坑</p>
+<h2 id="step5训练与过程记录">step5:训练与过程记录</h2>
+<pre><code class="language-python">for epoch in range(1, 51):
+    loss = train()
+    print(f'Epoch: {epoch:02d}, Loss: {loss:.4f}')
+    val_ap, val_auc = test(val_loader)
+    test_ap, test_auc = test(test_loader)
+    print(f'Val AP: {val_ap:.4f}, Val AUC: {val_auc:.4f}')
+    print(f'Test AP: {test_ap:.4f}, Test AUC: {test_auc:.4f}')
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#tgn%E5%8E%9F%E7%90%86%E6%9C%AA%E5%AE%8C%E5%BE%85%E7%BB%AD">TGN原理(未完待续)</a></li>
+<li><a href="#tgn%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0pyg%E7%89%88%E6%9C%AC">TGN代码实现(pyg版本)</a>
+<ul>
+<li><a href="#step1%E5%AF%BC%E5%85%A5%E4%BE%9D%E8%B5%96">step1:导入依赖</a></li>
+<li><a href="#step2%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE%E9%9B%86%E5%B9%B6%E5%88%92%E5%88%86">step2:导入数据集并划分</a></li>
+<li><a href="#step3%E5%88%9B%E5%BB%BA%E6%A8%A1%E5%9E%8B%E5%8F%8A%E5%85%B6%E7%BB%84%E4%BB%B6">step3:创建模型及其组件</a></li>
+<li><a href="#step4%E8%AE%AD%E7%BB%83%E5%89%8D%E7%9A%84%E4%BB%A3%E7%A0%81%E5%87%86%E5%A4%87">step4:训练前的代码准备</a></li>
+<li><a href="#step5%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95">step5:训练与过程记录</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,323 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>开始你的第一个solidity合约ERC20（真实网络环境版）[fantom testnet/remix] | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="开始你的第一个solidity合约ERC20（真实网络环境版）[fantom testnet/remix] | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="正确的部署合约与验证合约的流程
+ERC20是一个最基础的发行自己在以太坊上的代币的合约接口。
+本教程于2023年08月21日，由于使用的是0.8.20版本，会出现合约部署成功但是验证失败的问题
+一般合约写完后的步骤就是
+
+1.部署
+2.验证..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              开始你的第一个solidity合约ERC20（真实网络环境版）[fantom testnet/remix]
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-08-21
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="正确的部署合约与验证合约的流程">正确的部署合约与验证合约的流程</h1>
+<p>ERC20是一个最基础的发行自己在以太坊上的代币的合约接口。<br>
+本教程于2023年08月21日，由于使用的是0.8.20版本，会出现合约部署成功但是验证失败的问题</p>
+<p>一般合约写完后的步骤就是</p>
+<blockquote>
+<p>1.部署</p>
+<p>2.验证</p>
+</blockquote>
+<h2 id="step0-metamask钱包连接fantom-testnet真实测试网络">step0: metaMask钱包连接fantom testnet真实测试网络</h2>
+<blockquote>
+<p>Setup Fantom testnet in wallet:</p>
+</blockquote>
+<p>https://docs.fantom.foundation/wallet/set-up-metamask-testnet</p>
+<blockquote>
+<p>Faucet (You can request 5 fantom from here for free): 免费领5个测试币</p>
+</blockquote>
+<p>https://faucet.fantom.network/</p>
+<h2 id="step1编译一份实现了erc20的合约复制到remix">step1:编译一份实现了ERC20的合约复制到remix</h2>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/token/ERC20/IERC20.sol
+interface IERC20 {
+    function totalSupply() external view returns (uint);
+
+    function balanceOf(address account) external view returns (uint);
+
+    function transfer(address recipient, uint amount) external returns (bool);
+
+    function allowance(address owner, address spender) external view returns (uint);
+
+    function approve(address spender, uint amount) external returns (bool);
+
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint amount
+    ) external returns (bool);
+
+    event Transfer(address indexed from, address indexed to, uint value);
+    event Approval(address indexed owner, address indexed spender, uint value);
+}
+
+contract ERC20 is IERC20 {
+    uint public totalSupply;
+    mapping(address =&gt; uint) public balanceOf;
+    mapping(address =&gt; mapping(address =&gt; uint)) public allowance;
+    string public name = &quot;G2303465C&quot;;
+    string public symbol = &quot;YWY&quot;;
+    uint8 public decimals = 18;
+
+    function transfer(address recipient, uint amount) external returns (bool) {
+        balanceOf[msg.sender] -= amount;
+        balanceOf[recipient] += amount;
+        emit Transfer(msg.sender, recipient, amount);
+        return true;
+    }
+
+    function approve(address spender, uint amount) external returns (bool) {
+        allowance[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint amount
+    ) external returns (bool) {
+        allowance[sender][msg.sender] -= amount;
+        balanceOf[sender] -= amount;
+        balanceOf[recipient] += amount;
+        emit Transfer(sender, recipient, amount);
+        return true;
+    }
+
+    function mint(uint amount) external {
+        balanceOf[msg.sender] += amount;
+        totalSupply += amount;
+        emit Transfer(address(0), msg.sender, amount);
+    }
+
+    function burn(uint amount) external {
+        balanceOf[msg.sender] -= amount;
+        totalSupply -= amount;
+        emit Transfer(msg.sender, address(0), amount);
+    }
+}
+</code></pre>
+<p>注意，这份代码原本是0.8.20版本，但是经过实践发行，如果用20版本以及20版本的编译器，在高级设置里需要如下设置（EVM的地址以及把代码优化打开） 后面的编译器设置都是<strong>paris的EVM</strong>以及<strong>Enable optimization</strong>，以及<strong>Auto compile</strong></p>
+<p>下图以0.8.19版本的编译器配置为例：</p>
+<figure data-type="image" tabindex="1"><img src="https://gitee.com/yushen611/img/raw/master/image-20230821022718150.png" alt="image-20230821022718150" loading="lazy"></figure>
+<h2 id="step2部署到测试网络上">step2:部署到测试网络上</h2>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230821023133245.png" alt="image-20230821023133245" style="zoom:80%;" />
+<p>成功的话remix下会有合约地址显示出来给你复制，也可以在metamask上找到交易地址，从而找到合约地址</p>
+<figure data-type="image" tabindex="2"><img src="https://gitee.com/yushen611/img/raw/master/image-20230821023248662.png" alt="image-20230821023248662" loading="lazy"></figure>
+<h2 id="step3验证">step3:验证</h2>
+<p>先找到你的合约地址</p>
+<p>找到的网站：</p>
+<p>Explorer: https://testnet.ftmscan.com/</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230821023526451.png" alt="image-20230821023526451" style="zoom:67%;" />
+<p>然后进行验证即可</p>
+<p>验证时需要选择一些内容，如下：</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230821023636754.png" alt="image-20230821023636754" style="zoom:67%;" />
+<p>进入之后把你的代码直接复制上去即可，记得把验证时的优化打开</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230821023806701.png" alt="image-20230821023806701" style="zoom:67%;" />
+<p>验证成功之后即可看到你的合约具体信息了</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230821023855570.png" alt="image-20230821023855570" style="zoom:67%;" />
+<p>我的合约地址：0x8701c965a59b56225Bd13D430FF6f539C91327d2</p>
+<h1 id="踩坑记录">踩坑记录</h1>
+<h2 id="bug1-evm-shanghai-bug-导致部署不通过">BUG1: EVM shanghai BUG-导致部署不通过</h2>
+<p>如果evm不更改，有可能默认给你选上海。编译可以通过，但是部署通过不了</p>
+<h2 id="bug2-compiler-version-high-bug-导致验证不通过">BUG2: Compiler version high Bug-导致验证不通过</h2>
+<p>我一开始是用的0.8.20 version（sol文件写的是^0.8.20,以及编译器用的也是0.8.20版本），但是编译部署都没问题了，验证不通过了。</p>
+<p>经过尝试，发现需要降版本到0.8.19版本，下次如果发现代码并未用到新版本特性，可以考虑降低声明的版本与编译器，来解决这种离谱的bug</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E6%AD%A3%E7%A1%AE%E7%9A%84%E9%83%A8%E7%BD%B2%E5%90%88%E7%BA%A6%E4%B8%8E%E9%AA%8C%E8%AF%81%E5%90%88%E7%BA%A6%E7%9A%84%E6%B5%81%E7%A8%8B">正确的部署合约与验证合约的流程</a>
+<ul>
+<li><a href="#step0-metamask%E9%92%B1%E5%8C%85%E8%BF%9E%E6%8E%A5fantom-testnet%E7%9C%9F%E5%AE%9E%E6%B5%8B%E8%AF%95%E7%BD%91%E7%BB%9C">step0: metaMask钱包连接fantom testnet真实测试网络</a></li>
+<li><a href="#step1%E7%BC%96%E8%AF%91%E4%B8%80%E4%BB%BD%E5%AE%9E%E7%8E%B0%E4%BA%86erc20%E7%9A%84%E5%90%88%E7%BA%A6%E5%A4%8D%E5%88%B6%E5%88%B0remix">step1:编译一份实现了ERC20的合约复制到remix</a></li>
+<li><a href="#step2%E9%83%A8%E7%BD%B2%E5%88%B0%E6%B5%8B%E8%AF%95%E7%BD%91%E7%BB%9C%E4%B8%8A">step2:部署到测试网络上</a></li>
+<li><a href="#step3%E9%AA%8C%E8%AF%81">step3:验证</a></li>
+</ul>
+</li>
+<li><a href="#%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95">踩坑记录</a>
+<ul>
+<li><a href="#bug1-evm-shanghai-bug-%E5%AF%BC%E8%87%B4%E9%83%A8%E7%BD%B2%E4%B8%8D%E9%80%9A%E8%BF%87">BUG1: EVM shanghai BUG-导致部署不通过</a></li>
+<li><a href="#bug2-compiler-version-high-bug-%E5%AF%BC%E8%87%B4%E9%AA%8C%E8%AF%81%E4%B8%8D%E9%80%9A%E8%BF%87">BUG2: Compiler version high Bug-导致验证不通过</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

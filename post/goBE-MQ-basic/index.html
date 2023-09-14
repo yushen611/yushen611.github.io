@@ -1,0 +1,869 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>go语言中的消息队列(MQ) | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="go语言中的消息队列(MQ) | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+一、概述
+消息队列的概念
+定义
+
+消息队列是一种通信模式，它用于在不同的应用程序之间传递消息。它通常是在分布式系统中使用的一种组件，可以实现不同应用程序之间的解耦，从而提高系统的可伸缩性和可靠性。
+在消息队列中，消息是以异步的方式进行传递..." />
+    <meta name="keywords" content="go" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              go语言中的消息队列(MQ)
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-03-26
+              </span>
+              <span>
+                28 min read
+              </span>
+              
+                <a href="https://yushen611.github.io/tag/TNz53VXY2/" class="post-tag">
+                  # go
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <meta name="referrer" content="no-referrer"/>
+<h1 id="一-概述">一、概述</h1>
+<h2 id="消息队列的概念">消息队列的概念</h2>
+<h3 id="定义"><strong>定义</strong></h3>
+<blockquote>
+<p>消息队列是一种<strong>通信模式</strong>，它用于<strong>在不同的应用程序之间传递消息</strong>。它通常是在<strong>分布式系统中使用的一种组件</strong>，可以实现不同应用程序之间的<strong>解耦</strong>，从而提高系统的可伸缩性和可靠性。</p>
+<p>在消息队列中，<strong>消息是以异步的方式进行传递的</strong>。发送者将消息发送到队列中，而接收者则从队列中获取消息。消息队列允许多个接收者同时从同一个队列中获取消息，并且可以支持多种消息传递模式，如点对点和发布/订阅模式。</p>
+<p>消息队列还具有可靠性和持久性的特点。它可以确保消息的传递是有序的，而且即使在系统中断或故障的情况下，消息也不会丢失。</p>
+</blockquote>
+<p><strong>类比理解</strong>：</p>
+<p>例子1</p>
+<blockquote>
+<p>假设我们有一个在线商店，有很多顾客下单购买商品，而我们需要把商品快递送到顾客手中。这个过程可以类比为一个应用程序向另一个应用程序发送消息。</p>
+<p>如果我们按照传统的方式，每个订单都直接从商店直接派送出去，那么我们可能会面临一些问题。首先，我们需要等待一个订单处理完成后才能开始处理下一个订单，这样会导致我们的速度变慢。其次，如果我们需要处理大量的订单，可能会因为系统负载过高而导致我们的系统崩溃。</p>
+<p>这时，我们可以使用消息队列来解决这些问题。<strong>我们可以把订单看作是消息，而把快递员看作是接收者，把仓库看作是队列</strong>。当有新的订单下达时，我们可以把它放到仓库里面。这样，快递员就可以从仓库里面拿出订单，然后开始派送，而不需要等待商店处理完每一个订单。</p>
+<p>使用消息队列的好处是，它可以让我们把请求和处理分离开来，从而实现系统的解耦和可伸缩性。同时，消息队列还可以确保消息的可靠传递，即使系统出现问题，也不会丢失重要的消息。</p>
+</blockquote>
+<p>例子2：</p>
+<blockquote>
+<p>假设你是一个销售手机的公司，你需要处理大量的订单，包括下单、支付、发货等流程。如果你直接使用同步的方式来处理订单，可能会面临以下问题：</p>
+<ol>
+<li>需要等待一个订单的处理完成后才能处理下一个订单，可能会导致系统响应变慢。</li>
+<li>如果有大量订单同时到来，可能会因为系统负载过高而导致系统崩溃。</li>
+<li>如果有一些订单处理失败，需要重新处理，可能会导致订单丢失或者重复处理。</li>
+</ol>
+<p>这时候，你可以引入消息队列来解决这些问题。具体地，你可以将每一个订单看作是一个消息，将消息放到消息队列中，然后由另一个应用程序异步地从队列中获取消息并进行处理。</p>
+<p>举个例子，当顾客下单时，你可以将订单信息放到消息队列中。然后，另一个应用程序可以从消息队列中获取订单信息，进行支付和发货等处理。这样，<strong>订单处理的速度就不再受到一个订单处理完成的影响，而是可以根据处理能力自行调整，从而提高系统的可伸缩性和吞吐量</strong>。</p>
+<p>此外，消息队列还可以提供消息的持久化，即使系统崩溃或者应用程序异常终止，也不会丢失已经发送的消息。这样可以保证系统的可靠性，并避免订单丢失或者重复处理等问题</p>
+</blockquote>
+<h3 id="应用场景">应用场景</h3>
+<ol>
+<li>异步处理：消息队列可以用于将请求从应用程序异步地传递到后台处理程序。例如，当用户提交一个请求时，应用程序可以将请求放入消息队列中，并立即向用户发送响应，而后台处理程序则可以在后台异步地处理该请求。</li>
+<li>解耦系统组件：消息队列可以用于解耦系统中不同组件之间的通信。例如，一个应用程序可以将消息发送到消息队列中，而另一个应用程序可以从消息队列中读取消息，而不需要知道消息的发送者。</li>
+<li>广播：消息队列可以用于广播消息给多个接收者。例如，当一个新的产品发布时，可以将通知消息发送到消息队列中，所有的订阅者都可以从消息队列中读取到这个消息。</li>
+<li>延迟任务处理：消息队列可以用于将需要延迟处理的任务放到消息队列中。例如，当一个用户需要在未来的某个时间点接收一条消息时，应用程序可以将这条消息放到消息队列中，并设置一个定时器，在特定的时间点将这个消息发送给用户。</li>
+<li>流量控制：消息队列可以用于控制系统的流量。例如，当一个应用程序需要处理大量的请求时，可以将这些请求放到消息队列中，而不是直接处理这些请求。这样可以避免系统过载，并且可以平滑地处理请求。</li>
+</ol>
+<h2 id="mq的优点为什么要用消息队列">MQ的优点/为什么要用消息队列</h2>
+<h3 id="1解耦">1.解耦</h3>
+<p><img src="https://gitee.com/yushen611/img/raw/master/image-20230424204403930.png" alt="image-20230424204403930" loading="lazy">如图是三个微服务A,B,C，它们之间通过RPC调用。如果不使用消息队列，A与B与C之间的传递是同步的，一旦其中一个服务宕机，整个链路都会受到影响。如果加入了消息队列（如图)，B只需要把消息发送给MQ，C只需要从MQ中拿数据即可，这样就完成了B与C之间的解耦。</p>
+<h3 id="2异步">2.异步</h3>
+<p>之前是A，B，C之间是同步的方式，加入MQ后，B与C都是异步的从消息队列中读写消息的。</p>
+<h3 id="3流量削峰填谷">3.流量削峰填谷</h3>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230424205306386.png" alt="image-20230424205306386" style="zoom:80%;" />
+<p>如果B每分钟30W并发，C每分钟只有1W并发，就<strong>需要一个MQ做缓冲</strong>。如果没有MQ,C就因为过大的流量爆掉了。</p>
+<h2 id="mq的缺点">MQ的缺点</h2>
+<h3 id="1可用性降低">1.可用性降低</h3>
+<p>加入一个消息中间件，就会多一个业务崩溃的风险。比如MQ挂了，业务就挂了。一般的解决方法是加入MQ集群。</p>
+<h3 id="2复杂性提高">2.复杂性提高</h3>
+<p>需要额外加入生产端与消费端的代码</p>
+<h3 id="3数据一致性问题">3.数据一致性问题</h3>
+<p>如何确保<strong>数据是否丢失</strong>，也有可能出现<strong>数据重复</strong>。</p>
+<h2 id="常用的消息队列">常用的消息队列</h2>
+<h3 id="go语言常用的消息队列">Go语言常用的消息队列</h3>
+<p>Go语言中有许多常用的消息队列，以下是其中的一些：</p>
+<ol>
+<li>RabbitMQ：RabbitMQ是一个开源的消息队列，它支持多种消息协议，包括AMQP、STOMP和MQTT。</li>
+<li>Kafka：Kafka是一个高吞吐量的分布式发布-订阅消息系统，它可以处理数百万条消息，同时还支持消息的持久化存储。</li>
+<li>NSQ：NSQ是一个实时分布式消息平台，它具有高可用性、高可扩展性和低延迟等特点。</li>
+<li>ActiveMQ：ActiveMQ是一个流行的消息代理和集成平台，它支持多种传输协议和消息协议，包括AMQP、STOMP、OpenWire和MQTT。</li>
+<li>NATS：NATS是一个高性能、轻量级的分布式消息系统，它的设计目标是提供简单、快速和可靠的消息传递服务。</li>
+</ol>
+<p>这些消息队列都有各自的特点和优势，可以根据项目的需求选择合适的消息队列。</p>
+<h3 id="常见消息队列比较">常见消息队列比较</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ActiveMQ</th>
+<th>RabbitMQ</th>
+<th>RocketMQ</th>
+<th>Kafka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>性能</td>
+<td>6000QPS/单机</td>
+<td>12000QPS/单机</td>
+<td><strong>10W/单机</strong></td>
+<td><strong>100W/单机</strong></td>
+</tr>
+<tr>
+<td>持久化</td>
+<td>支持（性能会下降）</td>
+<td>支持（性能会下降）</td>
+<td><strong>天然支持</strong></td>
+<td><strong>天然支持</strong></td>
+</tr>
+<tr>
+<td>多语言支持</td>
+<td>主流语言都支持</td>
+<td>主流语言都支持</td>
+<td><strong>5.0版本</strong>主流语言都支持</td>
+<td>主流语言都支持</td>
+</tr>
+<tr>
+<td>综合</td>
+<td>缺乏大规模应用，不推荐</td>
+<td>高可用(RabbitMQ使用Erlang语言编写，宕机率低);<br />提供管理页面；<br />内部机制难以了解（由于语言小众）</td>
+<td>模型简单；<br />接口易用；<br />功能丰富<br />在阿里大规模应用；<br />性能优秀;<br />java编写；</td>
+<td>天生分布式；<br />性能最好；<br />流失处理，大数据支持好<br />缺点：<br />运维难度大；<br />对带宽有要求</td>
+</tr>
+</tbody>
+</table>
+<p>消息队列选择建议</p>
+<blockquote>
+<p><strong>1.Kafka</strong></p>
+<p>Kafka主要特点是基于Pull的模式来处理消息消费，追求高吞吐量，一开始的目的就是用于日志收集和传输，适合产生大量数据的互联网服务的数据收集业务。</p>
+<p>大型公司建议可以选用，如果有日志采集功能，肯定是首选kafka了。</p>
+<p><strong>2.RocketMQ</strong></p>
+<p>天生为金融互联网领域而生，对于可靠性要求很高的场景，尤其是电商里面的订单扣款，以及业务削峰，在大量交易涌入时，后端可能无法及时处理的情况。</p>
+<p>RoketMQ在稳定性上可能更值得信赖，这些业务场景在阿里双11已经经历了多次考验，如果你的业务有上述并发场景，建议可以选择RocketMQ。</p>
+<p><strong>3.RabbitMQ</strong></p>
+<p>RabbitMQ :结合erlang语言本身的并发优势，性能较好，社区活跃度也比较高，但是不利于做二次开发和维护。不过，RabbitMQ的社区十分活跃，可以解决开发过程中遇到的bug。</p>
+<p>如果你的数据量没有那么大，小公司优先选择功能比较完备的RabbitMQ。</p>
+</blockquote>
+<h2 id="消息重复问题解决方案">消息重复问题解决方案</h2>
+<p>如果使用MQ，不可避免会会遇到MQ中的消息的重复。下面有三种解决方案。</p>
+<h3 id="1消费时做幂等性处理">1.消费时做幂等性处理</h3>
+<ul>
+<li><strong>幂等性消息</strong>：如果消息重复了，但执行了动作都类似于<code>set count = 10</code>，这样就算消息重复接受了，也不会影响count的值</li>
+<li><strong>非幂等性消息</strong>：如果消息重复了，但执行了动作都类似于<code>set count = count  + 10</code>，这样消息重复接受了，count的值就取决于消息重复的数量了。</li>
+</ul>
+<h3 id="2mvcc多版本并发控制生产的时候带上版本号">2.MVCC多版本并发控制(生产的时候带上版本号)</h3>
+<ul>
+<li>第一个消息带着版本version1来，与消费者需要的version1对上了，消费者就接受，并且把下次要接受的version设置为（version1 + 1），记录为version2</li>
+<li>如果第二个消息与第一个消息重复，那它也是带着版本version1来，但消费者需要version2才接受，因此拒绝了这个消息的接收。</li>
+<li>第三个消息与第一个消息不同，带着版本version2来，与消费者需要的version2对上了，消费者就接受，并且把下次要接受的version设置为（version2 + 1），记录为version3</li>
+</ul>
+<h3 id="3去重表的方案">3.去重表的方案</h3>
+<p>建立一个去重表A，往A中插入消息[<strong>add(megId,version)</strong>]，同样的消息ID相同。如果之前已经有一个ID相同的消息已经插入数据库去重表A了，后面来的同样的消息就插入不进去。</p>
+<h1 id="二-rocketmq简明教程">二、RocketMQ简明教程</h1>
+<h2 id="rocketmq简介">RocketMQ简介</h2>
+<p>RocketMQ是一种分布式消息中间件，基于高可用，高性能和高扩展性的设计理念。它的逻辑是将消息按照特定的规则进行存储和传递，为消息的传输提供可靠性和顺序性的保障。</p>
+<p><strong>RocketMQ的架构</strong>可以分为四个部分：消息生产者(Producer)，消息消费者(Consumer)，消息中间件(Broker)，以及消息路由配置(Namesrv)。</p>
+<ol>
+<li>
+<p>消息生产者(Producer)：生产者是消息发送的客户端，负责将消息发送到消息队列中。生产者通过消息发送API将消息发送到指定主题(Topic)中。在发送消息时，生产者可以设置消息类型(Message Type)、消息优先级、消息过滤等属性。</p>
+</li>
+<li>
+<p>消息消费者(Consumer)：消费者是消息接收的客户端，负责从消息队列中订阅和消费消息。消费者可以订阅多个主题(Topic)和多个消息队列(Message Queue)，并可以设置消费模式(Consume Mode)、消费组(Consumer Group)、消息过滤(Filter)等属性。</p>
+</li>
+<li>
+<p>消息中间件(Broker)：消息中间件是RocketMQ最核心的部分，负责消息的存储、路由以及传输。Broker将消息存储到指定的消息队列(Message Queue)中，并提供了消息重试、消息丢失检测、消息查询等功能。</p>
+</li>
+<li>
+<p>消息路由配置(Namesrv)：Namesrv是RocketMQ的命名服务(Namespace)组件，负责管理所有RocketMQ Broker的信息，包括Broker地址、主题信息、消息队列信息等。Namesrv通过轮询方式将消息消费者连接到指定的Broker，以保证消息的可靠性和负载均衡。</p>
+</li>
+</ol>
+<p>在RocketMQ的架构中，消息生产者通过与消息中间件交互，将消息发送到指定的消息队列中，消息消费者通过与消息中间件交互，从消息队列中订阅和消费消息。消息中间件提供了多个Broker节点来存储和传输消息，并通过命名服务组件将消息生产者和消息消费者连接到指定的Broker节点。这个架构可以支持大规模的实时数据处理，并且具有高可靠性、高性能的特点。</p>
+<figure data-type="image" tabindex="1"><img src="https://gitee.com/yushen611/img/raw/master/image-20230430081359447.png" alt="image-20230430081359447" loading="lazy"></figure>
+<p><strong>RocketMQ的逻辑包含以下几个要素</strong>：</p>
+<ol>
+<li>
+<p>主题（Topic）- 包含多个消息的逻辑容器。</p>
+</li>
+<li>
+<p>生产者（Producer）- 发送消息的客户端程序。</p>
+</li>
+<li>
+<p>消费者（Consumer）- 接收消息的客户端程序。</p>
+</li>
+<li>
+<p>消息队列（Message Queue）- <strong>一个消息主题可以拥有多个消息队列</strong>，每个消息队列包含一部分主题的消息。</p>
+</li>
+<li>
+<p>消息模式（Message Mode）- 支持顺序消息和广播消息两种模式。</p>
+</li>
+<li>
+<p>消息驱动（Message Driven）- 通过异步回调或者监听器的方式实现消息驱动。</p>
+<figure data-type="image" tabindex="2"><img src="https://gitee.com/yushen611/img/raw/master/image-20230430080944401.png" alt="image-20230430080944401" loading="lazy"></figure>
+</li>
+</ol>
+<p><mark><strong>注意：一个主题A假设有N个消息队列，那么这个主题A最多有N个消费者</strong></mark></p>
+<p>偏移量：</p>
+<p>即<strong>队列中消息的数量</strong></p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230430083323423.png" alt="image-20230430083323423" style="zoom:80%;" />
+<p><strong>RocketMQ的消息流程</strong>为：</p>
+<ol>
+<li>生产者向指定的主题发送消息。</li>
+<li>消息中间件将消息存储到相应的消息队列中。</li>
+<li>消费者从消息队列中订阅消息。</li>
+<li>消息中间件将消息发送给消费者，并标记消息已被消费。</li>
+</ol>
+<p>RocketMQ的优点是支持大规模数据处理和高可用性，可以通过配置、故障转移和备份机制保证数据的完整性和可靠性。此外，RocketMQ还提供了消息重试、消息过滤和批处理等特性，方便用户进行灵活的消息处理。</p>
+<h2 id="rocketmq的安装">RocketMQ的安装</h2>
+<p>官方网站：<a href="https://rocketmq.apache.org/zh/">RocketMQ · 官方网站 | RocketMQ (apache.org)</a></p>
+<h3 id="安装方式1下载安装">安装方式1：下载安装</h3>
+<p>参考： <a href="https://blog.csdn.net/lichao_3013/article/details/100574517">(45条消息) RocketMQ 安装 For Windows10 (完整版）_栗超的博客-CSDN博客</a></p>
+<h4 id="1下载release版">1.下载release版</h4>
+<p>RocketMQ 的安装包分为两种，二进制包和源码包。 点击<a href="https://dist.apache.org/repos/dist/release/rocketmq/5.1.0/rocketmq-all-5.1.0-source-release.zip">这里</a> 下载 Apache RocketMQ 5.1.0的源码包。你也可以从<a href="https://dist.apache.org/repos/dist/release/rocketmq/5.1.0/rocketmq-all-5.1.0-bin-release.zip">这里</a> 下载到二进制包。二进制包是已经编译完成后可以直接运行的，源码包是需要编译后运行的。</p>
+<h4 id="2配置环境变量">2.配置环境变量</h4>
+<pre><code>变量名：ROCKETMQ_HOME
+变量值：MQ解压路径\MQ文件夹名
+</code></pre>
+<h4 id="3启动nameserver与broker服务">3.启动nameserver与broker服务</h4>
+<p>进入至‘MQ文件夹\bin’下 执行</p>
+<pre><code class="language-bash"># 启动nameserver
+start mqnamesrv.cmd
+#启动broker
+start mqbroker.cmd -n 127.0.0.1:9876 autoCreateTopicEnable=true diskMaxUsedSpaceRatio=99
+</code></pre>
+<h3 id="安装方式docker安装这部分存在问题不要参考">安装方式：docker安装（这部分存在问题，不要参考）</h3>
+<p>参考：<a href="https://blog.csdn.net/weixin_44606481/article/details/129758920">Docker部署RocketMQ5.x (单机部署+配置参数详解+不使用docker-compose直接部署)</a></p>
+<h4 id="1-拉取镜像"><strong>1. 拉取镜像</strong></h4>
+<p><a href="https://hub.docker.com/r/apache/rocketmq">apache/rocketmq - Docker Image | Docker Hub</a></p>
+<p>版本选择5.1.0</p>
+<figure data-type="image" tabindex="3"><img src="https://gitee.com/yushen611/img/raw/master/image-20230430131310307.png" alt="image-20230430131310307" loading="lazy"></figure>
+<pre><code class="language-bash">docker pull apache/rocketmq:5.1.0
+</code></pre>
+<p>注：如果拉取过慢，换成阿里云的源，阿里云具体看官方（很简单，详细）：<a href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors">阿里云容器镜像服务</a></p>
+<h4 id="2-启动nameserver"><strong>2. 启动NameServer</strong></h4>
+<p>参考：<a href="https://github.com/apache/rocketmq">apache/rocketmq: Apache RocketMQ is a cloud native messaging and streaming platform, making it simple to build event-driven applications. (github.com)</a></p>
+<pre><code class="language-bash">docker run -d --name namesrv --net=host apache/rocketmq ./mqnamesrv
+
+docker run -d --name namesrv -p 9876:9876 apache/rocketmq:5.1.0 ./mqnamesrv
+</code></pre>
+<blockquote>
+<p>这个命令指定了在容器内部启动 RocketMQ NameServer 的方式，其中：</p>
+<ul>
+<li><code>docker run</code> 表示以 Docker 容器的方式启动一个新的容器</li>
+<li>-d：表示将容器在后台运行。 <code>-it</code> 表示以交互式的方式启动容器，可以进行命令行交互</li>
+<li>--name namesrv：指定容器的名称为namesrv。</li>
+<li><code>--net=host</code> 表示使用主机网络，即容器直接使用宿主机的网络，这样可以方便地访问宿主机的地址和端口号</li>
+<li><code>apache/rocketmq</code> 表示启动使用的 Docker 镜像名称和版本号</li>
+<li><code>./mqnamesrv</code> 表示在容器内部以后台进程方式启动 RocketMQ NameServer</li>
+</ul>
+<p>这样可以在 Docker 容器内部启动一个 RocketMQ NameServer，使其能够连接到 Docker 容器内部的 RocketMQ Broker，从而实现消息的传输和存储。和下一条命令一样，这个命令指定了需要的配置信息，因此也不需要读取配置文件。</p>
+</blockquote>
+<p><em>下面也介绍其他启动方式，可跳过</em></p>
+<blockquote>
+<p>其他启动方式</p>
+<ol start="2">
+<li><strong>先启动RocketMQ的namesrv服务</strong></li>
+</ol>
+<pre><code class="language-bash">docker run -d -p 9876:9876 --name namesrv -e &quot;MAX_POSSIBLE_HEAP=100000000&quot; apache/rocketmq sh mqnamesrv
+</code></pre>
+<blockquote>
+<p>这个命令是在docker中运行RocketMQ的namesrv服务。其中：</p>
+<ul>
+<li>-d：表示将容器在后台运行。</li>
+<li>-p 9876:9876：表示将容器内部的9876端口映射为宿主机的9876端口。</li>
+<li>--name namesrv：指定容器的名称为namesrv。</li>
+<li>-e &quot;MAX_POSSIBLE_HEAP=100000000&quot;：指定容器中Java虚拟机的最大堆大小为100MB。</li>
+<li>apache/rocketmq：指定使用的Docker镜像为apache/rocketmq。</li>
+<li>sh mqnamesrv：在容器中执行的命令，启动namesrv服务。</li>
+</ul>
+</blockquote>
+</blockquote>
+<h4 id="3-启动broker"><strong>3. 启动Broker</strong></h4>
+<pre><code class="language-bash">docker run -d --name rmqbroker --net=host --mount type=bind,source=D:\rmqdata,target=/home/rocketmq/store apache/rocketmq ./mqbroker -n localhost:9876
+
+docker run -d --name rmqbroker -p 10911:10911 -p 10909:10909 --mount type=bind,source=D:\rmqdata,target=/home/rocketmq/store apache/rocketmq:5.1.0 ./mqbroker -n localhost:9876
+
+docker run -d --restart=always --name broker -p 10911:10911 -p 10909:10909 --privileged=true -v /d/project_file/StudyDemo/rocketMq/conf/broker.conf:/opt/rocketmq/conf/broker.conf apache/rocketmq:5.1.0 sh mqbroker -c /opt/rocketmq/conf/broker.conf
+</code></pre>
+<blockquote>
+<p>这个docker命令的作用是以容器的方式启动apache/rocketmq镜像中的mqbroker进程，并将主机的D:\rmqdata目录挂载到容器内的/home/rocketmq/store目录中，以便将RocketMQ的消息存储在主机上。具体各选项的含义如下：</p>
+<ul>
+<li><code>docker run</code>: 运行一个新容器的命令。</li>
+<li><code>-d</code>: 以“守护进程”方式运行容器，即在后台运行。</li>
+<li><code>--name rmqbroker</code>: 为容器取一个名字，用于后续容器的管理操作。</li>
+<li><code>--net=host</code>: 使用主机的网络模式，容器和主机共享网络命名空间。</li>
+<li><code>--mount type=bind,source=D:\rmqdata,target=/home/rocketmq/store</code>: 将主机的D:\rmqdata目录挂载到容器内的/home/rocketmq/store目录中。
+<ul>
+<li><code>type=bind</code>: 指定挂载类型为bind类型，即主机目录与容器内目录进行映射。</li>
+<li><code>source=D:\rmqdata</code>: 指定主机要挂载的本地目录路径。</li>
+<li><code>target=/home/rocketmq/store</code>: 指定容器内挂载点的目录路径。</li>
+</ul>
+</li>
+<li><code>apache/rocketmq</code>: 选择要运行的Docker镜像的名称。</li>
+<li><code>./mqbroker -n localhost:9876</code>: 在容器内运行mqbroker进程，并指定NameServer的地址为localhost:9876。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>为什么这个命令不需要配置conf文件?</strong></p>
+<p>这个命令指定了在容器内部启动 RocketMQ Broker 的地址和端口号，以及 NameServer 的地址和端口号，因此在容器内部启动 RocketMQ Broker 时不需要读取配置文件。</p>
+<p>此外，在 Docker 容器内运行 RocketMQ Broker 时，由于容器与主机之间的网络隔离，一些传统方式的配置（如像在原来的物理环境中需要配置的 IP 地址，端口号等等）可能不再适用。因此，可以直接在 Docker 命令中指定需要的配置信息，而无需修改配置文件，简化了配置的过程。</p>
+</blockquote>
+<p><em>下面也介绍其他启动方式，可跳过</em></p>
+<blockquote>
+<p><strong>其他启动方式</strong></p>
+<p>启动Broker需要先创建一个broker配置文件<code>broker.conf</code>，例如：</p>
+<pre><code class="language-bash">brokerClusterName = DefaultCluster
+brokerName = broker-a
+brokerId = 0
+deleteWhen = 04
+fileReservedTime = 48
+brokerRole = ASYNC_MASTER
+
+
+listenPort=10921
+advertisedPort=10921
+brokerIP1=172.17.0.2
+</code></pre>
+<ul>
+<li>
+<p>其中<code>brokerIP1</code>需要设置成你的Docker宿主机的IP地址。</p>
+<blockquote>
+<ul>
+<li>
+<p><code>broker.conf</code> 文件中的 <code>listenPort</code> 配置项，将 Broker 监听客户端连接的端口号修改为需要的端口号。</p>
+</li>
+<li>
+<p>修改 <code>broker.conf</code> 文件中的 <code>brokerClusterName</code> 和 <code>brokerName</code> 配置项，将 Broker 间通信使用的端口号修改为需要的端口号。默认端口号如下：</p>
+<ul>
+<li>
+<p>10911：Master 与 Slave 同步消息的端口号。</p>
+</li>
+<li>
+<p>10912：Slave 与 Master 进行消息复制的端口号。</p>
+</li>
+<li>
+<p>10913：Broker 与 Broker 之间互相通信的端口号。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>listenPort 和 advertisedPort 的值需要相同吗?不需要完全相同，但两个端口号需要处于同一子网，并且 advertisedPort 应该是可以公网访问的地址，用于在注册中心中告知其它的Consumer或者Producer访问Broker的地址。而 listenPort 指定的则是 Broker 内部使用的端口号，也就是在 broker 配置文件中使用的端口号。因此，两个端口号最好要一致，这样可以避免一些不必要的麻烦。</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>然后执行以下命令启动Broker容器：</p>
+<blockquote>
+<p>例如我的conf文件存储在这个路径<code>D:\project_file\StudyDemo\rocketMq\conf</code>，我应该这样写这个路径<code>/d/project_file/StudyDemo/rocketMq/conf/broker.conf</code>：</p>
+</blockquote>
+<ul>
+<li>简单版的参考命令：</li>
+</ul>
+<pre><code class="language-bash">docker run -d --name rmqbroker -p 10921:10921 -v /d/project_file/StudyDemo/rocketMq/conf/broker.conf:/opt/rocketmq/conf/broker.conf apache/rocketmq sh mqbroker -n namesrv:9876
+
+docker run -d --name rmqbroker -p 10911:10911 -p 10909:10909 -v /d/project_file/StudyDemo/rocketMq/conf/broker.conf:/opt/rocketmq/conf/broker.conf apache/rocketmq:5.1.0 sh mqbroker -n namesrv:9876
+</code></pre>
+<blockquote>
+<ul>
+<li><code>docker run</code> 是 Docker 的启动容器命令</li>
+<li><code>-d</code> 表示将该容器运行在后台模式</li>
+<li><code>--name rmqbroker</code> 给该容器取一个名称叫做 <code>rmqbroker</code></li>
+<li><code>-p 10921:10921</code> 选项将容器中的 10921 端口映射到宿主机的 10921 端口</li>
+<li><code>-v /d/project_file/StudyDemo/rocketMq/conf/broker.conf:/opt/rocketmq/conf/broker.conf</code> 选项将宿主机上的 <code>/d/project_file/StudyDemo/rocketMq/conf/broker.conf</code> 文件挂载到容器内部的 <code>/opt/rocketmq/conf/broker.conf</code> 目录下</li>
+<li><code>apache/rocketmq</code> 是该容器所使用的 Docker 镜像名称，表示使用官方提供的 RocketMQ 镜像</li>
+<li><code>sh mqbroker -n namesrv:9876</code> 是在容器中执行的命令，其中 <code>sh</code> 表示使用 Shell 命令解释器，<code>mqbroker</code> 表示启动 RocketMQ Broker 服务，<code>-n</code> 选项指定了 Broker 服务所连接的 Namesrv 服务的 IP 地址和端口号，这里使用的是 <code>namesrv:9876</code>，其中 <code>namesrv</code> 表示 Namesrv 服务所在的主机名，<code>9876</code> 表示 Namesrv 服务的默认端口号。</li>
+</ul>
+</blockquote>
+</blockquote>
+<h4 id="4-启动rocketmq-console">4. 启动rocketmq console</h4>
+<p><a href="https://rocketmq.apache.org/zh/download">下载 | RocketMQ (apache.org)</a></p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230430111546933.png" alt="image-20230430111546933" style="zoom:80%;" />
+<p>下载后里面有个readme文件，指导了如何拉取这个cosole的镜像并使用。</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230430112208454.png" alt="image-20230430112208454" style="zoom:80%;" />
+<p><strong>With Docker</strong></p>
+<p><a href="https://hub.docker.com/r/apacherocketmq/rocketmq-console">apacherocketmq/rocketmq-console - Docker Image | Docker Hub</a></p>
+<ul>
+<li>get docker image</li>
+</ul>
+<pre><code>mvn clean package -Dmaven.test.skip=true docker:build
+</code></pre>
+<p>or</p>
+<pre><code>docker pull apacherocketmq/rocketmq-console:2.0.0
+</code></pre>
+<blockquote>
+<p>currently the newest available docker image is apacherocketmq/rocketmq-console:2.0.0</p>
+</blockquote>
+<ul>
+<li>run it (change namesvrAddr and port yourself)</li>
+</ul>
+<pre><code class="language-bash">docker run -d  --name rmqconsole -e &quot;JAVA_OPTS=-Drocketmq.namesrv.addr=127.0.0.1:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false&quot; -p 8080:8080 -t apacherocketmq/rocketmq-console:2.0.0
+</code></pre>
+<h2 id="go-语言操作-rocketmq-的简单示例">Go 语言操作 RocketMQ 的简单示例</h2>
+<h3 id="生产者发送消息示例代码">生产者发送消息示例代码</h3>
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;fmt&quot;
+	&quot;os&quot;
+	&quot;strconv&quot;
+
+	&quot;github.com/apache/rocketmq-client-go/v2&quot;
+	&quot;github.com/apache/rocketmq-client-go/v2/primitive&quot;
+	&quot;github.com/apache/rocketmq-client-go/v2/producer&quot;
+)
+
+// Package main implements a simple producer to send message.
+func main() {
+	p, _ := rocketmq.NewProducer(
+		producer.WithNsResolver(primitive.NewPassthroughResolver([]string{&quot;127.0.0.1:9876&quot;})),
+		producer.WithRetry(2),
+	)
+	err := p.Start()
+	if err != nil {
+		fmt.Printf(&quot;start producer error: %s&quot;, err.Error())
+		os.Exit(1)
+	}
+	topic := &quot;test&quot;
+
+	for i := 0; i &lt; 10; i++ {
+		msg := &amp;primitive.Message{
+			Topic: topic,
+			Body:  []byte(&quot;Hello RocketMQ Go Client! &quot; + strconv.Itoa(i)),
+		}
+		res, err := p.SendSync(context.Background(), msg)
+
+		if err != nil {
+			fmt.Printf(&quot;send message error: %s\n&quot;, err)
+		} else {
+			fmt.Printf(&quot;send message success: result=%s\n&quot;, res.String())
+		}
+	}
+	err = p.Shutdown()
+	if err != nil {
+		fmt.Printf(&quot;shutdown producer error: %s&quot;, err.Error())
+	}
+}
+</code></pre>
+<h3 id="消费者发送消息接收代码">消费者发送消息接收代码</h3>
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;fmt&quot;
+	&quot;os&quot;
+
+	&quot;github.com/apache/rocketmq-client-go/v2&quot;
+	&quot;github.com/apache/rocketmq-client-go/v2/consumer&quot;
+	&quot;github.com/apache/rocketmq-client-go/v2/primitive&quot;
+)
+
+func main() {
+	sig := make(chan os.Signal)
+	c, err := rocketmq.NewPushConsumer(
+		consumer.WithGroupName(&quot;testGroup&quot;),
+		consumer.WithNsResolver(primitive.NewPassthroughResolver([]string{&quot;127.0.0.1:9876&quot;})),
+	)
+	if err != nil {
+		fmt.Printf(&quot;Failed to create consumer: %s&quot;, err.Error())
+		return
+	}
+	err = c.Subscribe(&quot;test&quot;, consumer.MessageSelector{}, func(ctx context.Context,
+		msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
+		for _, msg := range msgs {
+			fmt.Printf(&quot;receive successfully: %s \n&quot;, msg.Body)
+		}
+
+		return consumer.ConsumeSuccess, nil
+	})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	// Note: start after subscribe
+	err = c.Start()
+	if err != nil {
+		fmt.Printf(&quot;Failed to start consumer: %s&quot;, err.Error())
+		os.Exit(-1)
+	}
+	&lt;-sig
+	err = c.Shutdown()
+	if err != nil {
+		fmt.Printf(&quot;shutdown Consumer error: %s&quot;, err.Error())
+	}
+}
+
+</code></pre>
+<h3 id="避免消息重复的示例代码">避免消息重复的示例代码</h3>
+<p>生产者</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;github.com/apache/rocketmq-client-go/v2&quot;
+    &quot;github.com/apache/rocketmq-client-go/v2/primitive&quot;
+)
+
+func main() {
+    // 创建一个生产者实例
+    p, err := rocketmq.NewProducer(
+        rocketmq.WithNameServer([]string{&quot;127.0.0.1:9876&quot;}),
+    )
+    if err != nil {
+        fmt.Printf(&quot;create producer error: %s\n&quot;, err)
+        return
+    }
+
+    // 启动生产者实例
+    err = p.Start()
+    if err != nil {
+        fmt.Printf(&quot;start producer error: %s\n&quot;, err)
+        return
+    }
+    defer p.Shutdown()
+
+    // 生成一组消息
+    msgs := []*primitive.Message{
+        {
+            Topic: &quot;test_topic&quot;,
+            Body:  []byte(&quot;hello, rocketmq!&quot;),
+        },
+        {
+            Topic: &quot;test_topic&quot;,
+            Body:  []byte(&quot;hello, again!&quot;),
+        },
+    }
+
+    // 发送消息
+    for _, msg := range msgs {
+        _, err = p.SendSync(msg)
+        if err != nil {
+            fmt.Printf(&quot;send message error: %s\n&quot;, err)
+            continue
+        }
+    }
+}
+
+</code></pre>
+<p>消费者</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;github.com/apache/rocketmq-client-go/v2&quot;
+    &quot;github.com/apache/rocketmq-client-go/v2/consumer&quot;
+    &quot;github.com/apache/rocketmq-client-go/v2/primitive&quot;
+    &quot;sync&quot;
+)
+
+func main() {
+    // 创建一个消费者实例
+    c, err := rocketmq.NewPushConsumer(
+        consumer.WithNameServer([]string{&quot;127.0.0.1:9876&quot;}),
+        consumer.WithGroupName(&quot;test_group&quot;),
+    )
+    if err != nil {
+        fmt.Printf(&quot;create consumer error: %s\n&quot;, err)
+        return
+    }
+
+    // 注册消息处理函数
+    err = c.Subscribe(&quot;test_topic&quot;, consumer.MessageSelector{}, func(ctx context.Context, msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
+        for _, msg := range msgs {
+            // 检查是否为重复消息
+            if checkDuplicate(msg) {
+                // 已处理过的重复消息直接忽略
+                continue
+            }
+
+            // 自定义消息处理逻辑
+            processMessage(msg)
+
+            // 将消息 ID 存入本地状态
+            saveMessageID(msg.Properties[primitive.PropertyUniqueClientMessageIdKey], msg.Topic, msg.Queue.ID)
+        }
+
+        return consumer.ConsumeSuccess, nil
+    })
+    if err != nil {
+        fmt.Printf(&quot;subscribe topic error: %s\n&quot;, err)
+        return
+    }
+
+    // 启动消费者实例
+    err = c.Start()
+    if err != nil {
+        fmt.Printf(&quot;start consumer error: %s\n&quot;, err)
+        return
+    }
+    defer c.Shutdown()
+}
+
+var (
+    messageIDs = make(map[string]struct{})
+    mutex      = sync.Mutex{}
+)
+
+// 检查消息是否重复处理
+func checkDuplicate(msg *primitive.MessageExt) bool {
+    key := fmt.Sprintf(&quot;%s:%s:%d&quot;, msg.Topic, msg.Queue.ID, msg.QueueOffset)
+    mutex.Lock()
+    defer mutex.Unlock()
+    if _, ok := messageIDs[key]; ok {
+        return true
+    }
+    return false
+}
+
+// 将消息 ID 存入本地状态
+func saveMessageID(msgID, topic, queueID string) {
+    key := fmt.Sprintf(&quot;%s:%s&quot;, topic, queueID)
+    mutex.Lock()
+    defer mutex.Unlock()
+    messageIDs[key] = struct{}{}
+}
+
+// 处理消息
+func processMessage(msg *primitive.MessageExt) {
+    fmt.Printf(&quot;Received message: %s\n&quot;, string(msg.Body))
+}
+
+</code></pre>
+<p>上述代码中，处理消息重复的关键在于 <code>checkDuplicate</code> 函数和 <code>saveMessageID</code> 函数。在消费者每次处理一条消息时，都会先调用 <code>checkDuplicate</code> 函数检查该消息是否为重复消息。如果返回 <code>true</code> 则说明已经处理过该消息，直接忽略不处理。接下来，如果是第一次处理该消息，则调用 <code>processMessage</code> 函数处理，并调用 <code>saveMessageID</code> 函数将该消息 ID 存入本地状态。</p>
+<p>当下一次消费同样的消息时，<code>checkDuplicate</code> 函数就会返回 <code>true</code>，从而避免重复处理该消息。如此一来，即使 RocketMQ 的消费者接收到重复消息，也能保证只会处理一遍，从而避免重复操作和数据错误。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E6%A6%82%E8%BF%B0">一、概述</a>
+<ul>
+<li><a href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E6%A6%82%E5%BF%B5">消息队列的概念</a>
+<ul>
+<li><a href="#%E5%AE%9A%E4%B9%89"><strong>定义</strong></a></li>
+<li><a href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF">应用场景</a></li>
+</ul>
+</li>
+<li><a href="#mq%E7%9A%84%E4%BC%98%E7%82%B9%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97">MQ的优点/为什么要用消息队列</a>
+<ul>
+<li><a href="#1%E8%A7%A3%E8%80%A6">1.解耦</a></li>
+<li><a href="#2%E5%BC%82%E6%AD%A5">2.异步</a></li>
+<li><a href="#3%E6%B5%81%E9%87%8F%E5%89%8A%E5%B3%B0%E5%A1%AB%E8%B0%B7">3.流量削峰填谷</a></li>
+</ul>
+</li>
+<li><a href="#mq%E7%9A%84%E7%BC%BA%E7%82%B9">MQ的缺点</a>
+<ul>
+<li><a href="#1%E5%8F%AF%E7%94%A8%E6%80%A7%E9%99%8D%E4%BD%8E">1.可用性降低</a></li>
+<li><a href="#2%E5%A4%8D%E6%9D%82%E6%80%A7%E6%8F%90%E9%AB%98">2.复杂性提高</a></li>
+<li><a href="#3%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98">3.数据一致性问题</a></li>
+</ul>
+</li>
+<li><a href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97">常用的消息队列</a>
+<ul>
+<li><a href="#go%E8%AF%AD%E8%A8%80%E5%B8%B8%E7%94%A8%E7%9A%84%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97">Go语言常用的消息队列</a></li>
+<li><a href="#%E5%B8%B8%E8%A7%81%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%AF%94%E8%BE%83">常见消息队列比较</a></li>
+</ul>
+</li>
+<li><a href="#%E6%B6%88%E6%81%AF%E9%87%8D%E5%A4%8D%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">消息重复问题解决方案</a>
+<ul>
+<li><a href="#1%E6%B6%88%E8%B4%B9%E6%97%B6%E5%81%9A%E5%B9%82%E7%AD%89%E6%80%A7%E5%A4%84%E7%90%86">1.消费时做幂等性处理</a></li>
+<li><a href="#2mvcc%E5%A4%9A%E7%89%88%E6%9C%AC%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E7%94%9F%E4%BA%A7%E7%9A%84%E6%97%B6%E5%80%99%E5%B8%A6%E4%B8%8A%E7%89%88%E6%9C%AC%E5%8F%B7">2.MVCC多版本并发控制(生产的时候带上版本号)</a></li>
+<li><a href="#3%E5%8E%BB%E9%87%8D%E8%A1%A8%E7%9A%84%E6%96%B9%E6%A1%88">3.去重表的方案</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-rocketmq%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B">二、RocketMQ简明教程</a>
+<ul>
+<li><a href="#rocketmq%E7%AE%80%E4%BB%8B">RocketMQ简介</a></li>
+<li><a href="#rocketmq%E7%9A%84%E5%AE%89%E8%A3%85">RocketMQ的安装</a>
+<ul>
+<li><a href="#%E5%AE%89%E8%A3%85%E6%96%B9%E5%BC%8F1%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85">安装方式1：下载安装</a>
+<ul>
+<li><a href="#1%E4%B8%8B%E8%BD%BDrelease%E7%89%88">1.下载release版</a></li>
+<li><a href="#2%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F">2.配置环境变量</a></li>
+<li><a href="#3%E5%90%AF%E5%8A%A8nameserver%E4%B8%8Ebroker%E6%9C%8D%E5%8A%A1">3.启动nameserver与broker服务</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AE%89%E8%A3%85%E6%96%B9%E5%BC%8Fdocker%E5%AE%89%E8%A3%85%E8%BF%99%E9%83%A8%E5%88%86%E5%AD%98%E5%9C%A8%E9%97%AE%E9%A2%98%E4%B8%8D%E8%A6%81%E5%8F%82%E8%80%83">安装方式：docker安装（这部分存在问题，不要参考）</a>
+<ul>
+<li><a href="#1-%E6%8B%89%E5%8F%96%E9%95%9C%E5%83%8F"><strong>1. 拉取镜像</strong></a></li>
+<li><a href="#2-%E5%90%AF%E5%8A%A8nameserver"><strong>2. 启动NameServer</strong></a></li>
+<li><a href="#3-%E5%90%AF%E5%8A%A8broker"><strong>3. 启动Broker</strong></a></li>
+<li><a href="#4-%E5%90%AF%E5%8A%A8rocketmq-console">4. 启动rocketmq console</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#go-%E8%AF%AD%E8%A8%80%E6%93%8D%E4%BD%9C-rocketmq-%E7%9A%84%E7%AE%80%E5%8D%95%E7%A4%BA%E4%BE%8B">Go 语言操作 RocketMQ 的简单示例</a>
+<ul>
+<li><a href="#%E7%94%9F%E4%BA%A7%E8%80%85%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81">生产者发送消息示例代码</a></li>
+<li><a href="#%E6%B6%88%E8%B4%B9%E8%80%85%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E6%8E%A5%E6%94%B6%E4%BB%A3%E7%A0%81">消费者发送消息接收代码</a></li>
+<li><a href="#%E9%81%BF%E5%85%8D%E6%B6%88%E6%81%AF%E9%87%8D%E5%A4%8D%E7%9A%84%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81">避免消息重复的示例代码</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

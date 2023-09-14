@@ -1,0 +1,290 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>mysql八股笔记 | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="mysql八股笔记 | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="😇这里将全面的整理mysql的所有八股
+
+一、MYSQL底层知识与原理
+1.1 引擎
+TODO:如何选择MySQL的存储引擎？
+TODO:MySQL存储引擎MyISAM与InnoDB区别
+TODO：InnoDB引擎的4大特性
+1.2 索引..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              mysql八股笔记
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-06-20
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>😇这里将全面的整理mysql的所有八股</p>
+<!-- more -->
+<h1 id="一-mysql底层知识与原理">一、MYSQL底层知识与原理</h1>
+<h2 id="11-引擎">1.1 引擎</h2>
+<h3 id="todo如何选择mysql的存储引擎">TODO:如何选择MySQL的存储引擎？</h3>
+<h3 id="todomysql存储引擎myisam与innodb区别">TODO:MySQL存储引擎MyISAM与InnoDB区别</h3>
+<h3 id="todoinnodb引擎的4大特性">TODO：InnoDB引擎的4大特性</h3>
+<h2 id="12-索引">1.2 索引</h2>
+<h3 id="todo索引的使用场景有哪些">TODO:索引的使用场景有哪些？</h3>
+<h3 id="todo索引有哪几种类型">TODO:索引有哪几种类型？</h3>
+<h3 id="todo索引的数据结构b树hash">TODO:索引的数据结构（b+树，hash）</h3>
+<h3 id="todo创建索引的原则">TODO:创建索引的原则</h3>
+<h3 id="todo百万级别或以上的数据如何删除">TODO:百万级别或以上的数据如何删除</h3>
+<h3 id="todo最左前缀匹配原则">TODO:最左前缀匹配原则</h3>
+<h3 id="todo数据库为什么使用b树而不是b树">TODO:数据库为什么使用B+树而不是B树</h3>
+<h3 id="todo什么是聚簇索引何时使用聚簇索引与非聚簇索引">TODO:什么是聚簇索引？何时使用聚簇索引与非聚簇索引</h3>
+<h3 id="todo非聚簇索引一定会回表查询吗">TODO:非聚簇索引一定会回表查询吗？</h3>
+<h2 id="13-事务">1.3 事务</h2>
+<h3 id="todo事务的四大特性是什么">TODO:事务的四大特性是什么？</h3>
+<h3 id="todo什么是脏读幻读不可重复读">TODO:什么是脏读？幻读？不可重复读？</h3>
+<h3 id="todo什么是事务的隔离级别mysql的默认隔离级别是什么">TODO:什么是事务的隔离级别？MySQL的默认隔离级别是什么？</h3>
+<h2 id="1x-其他">1.X 其他</h2>
+<h3 id="mysql有关权限的表都有哪几个">mysql有关权限的表都有哪几个</h3>
+<p>MySQL服务器通过权限表来控制用户对数据库的访问，权限表存放在mysql数据库里，由mysql_install_db脚本初始化。这些权限表分别user，db，table_priv，columns_priv。下面分别介绍一下这些表的结构和内容：</p>
+<p>user权限表：记录允许连接到服务器的用户帐号信息，里面的权限是全局级的。</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230620085905449.png" alt="image-20230620085905449" style="zoom:60%;" />
+<p>db权限表：记录各个帐号在各个数据库上的操作权限。</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230620085944817.png" alt="image-20230620085944817" style="zoom:67%;" />
+<p>table_priv权限表：记录数据表级的操作权限。</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230620090312150.png" alt="image-20230620090312150" style="zoom:67%;" />
+<p>columns_priv权限表：记录数据列级的操作权限。</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230620090336968.png" alt="image-20230620090336968" style="zoom:67%;" />
+<h3 id="mysql的binlog有有几种录入格式分别有什么区别">Mysql的binlog有有几种录入格式？分别有什么区别？</h3>
+<p>有三种格式，statement，row和mixed。</p>
+<p>statement模式下，每一条会修改数据的sql都会记录在binlog中。不需要记录每一行的变化，减少了binlog日志量，节约了IO，提高性能。由于sql的执行是有上下文的，因此在保存的时候需要保存相关的信息，同时还有一些使用了函数之类的语句无法被记录复制。</p>
+<p>row级别下，不记录sql语句上下文相关信息，仅保存哪条记录被修改。记录单元为每一行的改动，基本是可以全部记下来但是由于很多操作，会导致大量行的改动(比如altertable)，因此这种模式的文件保存的信息太多，日志量太大。</p>
+<p>mixed，一种折中的方案，普通操作使用statement记录，当无法使用statement的时候使用row。此外，新版的MySQL中对row级别也做了一些优化，当表结构发生变化的时候，会记录语句而不是逐行记录。</p>
+<p>默认是row模式</p>
+<figure data-type="image" tabindex="1"><img src="https://gitee.com/yushen611/img/raw/master/image-20230620085806365.png" alt="image-20230620085806365" loading="lazy"></figure>
+<h3 id=""></h3>
+<h1 id="二-数据库设计">二、数据库设计</h1>
+<h3 id="数据库三大范式是什么"><strong>数据库三大范式是什么</strong></h3>
+<p>第一范式：每个列都不可以再拆分。</p>
+<p>第二范式：在第一范式的基础上，非主键列完全依赖于主键，而不能是依赖于主键的一部分。</p>
+<p>第三范式：在第二范式的基础上，非主键列只依赖于主键，不依赖于其他非主键。</p>
+<p>在设计数据库结构的时候，要尽量遵守三范式，如果不遵守，必须有足够的理由。比如性能。事实上我</p>
+<p>们经常会为了性能而妥协数据库的设计。</p>
+<h3 id="todomysql有哪些数据类型以及使用场景">TODO:mysql有哪些数据类型以及使用场景</h3>
+<h1 id="三-数据库操作">三、数据库操作</h1>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-mysql%E5%BA%95%E5%B1%82%E7%9F%A5%E8%AF%86%E4%B8%8E%E5%8E%9F%E7%90%86">一、MYSQL底层知识与原理</a>
+<ul>
+<li><a href="#11-%E5%BC%95%E6%93%8E">1.1 引擎</a>
+<ul>
+<li><a href="#todo%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9mysql%E7%9A%84%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E">TODO:如何选择MySQL的存储引擎？</a></li>
+<li><a href="#todomysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8Emyisam%E4%B8%8Einnodb%E5%8C%BA%E5%88%AB">TODO:MySQL存储引擎MyISAM与InnoDB区别</a></li>
+<li><a href="#todoinnodb%E5%BC%95%E6%93%8E%E7%9A%844%E5%A4%A7%E7%89%B9%E6%80%A7">TODO：InnoDB引擎的4大特性</a></li>
+</ul>
+</li>
+<li><a href="#12-%E7%B4%A2%E5%BC%95">1.2 索引</a>
+<ul>
+<li><a href="#todo%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E6%9C%89%E5%93%AA%E4%BA%9B">TODO:索引的使用场景有哪些？</a></li>
+<li><a href="#todo%E7%B4%A2%E5%BC%95%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E7%B1%BB%E5%9E%8B">TODO:索引有哪几种类型？</a></li>
+<li><a href="#todo%E7%B4%A2%E5%BC%95%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84b%E6%A0%91hash">TODO:索引的数据结构（b+树，hash）</a></li>
+<li><a href="#todo%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E5%88%99">TODO:创建索引的原则</a></li>
+<li><a href="#todo%E7%99%BE%E4%B8%87%E7%BA%A7%E5%88%AB%E6%88%96%E4%BB%A5%E4%B8%8A%E7%9A%84%E6%95%B0%E6%8D%AE%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4">TODO:百万级别或以上的数据如何删除</a></li>
+<li><a href="#todo%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99">TODO:最左前缀匹配原则</a></li>
+<li><a href="#todo%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8b%E6%A0%91%E8%80%8C%E4%B8%8D%E6%98%AFb%E6%A0%91">TODO:数据库为什么使用B+树而不是B树</a></li>
+<li><a href="#todo%E4%BB%80%E4%B9%88%E6%98%AF%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E4%BD%95%E6%97%B6%E4%BD%BF%E7%94%A8%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E4%B8%8E%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95">TODO:什么是聚簇索引？何时使用聚簇索引与非聚簇索引</a></li>
+<li><a href="#todo%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E4%B8%80%E5%AE%9A%E4%BC%9A%E5%9B%9E%E8%A1%A8%E6%9F%A5%E8%AF%A2%E5%90%97">TODO:非聚簇索引一定会回表查询吗？</a></li>
+</ul>
+</li>
+<li><a href="#13-%E4%BA%8B%E5%8A%A1">1.3 事务</a>
+<ul>
+<li><a href="#todo%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%9B%9B%E5%A4%A7%E7%89%B9%E6%80%A7%E6%98%AF%E4%BB%80%E4%B9%88">TODO:事务的四大特性是什么？</a></li>
+<li><a href="#todo%E4%BB%80%E4%B9%88%E6%98%AF%E8%84%8F%E8%AF%BB%E5%B9%BB%E8%AF%BB%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB">TODO:什么是脏读？幻读？不可重复读？</a></li>
+<li><a href="#todo%E4%BB%80%E4%B9%88%E6%98%AF%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%ABmysql%E7%9A%84%E9%BB%98%E8%AE%A4%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88">TODO:什么是事务的隔离级别？MySQL的默认隔离级别是什么？</a></li>
+</ul>
+</li>
+<li><a href="#1x-%E5%85%B6%E4%BB%96">1.X 其他</a>
+<ul>
+<li><a href="#mysql%E6%9C%89%E5%85%B3%E6%9D%83%E9%99%90%E7%9A%84%E8%A1%A8%E9%83%BD%E6%9C%89%E5%93%AA%E5%87%A0%E4%B8%AA">mysql有关权限的表都有哪几个</a></li>
+<li><a href="#mysql%E7%9A%84binlog%E6%9C%89%E6%9C%89%E5%87%A0%E7%A7%8D%E5%BD%95%E5%85%A5%E6%A0%BC%E5%BC%8F%E5%88%86%E5%88%AB%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB">Mysql的binlog有有几种录入格式？分别有什么区别？</a></li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1">二、数据库设计</a><br>
+*
+<ul>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%89%E5%A4%A7%E8%8C%83%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88"><strong>数据库三大范式是什么</strong></a></li>
+<li><a href="#todomysql%E6%9C%89%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BB%A5%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF">TODO:mysql有哪些数据类型以及使用场景</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C">三、数据库操作</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

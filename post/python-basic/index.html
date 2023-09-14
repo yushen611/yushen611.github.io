@@ -1,0 +1,1072 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Python 基础语法. | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Python 基础语法. | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+1. 概述
+本文目标：尝试找到所有编程语言的共性，以此来快速入门各类编程语言的基础语法。本文将以C++,Java,Python,Golang四种编程语言为样例，进行讲解。
+编程语言的定义：编程语言（programming language..." />
+    <meta name="keywords" content="python" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Python 基础语法.
+            </h2>
+            <div class="post-info">
+              <span>
+                2022-09-15
+              </span>
+              <span>
+                19 min read
+              </span>
+              
+                <a href="https://yushen611.github.io/tag/-Ra3_3Uau/" class="post-tag">
+                  # python
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <meta name="referrer" content="no-referrer"/>
+<h1 id="1-概述">1. 概述</h1>
+<p>本文目标：尝试找到所有编程语言的共性，以此来快速入门各类编程语言的基础语法。本文将以C++,Java,Python,Golang四种编程语言为样例，进行讲解。</p>
+<p>编程语言的定义：编程语言（programming language）可以简单的理解为一种计算机和人都能识别的语言。 一种计算机语言让程序员能够准确地<strong>定义计算机所需要使用的数据</strong>，并精确地定义在<strong>不同情况下</strong>所应当采取的<strong>行动</strong>。</p>
+<p>因此，各个语言的本质是围绕<strong>数据</strong>展开的。如何<code>定义数据</code>、<code>存储数据</code>、<code>操控数据</code>就是每个编程语言的本质目标。当然其中最复杂，内容最多的部分就是如何<strong>操控数据</strong>，它又包括<code>操控内存数据</code>与<code>操纵外存数据</code> 。对于<strong>操控内存数据</strong>,又包括<code>操控基本类型数据</code>，<code>操控数据存储的结构</code>，<code>操控数据的逻辑实现</code>，<code>操纵方法的封装</code>（自定义封装与引用封装）。对于<strong>操控外存数据</strong>，又分<code>读外存文件到内存</code>，<code>以及写内存数据到外存</code>，而外存文件又分文本文件和二进制文件，但这里不单独再分类。</p>
+<h2 id="main函数与hello-world">main函数与hello world</h2>
+<p>这里首先给出不同语言的hello world格式</p>
+<p><strong>python</strong><br>
+python 是解释型语言，可以没有main函数就能直接输出。但是也可以有main函数。</p>
+<ol>
+<li>python不用加分号；但是需要用缩进&lt;Tab按键&gt;来规定作用域</li>
+</ol>
+<pre><code class="language-python"># 不写main直接输出
+print(&quot;hello world&quot;)
+# main函数里输出
+if __name__ ==&quot;__main__&quot;:
+	print(&quot;hello world&quot;)
+</code></pre>
+<h1 id="2-定义数据">2. 定义数据</h1>
+<p>数据包括基本数据类型与定义类的对象。其实所有数据的定义，都是定义类的对象，但是其他类的对象数据都是基本数据类型的组合，所以单独拿出来说了。</p>
+<p>所有类的定义的语法基本都如下图所示：</p>
+<blockquote>
+<p>类的名字 类的对象的名字 = 类的一个对象/类的构造方法<br>
+eg.<br>
+Int num = 1  或者Int num = Int(1)</p>
+</blockquote>
+<p>其实更加常见的一个定义数据分类是定义常量和定义变量进行分类，后文也会提到。</p>
+<h2 id="21-定义基本数据类型">2.1 定义基本数据类型</h2>
+<p>基本数据类型包括：整数(int),浮点数(double/float)，字符串(string),布尔值(bool)。</p>
+<p>所谓基本数据类型，就是某个语言中最常见、最常使用的、且可作为构成其他类的基本元素的类。</p>
+<p>当然不同语言上，有的还会对基本类型还会做进一步的细分。</p>
+<p><strong>python</strong></p>
+<p>注意：python里，一个变量可以通过赋值指向不同类型的对象。</p>
+<p>单变量定义</p>
+<pre><code class="language-python">counter = 100          # 整型变量
+miles   = 1000.0       # 浮点型变量
+name    = &quot;runoob&quot;     # 字符串
+condition = True #布尔
+</code></pre>
+<p>注意生成的字符串由特殊的种类：原始字符串、格式化字符串、跨行字符串</p>
+<pre><code class="language-python">生成原始字符串：
+str_r = r&quot;Hello\1&quot;
+
+生成格式化字符串：
+name = &quot;Runoob&quot;
+str_f = f&quot;Hello {name}&quot;  # 替换变量
+
+跨行字符串(三引号):
+para_str = &quot;&quot;&quot;这是一个多行字符串的实例
+多行字符串可以使用制表符
+TAB ( \t )。
+也可以使用换行符 [ \n ]。
+&quot;&quot;&quot;
+
+</code></pre>
+<p>多变量定义(Python3 支持 int、float、bool、complex（复数）)</p>
+<pre><code class="language-python">a, b, c, d = 20, 5.5, True, 4+3j #多变量定义
+&lt;class 'int'&gt; &lt;class 'float'&gt; &lt;class 'bool'&gt; &lt;class 'complex'&gt;
+</code></pre>
+<p>查询变量类型的方法：type(),isinstance()</p>
+<pre><code class="language-python">type(a)
+isinstance(a, int)
+# type()不会认为子类是一种父类类型。
+# isinstance()会认为子类是一种父类类型。
+</code></pre>
+<h2 id="22-定义类的对象数据">2.2 定义类的对象数据</h2>
+<p>python</p>
+<pre><code class="language-python">p1 = MyClass()
+</code></pre>
+<h1 id="3存储数据">3.存储数据</h1>
+<p>一般高级编程语言都有如下数据结构：数组、集合、映射</p>
+<p>本部分<strong>只讨论生成</strong>一个数据结构的方式：</p>
+<ol>
+<li>由空的结构 被赋值 或 添加生成(最常见)</li>
+<li>由本身的数据结构截取生成而来</li>
+<li>由其他数据结构转换而来(可能是强转，也可能是其他数据结构的私有方法生成的)</li>
+</ol>
+<h2 id="31数组">3.1数组</h2>
+<p><strong>python</strong></p>
+<p>注意：python中<code>推导式</code>机制，可以从一个数据序列构建另一个新的数据序列的结构体。Python 支持各种数据结构的推导式：<br>
+列表(list)推导式<br>
+字典(dict)推导式<br>
+集合(set)推导式<br>
+元组(tuple)推导式</p>
+<p>List（列表）：可变</p>
+<pre><code class="language-python"> 1. 由空的结构 被赋值 或 添加生成(最常见)
+list1 = ['Google', 'Runoob', 1997, 2000] #赋值
+list2 = [] 
+for i in range(10):
+	list2.append(i)#末尾添加apeend
+list2.insert(index,value)# 指定位置添加
+list3 = [ i for i in range(10) if i%2==0] #列表生成式、又叫推导式 
+
+ 2. 由本身的数据结构截取生成而来
+ list4 = list3[1:]
+ list4 = list3[:-1]
+ 
+ 3. 由其他数据结构转换而来(可能是强转，也可能是其他数据结构的私有方法生成的)
+ set1 = {'Google', 'Runoob', 1997}
+ dict1 = {1:&quot;q&quot;,2:&quot;w&quot;}
+ list5 = list(set1) #强转
+ list6,list7 = dict1.keys(),dict2.values()#由字典的键值对生成
+</code></pre>
+<p>Tuple（元组）：不可变</p>
+<pre><code class="language-python"> 1. 由空的结构 被赋值 或 添加生成(最常见)
+tup1 = ('Google', 'Runoob', 1997, 2000)
+tup2 = &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;   #  不需要括号也可以
+tup3 = (expression for item in Sequence if conditional ) #推导式生成
+ 2. 由本身的数据结构截取生成而来
+ tup3 = tup1 + tup2 #元组中的元素值是不允许修改的，但我们可以对元组进行连接组合
+
+</code></pre>
+<h2 id="32-集合">3.2 集合</h2>
+<p><strong>python</strong></p>
+<p>set(集合):可变<br>
+可以使用大括号 <code>{ }</code> 或者 <code>set() </code>函数创建集合，注意：创建一个空集合必须用 <code>set() </code>而不是 { }，因为 <code>{ } </code>是用来创建一个空字典。</p>
+<pre><code class="language-python"> 1. 由空的结构 被赋值 或 添加生成(最常见)
+set1 = set()#空结构
+for i in range(10):
+	set1.add(i)
+set2 = ( i*2 for i in range(10) )#推导式生成的
+
+# 还有一个update方法，也可以添加元素，且参数可以是列表，元组，字典等，语法格式如下：
+&gt;&gt;&gt; set3 = set((&quot;Google&quot;, &quot;Runoob&quot;, &quot;Taobao&quot;))
+&gt;&gt;&gt; set3.update({1,3})
+&gt;&gt;&gt; print(set3)
+{1, 3, 'Google', 'Taobao', 'Runoob'}
+&gt;&gt;&gt; set3.update([1,4],[5,6])  
+&gt;&gt;&gt; print(set3)
+{1, 3, 4, 5, 6, 'Google', 'Taobao', 'Runoob'}
+
+ 2. 由其他数据结构转换而来(可能是强转，也可能是其他数据结构的私有方法生成的)
+set4 = set(list1)
+</code></pre>
+<h2 id="33-映射">3.3 映射</h2>
+<p>dict(字典)：可变</p>
+<pre><code class="language-python"> 1. 由空的结构 被赋值 或 添加生成(最常见)
+tinydict = {'Name': 'Runoob', 'Age': 7, 'Class': 'First'}
+emptyDict = {}# 使用大括号 {} 来创建空字典
+tinydict['Age'] = 8               # 更新 Age
+tinydict['School'] = &quot;菜鸟教程&quot;  # 添加信息
+testdict = { key_expr: value_expr for value in collection if condition } #推导式
+
+</code></pre>
+<h1 id="4操控数据">4.操控数据</h1>
+<h2 id="41-操控内存数据">4.1 操控内存数据</h2>
+<h3 id="411操控基本类型数据">4.1.1操控基本类型数据</h3>
+<h4 id="1基本数值运算与常见的数学函数">(1)基本数值运算与常见的数学函数</h4>
+<p><strong>python</strong><br>
+加减乘除，取余乘方</p>
+<pre><code class="language-python">&gt;&gt;&gt; 5 + 4  # 加法
+9
+&gt;&gt;&gt; 4.3 - 2 # 减法
+2.3
+&gt;&gt;&gt; 3 * 7  # 乘法
+21
+&gt;&gt;&gt; 2 / 4  # 除法，得到一个浮点数
+0.5
+&gt;&gt;&gt; 2 // 4 # 除法，得到一个整数
+0
+&gt;&gt;&gt; 17 % 3 # 取余
+2
+&gt;&gt;&gt; 2 ** 5 # 乘方
+32
+</code></pre>
+<p>数学函数:绝对值，保留指定位数四舍五入后的小数，最大值，最小值，向上取整，向下取整，指对数函数</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>abs(x)</td>
+<td>绝对值</td>
+</tr>
+<tr>
+<td>round(x [,n])</td>
+<td>返回浮点数 x 的四舍五入值，如给出 n 值，则代表舍入到小数点后的位数。</td>
+</tr>
+<tr>
+<td>math. ceil(x)</td>
+<td>返回数字的上入整数，如math.ceil(4.1) 返回 5</td>
+</tr>
+<tr>
+<td>math.floor(x)</td>
+<td>返回数字的下舍整数，如math.floor(4.9)返回 4</td>
+</tr>
+<tr>
+<td>math. exp(x)</td>
+<td>返回e的x次幂(ex),如math.exp(1) 返回2.718281828459045</td>
+</tr>
+<tr>
+<td>math.log(x)</td>
+<td>默认以e为底，如math.log(math.e)返回1.0,math.log(100,10)返回2.0</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2类型转换">（2）类型转换</h4>
+<h5 id="隐式类型转换">隐式类型转换</h5>
+<p>基本所有语言的隐式类型转换都遵守这一个<strong>避免数据丢失的规则</strong>：<code>在数值运算时，较低数据类型（整数）就会转换为较高数据类型（浮点数）以避免数据丢失</code></p>
+<h5 id="显式类型转换">显式类型转换</h5>
+<p><strong>python</strong></p>
+<p><code>标记格式</code>的函数为python常用函数</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>int</strong>(x [,base])</td>
+<td>将x转换为一个整数</td>
+</tr>
+<tr>
+<td><strong>float</strong>(x)</td>
+<td>将x转换到一个浮点数</td>
+</tr>
+<tr>
+<td><strong>str</strong>(x)</td>
+<td>将对象 x 转换为字符串</td>
+</tr>
+<tr>
+<td>complex(real [,imag])</td>
+<td>创建一个复数</td>
+</tr>
+<tr>
+<td><strong>tuple</strong>(s)</td>
+<td>将序列 s 转换为一个元组</td>
+</tr>
+<tr>
+<td><strong>list</strong>(s)</td>
+<td>将序列 s 转换为一个列表</td>
+</tr>
+<tr>
+<td><strong>set</strong>(s)</td>
+<td>转换为可变集合</td>
+</tr>
+<tr>
+<td>dict(d)</td>
+<td>创建一个字典。d 必须是一个 (key, value)元组序列。</td>
+</tr>
+<tr>
+<td>frozenset(s)</td>
+<td>转换为不可变集合</td>
+</tr>
+<tr>
+<td>chr(x)</td>
+<td>将一个整数转换为一个字符</td>
+</tr>
+<tr>
+<td>ord(x)</td>
+<td>将一个字符转换为它的整数值</td>
+</tr>
+<tr>
+<td>repr(x)</td>
+<td>将对象 x 转换为表达式字符串</td>
+</tr>
+<tr>
+<td><strong>eval</strong>(str)</td>
+<td>eval() 函数用来执行一个字符串表达式，并返回表达式的值。</td>
+</tr>
+<tr>
+<td>hex(x)</td>
+<td>将一个整数转换为一个十六进制字符串</td>
+</tr>
+<tr>
+<td>oct(x)</td>
+<td>将一个整数转换为一个八进制字符串</td>
+</tr>
+</tbody>
+</table>
+<p>说明：eval</p>
+<pre><code class="language-python">&gt;&gt;&gt;x = 7
+&gt;&gt;&gt; eval( '3 * x' )
+21
+&gt;&gt;&gt; eval('pow(2,2)')
+4
+&gt;&gt;&gt; eval('2 + 2')
+4
+&gt;&gt;&gt; n=81
+&gt;&gt;&gt; eval(&quot;n + 4&quot;)
+85
+</code></pre>
+<h4 id="3字符串运算">(3)字符串运算</h4>
+<p>字符串也是一个不可变序列。(无更新删除操作)</p>
+<blockquote>
+<p>所有序列的操作，都包括：索引访问，区间截取，元素搜索，子集搜索,合并拼接,更新删除。当然不同序列也有自己不同的操作。</p>
+</blockquote>
+<ul>
+<li>索引访问、区间截取</li>
+</ul>
+<pre><code class="language-python">str1 = &quot;hello hello&quot;
+var = str1[1] # 索引访问
+var = str1[1:3] # 区间截取
+</code></pre>
+<ul>
+<li>元素/子集搜索</li>
+</ul>
+<pre><code class="language-python">if &quot;he&quot; not in str1:
+	print(&quot;not in&quot;)
+</code></pre>
+<ul>
+<li>合并拼接</li>
+</ul>
+<pre><code class="language-python">str2= &quot;hello hello&quot; + str1
+str2 = str1*n # 把str1重复n次后返回重复后的字符串
+</code></pre>
+<ul>
+<li>特殊操作</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>str.count(str1, beg= 0,end=len(string))</td>
+<td>返回 str1 在 string 里面出现的次数，如果 beg 或者 end 指定则返回指定范围内 str 出现的次数</td>
+</tr>
+<tr>
+<td>str.lower()</td>
+<td>转换字符串中所有大写字符为小写.</td>
+</tr>
+<tr>
+<td>str.title()</td>
+<td>返回&quot;标题化&quot;的字符串,就是说所有单词都是以大写开始，其余字母均为小写(见 istitle())</td>
+</tr>
+<tr>
+<td>str.upper()</td>
+<td>转换字符串中的小写字母为大写</td>
+</tr>
+<tr>
+<td>str.replace(old, new [, max])</td>
+<td>把 将字符串中的 old 替换成 new,如果 max 指定，则替换不超过 max 次。</td>
+</tr>
+<tr>
+<td>str.split(str=&quot;&quot;, num=string.count(str))</td>
+<td>以 str 为分隔符截取字符串，如果 num 有指定值，则仅截取 num+1 个子字符串</td>
+</tr>
+<tr>
+<td>str.join(seq)</td>
+<td>以指定字符串作为分隔符，将 seq 中所有的元素(的字符串表示)合并为一个新的字符串</td>
+</tr>
+<tr>
+<td>str.strip([chars])</td>
+<td>去除字符串左右两端的空格</td>
+</tr>
+</tbody>
+</table>
+<h3 id="412操控数据存储的结构">4.1.2操控数据存储的结构</h3>
+<blockquote>
+<p>所有序列的操作，都包括：索引访问，区间截取，元素搜索，子集搜索,合并拼接。当然不同序列也有自己不同的操作。</p>
+</blockquote>
+<p>python中所有序列包括：字符串、列表、元祖、集合、字典</p>
+<h4 id="1共有操作">(1)共有操作</h4>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>len(seq)</td>
+<td>返回序列长度</td>
+<td>所有seq</td>
+</tr>
+<tr>
+<td>max(seq)</td>
+<td>返回给定参数的最大值，参数可以为序列。</td>
+<td>str,list,tuple</td>
+</tr>
+<tr>
+<td>min(seq)</td>
+<td>返回给定参数的最小值，参数可以为序列。</td>
+<td>str,list,tuple</td>
+</tr>
+<tr>
+<td>seq.count(x)</td>
+<td>统计x在seq中出现次数</td>
+<td>str,list,tuple</td>
+</tr>
+<tr>
+<td>seq.update()</td>
+<td>合并</td>
+<td>dict，set</td>
+</tr>
+<tr>
+<td>seq.add()</td>
+<td>添加新元素</td>
+<td>set</td>
+</tr>
+<tr>
+<td>seq.append()</td>
+<td>添加新元素</td>
+<td>list</td>
+</tr>
+<tr>
+<td>seq.remove(x)</td>
+<td>删除x</td>
+<td>list,set</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2列表运算">(2)列表运算</h4>
+<ul>
+<li>删除更新</li>
+</ul>
+<pre><code class="language-python">list1 = ['Google', 'Runoob', 1997, 2000]
+list1[1] = &quot;Baidu&quot; # 元素更新
+del list1[index] #删除指定索引元素
+list1.remove(value) #删除指定元素
+list1.pop() # 删除最后一个元素，并返回该元素的值
+</code></pre>
+<ul>
+<li>索引访问、区间截取</li>
+</ul>
+<pre><code class="language-python">var = list1[1] # 索引访问
+var = list1[1:3] # 区间截取
+</code></pre>
+<ul>
+<li>元素搜索</li>
+</ul>
+<pre><code class="language-python">#元素搜索
+if &quot;he&quot; not in list1:
+	print(&quot;not in&quot;)
+</code></pre>
+<ul>
+<li>合并拼接</li>
+</ul>
+<pre><code class="language-python">list2= [1,2,3] + list1
+list1 += [36, 49, 64, 81, 100]
+list2 = list1*n #把list1重复n次后返回重复拼接的列表
+</code></pre>
+<ul>
+<li>特殊操作</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>list.count(obj)</td>
+<td>统计某个元素在列表中出现的次数</td>
+</tr>
+<tr>
+<td>list.reverse()</td>
+<td>反向列表中元素</td>
+</tr>
+<tr>
+<td>list.copy()</td>
+<td>复制列表</td>
+</tr>
+</tbody>
+</table>
+<h4 id="3元祖运算">(3)元祖运算</h4>
+<ul>
+<li>索引访问、区间截取</li>
+</ul>
+<pre><code class="language-python">tup1 = ('Google', 'Runoob', 1997, 2000)
+var = tup1[1] # 索引访问
+var = tup1[1:3] # 区间截取
+</code></pre>
+<ul>
+<li>元素搜索</li>
+</ul>
+<pre><code class="language-python">#元素搜索
+if &quot;he&quot; not in list1:
+	print(&quot;not in&quot;)
+
+</code></pre>
+<ul>
+<li>合并拼接</li>
+</ul>
+<pre><code class="language-python">tup1= (1,2,3) + tup1
+tup1 += (36, 49, 64, 81, 100)
+tup2 = tup1*n
+</code></pre>
+<h4 id="4集合运算">(4)集合运算</h4>
+<p>集合无索引，因此无索引访问</p>
+<ul>
+<li>删除更新</li>
+</ul>
+<pre><code class="language-python">set1 = {'apple', 'orange', 'banana'}
+set1.remove(value) #删除指定元素
+</code></pre>
+<ul>
+<li>元素搜索</li>
+</ul>
+<pre><code class="language-python">#元素搜索
+if &quot;he&quot; not in set1:
+	print(&quot;not in&quot;)
+
+</code></pre>
+<ul>
+<li>合并拼接</li>
+</ul>
+<pre><code class="language-python">set2.update(set1)
+</code></pre>
+<ul>
+<li>特殊操作</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a - b</td>
+<td>返回集合a与集合b的差集(集合a中包含而集合b中不包含的元素)</td>
+</tr>
+<tr>
+<td>a | b</td>
+<td>返回集合a和集合b的并集</td>
+</tr>
+<tr>
+<td>a &amp; b</td>
+<td>返回集合a和集合b的交集</td>
+</tr>
+<tr>
+<td>a ^ b</td>
+<td>返回不同时包含于a和b的元素集合(返回集合a和集合b的交集的反)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="5字典运算">(5)字典运算</h4>
+<ul>
+<li>删除更新</li>
+</ul>
+<pre><code class="language-python">tinydict = {'Age': 7, 'Name': 'First'}
+del tinydict['Name'] # 删除键 'Name'
+del tinydict         # 删除字典
+tinydict['Age'] = 8               # 更新 Age
+tinydict['School'] = &quot;菜鸟教程&quot;  # 添加信息
+</code></pre>
+<ul>
+<li>键访问</li>
+</ul>
+<pre><code class="language-python">var = tinydict['Age']
+</code></pre>
+<ul>
+<li>元素搜索</li>
+</ul>
+<pre><code class="language-python">#键/值搜索
+if &quot;he&quot; not in tinydict.keys()/tinydict.values():
+	print(&quot;not in&quot;)
+</code></pre>
+<ul>
+<li>合并拼接</li>
+</ul>
+<pre><code class="language-python">dict2.update(dict1)
+</code></pre>
+<ul>
+<li>特殊操作</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dict.keys()</td>
+<td>返回所有的键</td>
+</tr>
+<tr>
+<td>dict.values()</td>
+<td>返回所有的值</td>
+</tr>
+<tr>
+<td>dict.items()</td>
+<td>以列表返回返回所有的键值对</td>
+</tr>
+<tr>
+<td>dict.get(key, default=None)</td>
+<td>返回指定键的值，如果键不在字典中返回 default 设置的默认值</td>
+</tr>
+</tbody>
+</table>
+<h4 id="6常用操作去重排序计数">(6)常用操作：去重，排序，计数</h4>
+<p>以list为数据源</p>
+<ol>
+<li>去重</li>
+</ol>
+<pre><code class="language-python">list1 = list(set(list1))
+</code></pre>
+<ol start="2">
+<li>排序</li>
+</ol>
+<pre><code class="language-python"># 列表排序 reverse=True从大到小排序
+list1 = sorted(list1, key=lambda e: e, reverse=True)
+#字典排序 根据值排序
+dict1 = sorted(dict1.items(), key=lambda e: e[1], reverse=True) 
+</code></pre>
+<ol start="3">
+<li>计数</li>
+</ol>
+<pre><code class="language-python">cnt_dict = {}
+for e in list1:cnt_dict[e] = cnt_dict.get(e,0) + 1
+</code></pre>
+<h3 id="413操控数据的逻辑实现">4.1.3操控数据的逻辑实现</h3>
+<h4 id="1条件表达式">(1)条件表达式</h4>
+<p>逻辑运算符/操作符</p>
+<p><code>or</code> <code>and</code> <code>&lt;</code>  <code>&lt;=</code> <code>&gt;</code>  <code>&gt;=</code>  <code>==</code>  <code>!=	</code></p>
+<h4 id="2if语句三元表达式">(2)if语句/三元表达式</h4>
+<pre><code class="language-python">if condition_1:
+    statement_block_1
+elif condition_2:
+    statement_block_2
+else:
+    statement_block_3
+
+var = &quot;真结果&quot; if condition else &quot;假结果&quot;
+</code></pre>
+<h4 id="3for循环">(3)for循环</h4>
+<pre><code class="language-python">for i in range(num):print(i) #[0,num)
+for i in range(start,stop,step):print(i) #[start,stop) start = start + step
+for i,e in enumerate(list):print(i,e)
+for e in list1:print(e)
+
+</code></pre>
+<h4 id="4while循环">(4)while循环</h4>
+<pre><code class="language-python">while 判断条件(condition)：
+    执行语句(statements)……
+</code></pre>
+<h3 id="414操纵方法的封装自定义封装与引用封装">4.1.4操纵方法的封装（自定义封装与引用封装）</h3>
+<h4 id="1函数">(1)函数</h4>
+<p>函数的入参：类型约束，默认参数，不定长参数</p>
+<blockquote>
+<p>加了一个星号 * 的参数会以元组(tuple)的形式导入，存放所有未命名的变量参数。<br>
+加了两个星号 ** 的参数会以字典的形式导入。</p>
+</blockquote>
+<p>返回值：如何返回多个值</p>
+<pre><code class="language-python">def func(arg1:str = &quot;默认字符串&quot;,*vartuple,**var_args_dict)：
+	for var in vartuple:
+      print (var)
+    for k,v in var_args_dict:
+    	print(k,v)
+	return 1,2
+</code></pre>
+<h4 id="2类">(2)类</h4>
+<p>类的属性，方法，继承，访问范围，多构造函数</p>
+<pre><code class="language-python">class Site(object):#继承自object类
+    def __init__(self, name, url):
+        self.name = name       # public
+        self.__url = url   # private
+ 	@classmethod
+    def myinit(self, name):#自定义构造函数
+    	# 利用@classmethod装饰器实现 Python 中构造函数重载
+    	# 记得返回self
+        return self(name, &quot;myurl&quot;)
+    def who(self):
+        print('name  : ', self.name)
+        print('url : ', self.__url)
+ 
+    def __foo(self):          # 私有方法
+        print('这是私有方法')
+ 
+    def foo(self):            # 公共方法
+        print('这是公共方法')
+        self.__foo()
+</code></pre>
+<p>任意类的方法(可重载)</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>__init__</td>
+<td>构造函数，在生成对象时调用</td>
+</tr>
+<tr>
+<td>__del__</td>
+<td>析构函数，释放对象时使用</td>
+</tr>
+<tr>
+<td>__repr__</td>
+<td>打印，转换</td>
+</tr>
+<tr>
+<td>__setitem__</td>
+<td>按照索引赋值</td>
+</tr>
+<tr>
+<td>__getitem__</td>
+<td>按照索引获取值</td>
+</tr>
+<tr>
+<td>__len__:</td>
+<td>获得长度</td>
+</tr>
+<tr>
+<td>__cmp__</td>
+<td>比较运算</td>
+</tr>
+<tr>
+<td>__call__</td>
+<td>函数调用</td>
+</tr>
+<tr>
+<td>__add__</td>
+<td>加运算</td>
+</tr>
+<tr>
+<td>__sub__</td>
+<td>减运算</td>
+</tr>
+<tr>
+<td>__mul__</td>
+<td>乘运算</td>
+</tr>
+<tr>
+<td>__truediv__</td>
+<td>除运算</td>
+</tr>
+<tr>
+<td>__mod__</td>
+<td>求余运算</td>
+</tr>
+<tr>
+<td>__pow__</td>
+<td>乘方</td>
+</tr>
+</tbody>
+</table>
+<p>抽象类，抽象方法</p>
+<pre><code class="language-python">from abc import ABCMeta,abstractmethod #导入 abstract class
+class Discriminator(object):
+    
+    __metaclass__ = ABCMeta #指定这是一个抽象类
+    
+    
+    def __init__(self,config:Config) -&gt; None:
+        self.dtype = DType.ABD
+        self.config = config
+        pass
+    
+    @abstractmethod  #抽象方法
+    def judge_sqli(self,parameter:str)-&gt;IsSqliJudgeRes:
+        '''
+        parameter:判断
+        '''
+        pass
+</code></pre>
+<p>枚举类</p>
+<pre><code class="language-python">from enum import Enum
+class DType(Enum):
+    ABD = &quot;Abstract Discriminator&quot; #抽象类鉴别器
+    REG = &quot;Regular Discriminator&quot; #规则鉴别器
+    DLD = &quot;Deep Learning Discriminator&quot; #深度学习鉴别器
+</code></pre>
+<h2 id="42-操纵外存数据">4.2 操纵外存数据</h2>
+<h3 id="1写内存数据到外存">(1)写内存数据到外存</h3>
+<p>写到外存文本文件:</p>
+<pre><code class="language-python"># 覆盖写
+filename = 'write_data.txt'
+with open(filename,'w',encoding=&quot;utf-8&quot;) as f: # 如果filename不存在会自动创建， 'w'表示写数据，写之前会清空文件中的原有数据！
+    f.write(&quot;I am Meringue.\n&quot;)
+    f.write(&quot;I am now studying in NJTECH.\n&quot;)
+# 追加写
+with open(filename,'a',encoding=&quot;utf-8&quot;) as f: # 'a'表示append,即在原来文件内容后继续写数据（不清楚原有数据）
+    f.write(&quot;I major in Machine learning and Computer vision.\n&quot;)
+</code></pre>
+<p>写二进制文件</p>
+<blockquote>
+<p>简言之就是用struct.pack将要变成字节的数据打包然后以字节的形式写入到二进制文件,对于大于255的数字可以将‘B’换成‘H’或者‘L’，可以百度一下struct的用法</p>
+</blockquote>
+<pre><code class="language-python">import struct
+ 
+list_dec = [1, 2, 3, 4, 53, 100, 220, 244, 255]
+with open('hexBin.bin', 'wb')as fp:
+    for x in list_dec:
+        a = struct.pack('B', x)
+        fp.write(a)
+
+</code></pre>
+<h3 id="2读外存文件到内存">(2)读外存文件到内存</h3>
+<p>读文本文件：</p>
+<pre><code class="language-python">with open(configPath, 'r',encoding=&quot;utf-8&quot;) as f:
+        lines = f.readlines()
+#去除换行符，去除空格，以&quot;:=&quot;分割
+ for line in lines:
+     line = line.replace(&quot;\n&quot;,&quot;&quot;)
+     line = line.strip()
+     line = line.split(&quot;:=&quot;)
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#1-%E6%A6%82%E8%BF%B0">1. 概述</a>
+<ul>
+<li><a href="#main%E5%87%BD%E6%95%B0%E4%B8%8Ehello-world">main函数与hello world</a></li>
+</ul>
+</li>
+<li><a href="#2-%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE">2. 定义数据</a>
+<ul>
+<li><a href="#21-%E5%AE%9A%E4%B9%89%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B">2.1 定义基本数据类型</a></li>
+<li><a href="#22-%E5%AE%9A%E4%B9%89%E7%B1%BB%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%95%B0%E6%8D%AE">2.2 定义类的对象数据</a></li>
+</ul>
+</li>
+<li><a href="#3%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE">3.存储数据</a>
+<ul>
+<li><a href="#31%E6%95%B0%E7%BB%84">3.1数组</a></li>
+<li><a href="#32-%E9%9B%86%E5%90%88">3.2 集合</a></li>
+<li><a href="#33-%E6%98%A0%E5%B0%84">3.3 映射</a></li>
+</ul>
+</li>
+<li><a href="#4%E6%93%8D%E6%8E%A7%E6%95%B0%E6%8D%AE">4.操控数据</a>
+<ul>
+<li><a href="#41-%E6%93%8D%E6%8E%A7%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE">4.1 操控内存数据</a>
+<ul>
+<li><a href="#411%E6%93%8D%E6%8E%A7%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE">4.1.1操控基本类型数据</a>
+<ul>
+<li><a href="#1%E5%9F%BA%E6%9C%AC%E6%95%B0%E5%80%BC%E8%BF%90%E7%AE%97%E4%B8%8E%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%B0%E5%AD%A6%E5%87%BD%E6%95%B0">(1)基本数值运算与常见的数学函数</a></li>
+<li><a href="#2%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2">（2）类型转换</a>
+<ul>
+<li><a href="#%E9%9A%90%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2">隐式类型转换</a></li>
+<li><a href="#%E6%98%BE%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2">显式类型转换</a></li>
+</ul>
+</li>
+<li><a href="#3%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BF%90%E7%AE%97">(3)字符串运算</a></li>
+</ul>
+</li>
+<li><a href="#412%E6%93%8D%E6%8E%A7%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E7%9A%84%E7%BB%93%E6%9E%84">4.1.2操控数据存储的结构</a>
+<ul>
+<li><a href="#1%E5%85%B1%E6%9C%89%E6%93%8D%E4%BD%9C">(1)共有操作</a></li>
+<li><a href="#2%E5%88%97%E8%A1%A8%E8%BF%90%E7%AE%97">(2)列表运算</a></li>
+<li><a href="#3%E5%85%83%E7%A5%96%E8%BF%90%E7%AE%97">(3)元祖运算</a></li>
+<li><a href="#4%E9%9B%86%E5%90%88%E8%BF%90%E7%AE%97">(4)集合运算</a></li>
+<li><a href="#5%E5%AD%97%E5%85%B8%E8%BF%90%E7%AE%97">(5)字典运算</a></li>
+<li><a href="#6%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E5%8E%BB%E9%87%8D%E6%8E%92%E5%BA%8F%E8%AE%A1%E6%95%B0">(6)常用操作：去重，排序，计数</a></li>
+</ul>
+</li>
+<li><a href="#413%E6%93%8D%E6%8E%A7%E6%95%B0%E6%8D%AE%E7%9A%84%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0">4.1.3操控数据的逻辑实现</a>
+<ul>
+<li><a href="#1%E6%9D%A1%E4%BB%B6%E8%A1%A8%E8%BE%BE%E5%BC%8F">(1)条件表达式</a></li>
+<li><a href="#2if%E8%AF%AD%E5%8F%A5%E4%B8%89%E5%85%83%E8%A1%A8%E8%BE%BE%E5%BC%8F">(2)if语句/三元表达式</a></li>
+<li><a href="#3for%E5%BE%AA%E7%8E%AF">(3)for循环</a></li>
+<li><a href="#4while%E5%BE%AA%E7%8E%AF">(4)while循环</a></li>
+</ul>
+</li>
+<li><a href="#414%E6%93%8D%E7%BA%B5%E6%96%B9%E6%B3%95%E7%9A%84%E5%B0%81%E8%A3%85%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B0%81%E8%A3%85%E4%B8%8E%E5%BC%95%E7%94%A8%E5%B0%81%E8%A3%85">4.1.4操纵方法的封装（自定义封装与引用封装）</a>
+<ul>
+<li><a href="#1%E5%87%BD%E6%95%B0">(1)函数</a></li>
+<li><a href="#2%E7%B1%BB">(2)类</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#42-%E6%93%8D%E7%BA%B5%E5%A4%96%E5%AD%98%E6%95%B0%E6%8D%AE">4.2 操纵外存数据</a>
+<ul>
+<li><a href="#1%E5%86%99%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B0%E5%A4%96%E5%AD%98">(1)写内存数据到外存</a></li>
+<li><a href="#2%E8%AF%BB%E5%A4%96%E5%AD%98%E6%96%87%E4%BB%B6%E5%88%B0%E5%86%85%E5%AD%98">(2)读外存文件到内存</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

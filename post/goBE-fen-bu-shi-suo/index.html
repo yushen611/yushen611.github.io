@@ -1,0 +1,723 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>分布式锁-基于redis或基于mysql的go语言实现 | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="分布式锁-基于redis或基于mysql的go语言实现 | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+一、分布式锁的概念
+概念
+分布式锁是一种在分布式系统中实现互斥控制的技术。它可以保证在多个线程或者多台服务器同时访问共享资源时，只有一个线程或服务器能够获得锁并对资源进行操作，其他线程或服务器需要等待锁的释放才能继续访问。分布式锁一般使用..." />
+    <meta name="keywords" content="go" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              分布式锁-基于redis或基于mysql的go语言实现
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-06-19
+              </span>
+              <span>
+                14 min read
+              </span>
+              
+                <a href="https://yushen611.github.io/tag/TNz53VXY2/" class="post-tag">
+                  # go
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <meta name="referrer" content="no-referrer"/>
+<h1 id="一-分布式锁的概念">一、分布式锁的概念</h1>
+<h2 id="概念">概念</h2>
+<p>分布式锁是一种在分布式系统中实现互斥控制的技术。它可以保证在多个线程或者多台服务器同时访问共享资源时，只有一个线程或服务器能够获得锁并对资源进行操作，其他线程或服务器需要等待锁的释放才能继续访问。分布式锁一般使用一些共享存储系统（如Redis、Zookeeper等）提供的原子操作实现，比如setnx操作、CAS操作等。这样就可以避免多个线程或服务器在同一时间同时访问共享资源导致数据出错的问题。</p>
+<h2 id="举例">举例</h2>
+<p>假设有一个在线抽奖系统，多个用户同时进入页面想要参与抽奖，但是系统只能允许一个用户抽奖，其他用户需要等待前一个用户中奖后才能再次抽奖。这时候就需要用到分布式锁来实现。</p>
+<p>分布式锁的实现方式可以是基于共享存储系统，例如Redis。假如多个用户同时发起请求，系统可以先在Redis中创建一个名为“lottery_lock”的键值对，设置过期时间为5秒，然后通过setnx操作尝试获取这个键的锁。如果获取到锁，其中一个用户就可以进行抽奖，抽完奖后再通过del操作或者设置过期时间来释放锁。如果没有获取到锁，代码需要等待，并且在等待过程中定时刷新过期时间。</p>
+<p>因为Redis是一个单线程处理请求的系统，所以setnx和del操作都是原子性操作，可以保证资源在分布式环境下被正确地占用和释放。</p>
+<p>这就是一个简单的使用分布式锁的例子，它可以确保在线抽奖系统在多用户同时参与时，只有一个用户能够中奖。</p>
+<h1 id="二-基于redis的实现">二、基于redis的实现</h1>
+<blockquote>
+<p>源码已在github上分享:<a href="https://github.com/yushen611/StudyDemo/tree/main/distributedLock">StudyDemo/distributedLock at main · yushen611/StudyDemo (github.com)</a></p>
+</blockquote>
+<h2 id="0全部代码">0.全部代码</h2>
+<p>所有代码都在一个main.go文件里</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;sync&quot;
+	&quot;time&quot;
+
+	&quot;github.com/go-redis/redis&quot;
+)
+
+var (
+	redisClient *redis.Client
+	once        sync.Once
+)
+
+func GetRedis() *redis.Client {
+	once.Do(func() {
+		redisClient = initRedis()
+	})
+	return redisClient
+}
+
+func initRedis() *redis.Client {
+	client := redis.NewClient(&amp;redis.Options{
+		Addr:     &quot;localhost:6379&quot;,
+		Password: &quot;&quot;, //No password set
+		DB:       0,  // Use default DB
+	})
+
+	return client
+}
+
+const (
+	lockExpire = 10 * time.Second // 锁的超时时间
+	lockValue  = &quot;1&quot;              // 锁的内容
+)
+
+func acquireLock(lockName string, timeout time.Duration) bool {
+	/*
+		将lockKey作为锁的名称，lockValue作为锁的值，lockExpire作为锁的超时时间。
+		如果SetNX命令返回1，说明成功地设置了键值对，并且这个锁被当前请求的客户端获取，
+		如果SetNX命令返回0，说明当前锁已经被其他客户端获取，请求的这个客户端没有获取成功。
+	*/
+	startTime := time.Now()
+	for {
+		result, err := GetRedis().SetNX(lockName, lockValue, lockExpire).Result()
+		if err == nil &amp;&amp; result == true {
+			return true
+		}
+		if timeout &gt; 0 &amp;&amp; time.Now().Sub(startTime) &gt; timeout {
+			return false
+		}
+		time.Sleep(time.Millisecond * 100)
+	}
+
+}
+
+func releaseLock(lockName string) bool {
+	result, err := GetRedis().Del(lockName).Result()
+	if err != nil || result == 0 {
+		return false
+	}
+	return true
+}
+
+// 示例代码
+func main() {
+
+	const lockKey = &quot;mylock&quot; // 锁的名称
+	if acquireLock(lockKey, time.Second*1) {
+		// 执行需要加锁的代码
+		fmt.Println(&quot;DO SOMETHING&quot;)
+		defer releaseLock(lockKey)
+	} else {
+		// 未获取到锁
+		fmt.Println(&quot;Failed to acquire lock&quot;)
+	}
+
+}
+
+</code></pre>
+<h2 id="1与redis连接">1.与redis连接</h2>
+<p>这里采用单例模式与redis连接</p>
+<pre><code class="language-go">var (
+	redisClient *redis.Client
+	once        sync.Once
+)
+
+func GetRedis() *redis.Client {
+	once.Do(func() {
+		redisClient = initRedis()
+	})
+	return redisClient
+}
+
+func initRedis() *redis.Client {
+	client := redis.NewClient(&amp;redis.Options{
+		Addr:     &quot;localhost:6379&quot;,
+		Password: &quot;&quot;, //No password set
+		DB:       0,  // Use default DB
+	})
+
+	return client
+}
+</code></pre>
+<h2 id="2获取锁操作与释放锁操作">2.获取锁操作与释放锁操作</h2>
+<p>获取锁操作是基于redis的SetNX功能，可以实现原子化操作，且在设置key,value的同时可以设置获取时间。如果锁过期了，在redis里就会自动删除，redis这一特性避免了手动删除过期的锁的麻烦。</p>
+<p>同时，获取锁并不是只获取一次而是获取多次，引入了超时机制。如果在规定时间内没有获取成功，才放弃获取。</p>
+<pre><code class="language-go">const (
+	lockExpire = 10 * time.Second // 锁的超时时间
+	lockValue  = &quot;1&quot;              // 锁的内容
+)
+
+func acquireLock(lockName string, timeout time.Duration) bool {
+	/*
+		将lockKey作为锁的名称，lockValue作为锁的值，lockExpire作为锁的超时时间。
+		如果SetNX命令返回1，说明成功地设置了键值对，并且这个锁被当前请求的客户端获取，
+		如果SetNX命令返回0，说明当前锁已经被其他客户端获取，请求的这个客户端没有获取成功。
+	*/
+	startTime := time.Now()
+	for {
+		result, err := GetRedis().SetNX(lockName, lockValue, lockExpire).Result()
+		if err == nil &amp;&amp; result == true {
+			return true
+		}
+		if timeout &gt; 0 &amp;&amp; time.Now().Sub(startTime) &gt; timeout {
+			return false
+		}
+		time.Sleep(time.Millisecond * 100)
+	}
+
+}
+
+func releaseLock(lockName string) bool {
+	result, err := GetRedis().Del(lockName).Result()
+	if err != nil || result == 0 {
+		return false
+	}
+	return true
+}
+</code></pre>
+<h2 id="3使用的实例代码">3.使用的实例代码</h2>
+<pre><code class="language-go">// 示例代码
+func main() {
+
+	const lockKey = &quot;mylock&quot; // 锁的名称
+	if acquireLock(lockKey, time.Second*1) {
+		// 执行需要加锁的代码
+		fmt.Println(&quot;DO SOMETHING&quot;)
+		defer releaseLock(lockKey)
+	} else {
+		// 未获取到锁
+		fmt.Println(&quot;Failed to acquire lock&quot;)
+	}
+
+}
+</code></pre>
+<h1 id="三-基于mysql实现">三、基于mysql实现</h1>
+<blockquote>
+<p>源码已在github上分享:<a href="https://github.com/yushen611/StudyDemo/tree/main/distributedLock">StudyDemo/distributedLock at main · yushen611/StudyDemo (github.com)</a></p>
+</blockquote>
+<p>基于mysql实现与redis的唯一不同是，mysql需要手动删除过期的锁。</p>
+<h2 id="0全部代码-2">0.全部代码</h2>
+<p>所有代码都在一个main.go文件里</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;errors&quot;
+	&quot;fmt&quot;
+	&quot;path/filepath&quot;
+	&quot;sync&quot;
+	&quot;time&quot;
+
+	&quot;gorm.io/driver/mysql&quot;
+	&quot;gorm.io/gorm&quot;
+)
+
+var (
+	db   *gorm.DB
+	once sync.Once
+)
+
+func GetDB() *gorm.DB {
+	once.Do(func() {
+		db = initDB()
+	})
+	return db
+}
+
+func initDB() *gorm.DB {
+
+	var user string = &quot;root&quot;
+	var password string = &quot;123456&quot;
+	var host string = &quot;localhost&quot;
+	var port string = &quot;3306&quot;
+	var dbname string = &quot;offermaker&quot;
+	var Dsn = fmt.Sprintf(&quot;%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&amp;parseTime=True&amp;loc=Local&quot;,
+		user,
+		password,
+		host,
+		port,
+		filepath.Join(dbname),
+	)
+
+	DB, err := gorm.Open(mysql.Open(Dsn), &amp;gorm.Config{})
+	if err != nil {
+		panic(&quot;failed to connect database, error=&quot; + err.Error())
+	}
+	fmt.Println(&quot;successfully connect database&quot;)
+
+	return DB
+}
+
+const (
+	LOCK_EXPIRE_TIME = 2000 // 锁的过期时间（毫秒）
+)
+
+type DistributedLock struct {
+	Name       string `gorm:&quot;type:varchar(255);primary_key&quot;`
+	ExpireTime int64  `gorm:&quot;type:bigint(20)&quot;`
+}
+
+func FindLock(name string) (lock *DistributedLock, err error) {
+	// 查询记录
+	result := GetDB().First(&amp;lock, &quot;name = ?&quot;, name)
+	// 处理查询结果
+	if result.RowsAffected == 0 {
+		return nil, errors.New(&quot;lock not found&quot;)
+	} else if result.Error != nil {
+		return nil, result.Error
+	} else {
+		return lock, nil
+	}
+}
+
+func DeleteLock(name string) (bool, error) {
+	db := GetDB()
+	tx := db.Begin()
+
+	lock := DistributedLock{
+		Name: name,
+	}
+	if err := tx.Delete(&amp;lock).Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+	return true, nil
+}
+
+func (lock *DistributedLock) AcquireLock(timeout time.Duration) (success bool, err error) {
+	startTime := time.Now()                               //当前时间
+	now := startTime.UnixNano() / int64(time.Millisecond) // 获取当前时间的毫秒数
+	lock.ExpireTime = now + LOCK_EXPIRE_TIME              // 计算锁的过期时间
+	//检查如果存在锁，其是否过期
+	existlock, err := FindLock(lock.Name)
+	if err != nil {
+		fmt.Println(&quot;查找存在错误&quot;) //注：这里无论查找成功或失败与否均不要返回，因为还未尝试获取锁呢
+	}
+	if existlock != nil {
+		fmt.Printf(&quot;查找成功,存在该锁&quot;)
+		//如果过期就删除
+		if now &gt; existlock.ExpireTime {
+			fmt.Println(&quot;已过期&quot;)
+			isDelete, err := DeleteLock(lock.Name)
+			if err != nil {
+				//删除失败
+				fmt.Println(&quot;删除出现错误&quot;) //注：这里无论删除成功或失败与否均不要返回，因为还未尝试获取锁呢
+			}
+			if isDelete != true {
+				fmt.Println(&quot;未删除成功&quot;) //注：这里无论删除成功或失败与否均不要返回，因为还未尝试获取锁呢
+			}
+
+		} else {
+			fmt.Println(&quot;未过期&quot;)
+		}
+
+	}
+	for {
+		result := GetDB().Create(lock)
+		if result.Error == nil || result.RowsAffected != 0 {
+			fmt.Println(&quot;AcquireLock Successfully&quot;)
+			return true, nil
+		}
+		if timeout &gt; 0 &amp;&amp; time.Now().Sub(startTime) &gt; timeout {
+			return false, nil
+		}
+		time.Sleep(time.Millisecond * 100)
+	}
+}
+
+func (lock *DistributedLock) ReleaseLock() (success bool, err error) {
+	result := GetDB().Where(&quot;name = ?&quot;, lock.Name).Unscoped().Delete(&amp;DistributedLock{})
+	if result.Error != nil || result.RowsAffected == 0 { // 如果删除失败，则锁不存在或已过期
+		fmt.Println(&quot;ReleaseLock UnSuccessfully&quot;)
+		return false, nil
+	}
+	fmt.Println(&quot;ReleaseLock Successfully&quot;)
+	return true, nil
+}
+
+func main() {
+	const LOCK_NAME = &quot;my_lock&quot; // 定义锁名称
+	// 获取锁
+	lock := &amp;DistributedLock{Name: LOCK_NAME, ExpireTime: 0}
+	if ok, err := lock.AcquireLock(time.Second * 1); err == nil {
+		if ok {
+			// 获取锁成功后的执行业务逻辑操作
+			fmt.Println(&quot;获取锁成功，我要做一些操作了&quot;)
+			defer lock.ReleaseLock() //释放锁
+		} else {
+			// 获取锁超时
+			fmt.Println(&quot;timeout: fail to get DistributedLock&quot;)
+		}
+	} else {
+		// 获取锁失败后的执行业务逻辑操作
+		fmt.Println(&quot;获取锁失败&quot;)
+	}
+
+}
+
+</code></pre>
+<h2 id="1mysql中分布式锁的表结构">1.mysql中分布式锁的表结构</h2>
+<pre><code class="language-mysql">CREATE TABLE `distributed_locks` (
+  `name` varchar(255) NOT NULL COMMENT '锁的名称',
+  `expire_time` BIGINT(20) NOT NULL COMMENT '过期时间',
+  PRIMARY KEY (`name`)
+) COMMENT '分布式锁表';
+</code></pre>
+<h2 id="2与mysql连接的代码">2.与mysql连接的代码</h2>
+<p>与mysql的连接同样采用单例模式</p>
+<pre><code class="language-go">var (
+	db   *gorm.DB
+	once sync.Once
+)
+
+func GetDB() *gorm.DB {
+	once.Do(func() {
+		db = initDB()
+	})
+	return db
+}
+
+func initDB() *gorm.DB {
+
+	var user string = &quot;root&quot;
+	var password string = &quot;123456&quot;
+	var host string = &quot;localhost&quot;
+	var port string = &quot;3306&quot;
+	var dbname string = &quot;offermaker&quot;
+	var Dsn = fmt.Sprintf(&quot;%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&amp;parseTime=True&amp;loc=Local&quot;,
+		user,
+		password,
+		host,
+		port,
+		filepath.Join(dbname),
+	)
+
+	DB, err := gorm.Open(mysql.Open(Dsn), &amp;gorm.Config{})
+	if err != nil {
+		panic(&quot;failed to connect database, error=&quot; + err.Error())
+	}
+	fmt.Println(&quot;successfully connect database&quot;)
+
+	return DB
+}
+</code></pre>
+<h2 id="3定义gorm结构体与基础操作">3.定义gorm结构体与基础操作</h2>
+<p>gorm结构体 是指与数据库表的映射</p>
+<p>基础操作在这里包括了 查找与删除数据</p>
+<pre><code class="language-go">type DistributedLock struct {
+	Name       string `gorm:&quot;type:varchar(255);primary_key&quot;`
+	ExpireTime int64  `gorm:&quot;type:bigint(20)&quot;`
+}
+
+func FindLock(name string) (lock *DistributedLock, err error) {
+	// 查询记录
+	result := GetDB().First(&amp;lock, &quot;name = ?&quot;, name)
+	// 处理查询结果
+	if result.RowsAffected == 0 {
+		return nil, errors.New(&quot;lock not found&quot;)
+	} else if result.Error != nil {
+		return nil, result.Error
+	} else {
+		return lock, nil
+	}
+}
+
+func DeleteLock(name string) (bool, error) {
+	db := GetDB()
+	tx := db.Begin()
+
+	lock := DistributedLock{
+		Name: name,
+	}
+	if err := tx.Delete(&amp;lock).Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return false, err
+	}
+	return true, nil
+}
+</code></pre>
+<h2 id="4获取锁与释放锁操作">4.获取锁与释放锁操作</h2>
+<pre><code class="language-go">const (
+	LOCK_EXPIRE_TIME = 2000 // 锁的过期时间（毫秒）
+)
+
+func (lock *DistributedLock) AcquireLock(timeout time.Duration) (success bool, err error) {
+	startTime := time.Now()                               //当前时间
+	now := startTime.UnixNano() / int64(time.Millisecond) // 获取当前时间的毫秒数
+	lock.ExpireTime = now + LOCK_EXPIRE_TIME              // 计算锁的过期时间
+	//检查如果存在锁，其是否过期
+	existlock, err := FindLock(lock.Name)
+	if err != nil {
+		fmt.Println(&quot;查找存在错误&quot;) //注：这里无论查找成功或失败与否均不要返回，因为还未尝试获取锁呢
+	}
+	if existlock != nil {
+		fmt.Printf(&quot;查找成功,存在该锁&quot;)
+		//如果过期就删除
+		if now &gt; existlock.ExpireTime {
+			fmt.Println(&quot;已过期&quot;)
+			isDelete, err := DeleteLock(lock.Name)
+			if err != nil {
+				//删除失败
+				fmt.Println(&quot;删除出现错误&quot;) //注：这里无论删除成功或失败与否均不要返回，因为还未尝试获取锁呢
+			}
+			if isDelete != true {
+				fmt.Println(&quot;未删除成功&quot;) //注：这里无论删除成功或失败与否均不要返回，因为还未尝试获取锁呢
+			}
+
+		} else {
+			fmt.Println(&quot;未过期&quot;)
+		}
+
+	}
+	for {
+		result := GetDB().Create(lock)
+		if result.Error == nil || result.RowsAffected != 0 {
+			fmt.Println(&quot;AcquireLock Successfully&quot;)
+			return true, nil
+		}
+		if timeout &gt; 0 &amp;&amp; time.Now().Sub(startTime) &gt; timeout {
+			return false, nil
+		}
+		time.Sleep(time.Millisecond * 100)
+	}
+}
+
+func (lock *DistributedLock) ReleaseLock() (success bool, err error) {
+	result := GetDB().Where(&quot;name = ?&quot;, lock.Name).Unscoped().Delete(&amp;DistributedLock{})
+	if result.Error != nil || result.RowsAffected == 0 { // 如果删除失败，则锁不存在或已过期
+		fmt.Println(&quot;ReleaseLock UnSuccessfully&quot;)
+		return false, nil
+	}
+	fmt.Println(&quot;ReleaseLock Successfully&quot;)
+	return true, nil
+}
+
+</code></pre>
+<h2 id="5使用的示例代码">5.使用的示例代码</h2>
+<pre><code class="language-go">func main() {
+	const LOCK_NAME = &quot;my_lock&quot; // 定义锁名称
+	// 获取锁
+	lock := &amp;DistributedLock{Name: LOCK_NAME, ExpireTime: 0}
+	if ok, err := lock.AcquireLock(time.Second * 1); err == nil {
+		if ok {
+			// 获取锁成功后的执行业务逻辑操作
+			fmt.Println(&quot;获取锁成功，我要做一些操作了&quot;)
+			defer lock.ReleaseLock() //释放锁
+		} else {
+			// 获取锁超时
+			fmt.Println(&quot;timeout: fail to get DistributedLock&quot;)
+		}
+	} else {
+		// 获取锁失败后的执行业务逻辑操作
+		fmt.Println(&quot;获取锁失败&quot;)
+	}
+
+}
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E6%A6%82%E5%BF%B5">一、分布式锁的概念</a>
+<ul>
+<li><a href="#%E6%A6%82%E5%BF%B5">概念</a></li>
+<li><a href="#%E4%B8%BE%E4%BE%8B">举例</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-%E5%9F%BA%E4%BA%8Eredis%E7%9A%84%E5%AE%9E%E7%8E%B0">二、基于redis的实现</a>
+<ul>
+<li><a href="#0%E5%85%A8%E9%83%A8%E4%BB%A3%E7%A0%81">0.全部代码</a></li>
+<li><a href="#1%E4%B8%8Eredis%E8%BF%9E%E6%8E%A5">1.与redis连接</a></li>
+<li><a href="#2%E8%8E%B7%E5%8F%96%E9%94%81%E6%93%8D%E4%BD%9C%E4%B8%8E%E9%87%8A%E6%94%BE%E9%94%81%E6%93%8D%E4%BD%9C">2.获取锁操作与释放锁操作</a></li>
+<li><a href="#3%E4%BD%BF%E7%94%A8%E7%9A%84%E5%AE%9E%E4%BE%8B%E4%BB%A3%E7%A0%81">3.使用的实例代码</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E5%9F%BA%E4%BA%8Emysql%E5%AE%9E%E7%8E%B0">三、基于mysql实现</a>
+<ul>
+<li><a href="#0%E5%85%A8%E9%83%A8%E4%BB%A3%E7%A0%81-2">0.全部代码</a></li>
+<li><a href="#1mysql%E4%B8%AD%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E8%A1%A8%E7%BB%93%E6%9E%84">1.mysql中分布式锁的表结构</a></li>
+<li><a href="#2%E4%B8%8Emysql%E8%BF%9E%E6%8E%A5%E7%9A%84%E4%BB%A3%E7%A0%81">2.与mysql连接的代码</a></li>
+<li><a href="#3%E5%AE%9A%E4%B9%89gorm%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%8E%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C">3.定义gorm结构体与基础操作</a></li>
+<li><a href="#4%E8%8E%B7%E5%8F%96%E9%94%81%E4%B8%8E%E9%87%8A%E6%94%BE%E9%94%81%E6%93%8D%E4%BD%9C">4.获取锁与释放锁操作</a></li>
+<li><a href="#5%E4%BD%BF%E7%94%A8%E7%9A%84%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81">5.使用的示例代码</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

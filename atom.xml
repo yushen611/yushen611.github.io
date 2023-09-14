@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://yushen611.github.io</id>
+    <title>YU WENYA&apos;S BLOG</title>
+    <updated>2023-09-14T16:15:24.239Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://yushen611.github.io"/>
+    <link rel="self" href="https://yushen611.github.io/atom.xml"/>
+    <subtitle>👏  欢迎来到余文涯的博客 ！  &lt;br&gt;
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。</subtitle>
+    <logo>https://yushen611.github.io/images/avatar.png</logo>
+    <icon>https://yushen611.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2023, YU WENYA&apos;S BLOG</rights>
+    <entry>
+        <title type="html"><![CDATA[News]]></title>
+        <id>https://yushen611.github.io/post/news/</id>
+        <link href="https://yushen611.github.io/post/news/">
+        </link>
+        <updated>2023-09-14T12:40:08.000Z</updated>
+        <summary type="html"><![CDATA[<ul>
+<li>09/2023: Invited to serve as a reviewer for <a href="https://www.theatlantic.com/world/">Atlantic2023</a></li>
+<li>03/2023: Paper 【<a href="https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12566/125662W/TransCGan-based-human-motion-generator/10.1117/12.2668277.short?SSO=1">TransCGan-based human motion generator</a>】</li>
+<li>08/2023：Pursuing a Master's degree in Blockchain Technology at Nanyang Technological University.(于南洋理工大学攻读区块链技术计算机硕士)</li>
+<li>09/2020: Received National Scholarship.(获得国家奖学金、优秀三好学生、科技活动奖学金、校一等奖学金)</li>
+<li>09/2019: Studying for a bachelor's degree at HFUT(于合肥工业大学攻读本科)</li>
+<li>03/2018: paper【<a href="https://xueshu.baidu.com/usercenter/paper/show?paperid=180a0vs0vs690j400x7f0jw0dm196892&amp;site=xueshu_se">房地产政策对房地产股价的影响研究——基于事件研究法的不对称分析</a>】</li>
+<li><a href="https://yushen611.github.io/post/news/">Click to see more...</a></li>
+</ul>
+]]></summary>
+        <content type="html"><![CDATA[<ul>
+<li>09/2023: Invited to serve as a reviewer for <a href="https://www.theatlantic.com/world/">Atlantic2023</a></li>
+<li>03/2023: Paper 【<a href="https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12566/125662W/TransCGan-based-human-motion-generator/10.1117/12.2668277.short?SSO=1">TransCGan-based human motion generator</a>】</li>
+<li>08/2023：Pursuing a Master's degree in Blockchain Technology at Nanyang Technological University.(于南洋理工大学攻读区块链技术计算机硕士)</li>
+<li>09/2020: Received National Scholarship.(获得国家奖学金、优秀三好学生、科技活动奖学金、校一等奖学金)</li>
+<li>09/2019: Studying for a bachelor's degree at HFUT(于合肥工业大学攻读本科)</li>
+<li>03/2018: paper【<a href="https://xueshu.baidu.com/usercenter/paper/show?paperid=180a0vs0vs690j400x7f0jw0dm196892&amp;site=xueshu_se">房地产政策对房地产股价的影响研究——基于事件研究法的不对称分析</a>】</li>
+<li><a href="https://yushen611.github.io/post/news/">Click to see more...</a></li>
+</ul>
+  <!-- more -->
+<p>🙏有任何问题欢迎联系我或在对应博客下方留言。</p>
+<ul>
+<li>09/2023: Invited to serve as a reviewer for <a href="https://www.theatlantic.com/world/">Atlantic2023</a></li>
+<li>08/2023：Pursuing a Master's degree in Blockchain Technology at Nanyang Technological University.(于南洋理工大学攻读区块链技术计算机硕士)</li>
+<li>03/2023: Paper 【<a href="https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12566/125662W/TransCGan-based-human-motion-generator/10.1117/12.2668277.short?SSO=1">TransCGan-based human motion generator</a>】</li>
+<li>09/2022:  obtained the qualification for recommended graduate admission but chose to decline.(Software Engineering major (rank 5, top 3%)) (获得保研资格后放弃,软件工程专业（rank 5,3%）)</li>
+<li>06/2022: 发表专利【<a href="https://www.xjishu.com/zhuanli/52/202210304204_2.html">一种实现高速旋转轴系扭矩原位测量的无线力矩传感器</a>】</li>
+<li>06/2022 ：Obtained Software Copyright &quot;<em>Beichite Cloud Customized Printing System , No. 2022SRO758646</em>&quot;《倍齿特云端在线打印系统》</li>
+<li>05/2022：Obtained Software Copyright &quot;<em>Intelligent Financial Reimbursement System, No. 2022SRO576160</em>&quot;  (申请软著【<a href="https://banquan.tianyancha.com/rj/ece9471c0bca9d0d7c44fb1bal814e78">智能化财务报销系统</a>】)</li>
+<li>10/2021: Participated in National-level Innovation and Entrepreneurship Project.(参与国家级大创项目) 【 <a href="http://www.baidu.com/link?url=bhbPpb2Ja9bFCDcVVX3I3D6KjMzGwVhhRw7xgwY3797HAkURBSJ-tvdKYigD2e9jD5Oj5EH2mwjnLS5huuUKenLorY85CAY42tYf9L9UsJWYvIsrfN_t8fqIqNzkUG__FkaLvToFEQF0CLn5rWcbO_&amp;wd=&amp;eqid=aa0108380002457f0000000665030924">国家级大创项目PDF</a>】</li>
+<li>12/2020: Published patents “A Walking Aid Stick, No. 202010166261.6”【<a href="https://wenku.baidu.com/view/f831036324fff705cc1755270722192e45365894.html">专利：一种助行拐杖</a>】</li>
+<li>10/2020：Switched majors from Intelligent Manufacturing Engineering to Software Engineering.(从智能制造工程转专业到软件工程)【<a href="http://rjxy.hfut.edu.cn/2020/0930/c7254a238787/page.htm">软件学院2020年本科生校内转专业(第二轮) </a>】</li>
+<li>09/2020: Received <strong>National Scholarship</strong>, Outstanding &quot;Sanhao&quot; Student, Science and Technology Activity Scholarship, and University First-Class Scholarship.(获得<strong>国家奖学金</strong>、优秀三好学生、科技活动奖学金、校一等奖学金)</li>
+<li>06/2020: Rank 1 in the Intelligent Manufacturing Engineering Major（2019学年智能制造工程专业第一）</li>
+<li>09/2019: Studying for a bachelor's degree at HFUT(于合肥工业大学攻读本科)</li>
+<li>03/2018: paper【<a href="https://xueshu.baidu.com/usercenter/paper/show?paperid=180a0vs0vs690j400x7f0jw0dm196892&amp;site=xueshu_se">房地产政策对房地产股价的影响研究——基于事件研究法的不对称分析</a>】</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Projects Experience]]></title>
+        <id>https://yushen611.github.io/post/about-project/</id>
+        <link href="https://yushen611.github.io/post/about-project/">
+        </link>
+        <updated>2022-11-26T03:25:18.000Z</updated>
+        <summary type="html"><![CDATA[<p>📖 Interests:Backend,Frontend,distributed system,BlockChain</p>
+<ul>
+<li>java develop:Intelligent Financial Reimbursement System</li>
+<li>golang develop: Online Video Play System</li>
+<li>frontend develop:Desktop Grid Five Axis Linkage Denture</li>
+<li>Flutter APP:Development of Power Detection APP Based on Modbus TCP</li>
+<li><a href="https://yushen611.github.io/post/about-project/">Click to see more...</a></li>
+</ul>
+]]></summary>
+        <content type="html"><![CDATA[<p>📖 Interests:Backend,Frontend,distributed system,BlockChain</p>
+<ul>
+<li>java develop:Intelligent Financial Reimbursement System</li>
+<li>golang develop: Online Video Play System</li>
+<li>frontend develop:Desktop Grid Five Axis Linkage Denture</li>
+<li>Flutter APP:Development of Power Detection APP Based on Modbus TCP</li>
+<li><a href="https://yushen611.github.io/post/about-project/">Click to see more...</a></li>
+</ul>
+<!-- more -->
+<meta name="referrer" content="no-referrer"/>
+<p>[TOC]</p>
+<h1 id="part-1-internship-experience">PART 1: Internship Experience</h1>
+<h1 id="centerinternex-2022intelligent-financial-reimbursement-system"><center>[InternEx-2022]:Intelligent Financial Reimbursement System</h1>
+<blockquote>
+<p><strong>Outcome : Software Copyright (First author)</strong></p>
+<p><strong>Company</strong> : GUOCHUANG CLOUD Technology Co.,Ltd</p>
+<p>From <strong>2021.12</strong> to <strong>2022.02</strong></p>
+</blockquote>
+<p>The &quot;Intelligent Financial Reimbursement System&quot; provides enterprises with online invoice upload, identification and approval services, which can simplify the enterprise reimbursement process and reduce financial labor costs.</p>
+<p>Note: The system supports the identification of multiple invoices(Seven different types)</p>
+<ul>
+<li>
+<p><strong>Automatic Invoice Information Entry</strong>:Employing Tencent Cloud AI APIs for invoice OCR recognition, our System can detect all info from invoice picture within 1s.</p>
+</li>
+<li>
+<p><strong>Automatic Travel Allowance Calculation</strong>:Utilized Genetic Algorithms for Global Path Planning to verify the Correctness of travel routes in reimbursement invoices. Automatically inferred missing travel points to prevent reimbursement issues due to lost invoices.</p>
+</li>
+<li>
+<p><strong>Microservices Architecture</strong>: Implemented a Microservices Architecture using Spring Cloud to decouple various modules, including User Management, Invoice Processing, and Expense Report Management, thereby enhancing process modularity.</p>
+</li>
+<li>
+<p><em><strong>Project Sustainability Management</strong></em>: As a team leader, managed a team of 9 individuals,utilized Weekly Report and Gantt charts to document requirements and schedule tasks for unified management and tracking.Finally, a total of over 20 technical documents were created and our team completing feature development 7 days ahead of schedule.</p>
+</li>
+</ul>
+<details>
+<summary>Click to view details</summary>
+<h2 id="identification-of-value-added-tax-invoices">Identification of value-added tax invoices</h2>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/增值税发票表单.png width=60%  />
+<p>Fig1. value-added tax invoice</p>
+</div>
+<h2 id="ordinary-form-recognition">Ordinary form recognition</h2>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/普通类表单.png width=60%  />
+<p>Fig2. Ordinary form</p>
+</div>
+<h2 id="train-ticket-identification">Train ticket identification</h2>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/火车票类表单.png width=60%  />
+<p>Fig3. Train ticket</p>
+</div>
+</details>
+<h1 id="part-2-project-experience">PART 2: Project Experience</h1>
+<h1 id="projectex-2023online-video-play-system">[ProjectEx-2023]Online Video Play System</h1>
+<ul>
+<li>
+<p><strong>Stability of Distributed System Microservices Architecture</strong>:Successfully keeping RPC Error Rate below 3%, through Consul and GRPC for service registration and discovery, combined with the weighted round-robin algorithm to optimize load balancing for the online video system.</p>
+</li>
+<li>
+<p><em><strong>System Metrics Monitoring and Alerting</strong></em>:Monitored server status using Prometheus,Grafana and Altermanager.After Post-Load Testing through Jmeter, performance bottleneck analysis is employed with ELK log recording and PPROF flame graphs for performance bottleneck analysis.</p>
+</li>
+<li>
+<p><strong>High Concurrency and High Performance</strong>:Achieved an interface QPS of over 1500 by using Redis, establishing DB Index and Read-write separation,Server Scale Out with Kubernetes,and a pagination query to optimize the slow-query video list interface.</p>
+</li>
+<li>
+<p><strong>Continuous Integration/Continuous Deployment</strong>:Compressing the entire process from Code Changes to Deployment into a 2-minute timeline by implementing CI/CD using Docker and Github Action.</p>
+</li>
+<li>
+<p><strong>Project Link</strong>: http://175.178.59.92:8081/</p>
+</li>
+</ul>
+<h1 id="centerprojectex-2022desktop-grid-five-axis-linkage-denture-manufacturing-system"><center>[ProjectEx-2022]Desktop Grid Five Axis Linkage Denture Manufacturing System</h1>
+<blockquote>
+<p><strong>Outcome : Software Copyright (First author)</strong></p>
+</blockquote>
+<p>The customized printing system of Beidite cloud will be used for daily data analysis, model management and equipment management of denture equipment users such as hospitals and medical institutions.The system supports model upload, model viewing, model printing, and equipment activation to improve work efficiency, thereby comprehensively enhancing the profitability and competitiveness of enterprises.</p>
+<details>
+<summary>Click to view details</summary>
+## One-click printing all models
+  One-click printing can print all selected models.According to the model structure, the G code corresponding to the five-axis denture processing machine can be automatically generated.
+<p>The G code will be transmitted to the next machine.If there are multiple models that need to be printed, the priority of printing is determined by intelligent sorting based on the total number of machines and resources.</p>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/一键打印.png width=80%  />
+<p>Fig1. One-click printing all models</p>
+</div>
+<h2 id="online-management-of-3d-models">Online management of 3D models</h2>
+<p>The details include two parts, one is the basic information of the model, and the other is the 3D model of the model.</p>
+<p>The basic information of the model includes the number, patient, creation date, material, size, quality level, etc.</p>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/模型信息.png width=80%  />
+<p>Fig2. basic information of the model</p>
+</div>
+<p>The 3D model module of the model can view the uploaded model online, and you can zoom and scroll to view the relevant details.</p>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/模型查看.png width=80%  />
+<p>Fig3. 3D model module online show</p>
+</div>
+</details>
+<h1 id="centerprojectex-2022development-of-power-detection-app-based-on-modbus-tcp"><center>[ProjectEx-2022]Development of Power Detection APP Based on Modbus TCP</h1>
+<blockquote>
+<p><strong>Outcome</strong>: <strong>BEST open source implement of Modbus tcp Protocol</strong></p>
+</blockquote>
+<p>The goal of this system: in order to be able to interact with power equipment in a WIFI local area network (no 4G network) environment, and efficiently and conveniently realize the operation and maintenance management of power equipment, including: 1) DCU, power equipment data management; 2) power equipment remote control, remote adjustment, telemetry, remote communication; 3) and power equipment historical data query and other functions.</p>
+<p>In order to complete the communication, I independently developed the dart version interface of the Modbus Tcp protocol and opened it <a href="https://github.com/yushen611/modbusTcpApi" title="Modbus Tcp Api In github"><strong>open source</strong></a>.</p>
+<p><strong>It is the best Modbus Tcp Api for dart.</strong></p>
+<h1 id="centerprojectex-2021a-wireless-torque-sensor-of-high-speed-rotating-shafting-torque-for-in-situ-measurement"><center>[ProjectEx-2021]A Wireless Torque Sensor of High-Speed Rotating Shafting Torque for In Situ Measurement</h1>
+<blockquote>
+<p><strong>Outcome</strong>: <strong>patent</strong> and <strong>paper</strong></p>
+</blockquote>
+<p>At present, torque sensors are widely used in industry to measure static and dynamic torque.Since the torque sensor is mostly installed between the input shaft and the output shaft at this stage, this measurement method leads to a variety of factors affecting the test results, such as the axial degree error causing additional deformation of the measurement part, so a method for in situ direct measurement of the measuring shaft is proposed.In this paper, a wireless torque measurement method for in situ measurement of torque of rotating shaft system is studied.A mechanical model for in situ measurement of torque is established, and the correctness of the theoretical model is verified through finite element simulation analysis.The steps of using this method for torque measurement are introduced, and static and dynamic repetitive experiments are carried out.The uncertainty of the measurement of torque on the surface of the experimental structure in this method can be maintained below 3%.It provides a reference for the study of torque in situ measurement.</p>
+<details>
+<summary>Click to view details</summary>
+<h2 id="simulation-and-analysis">Simulation and analysis</h2>
+<p>In this section, finite element simulation is carried out to analyze the axial strain distribution law of the test piece under torsion.According to the performance of the MTS torsional universal material testing machine and considering the rigidity and strength of the test piece, the material of the test piece is selected as 45#steel with good overall performance.ANSYS Workbench 2020 R2 is used to apply external torque to the test piece to realize statics simulation. In order to obtain high simulation accuracy, the meshing is selected as Hex dominant method, and the free surface mesh type is quadrilateral/triangle.A fixed restraint is applied to one end of the cylinder of the test piece, and a torque load is applied to the other end.Through ANSYS simulation, the surface strain and stress distribution of the test piece are shown in Figure 1.</p>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/等效力.png width=80%  />
+<p>Fig1. Equivalent elastic strain / equivalent force</p>
+</div>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/角度与扭矩.png width=80%  />
+<p>Fig2.  Position, angle, torque relationship</p>
+</div>
+<h2 id="experiment">Experiment</h2>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/机械结构设计.png width=80%  />
+<p>Fig3. Mechanical structure design</p>
+</div>
+<p>In order to verify the performance of the wireless in situ measurement system and test system designed in this paper, static cyclic loading experiments were carried out on the built test prototype.</p>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/实验设备.png width=80%  />
+<p>Fig4. Torsion MTS universal material testing machine loading experiment</p>
+</div>
+<p>In situ dynamic detection of the output shaft is carried out on the friction tester. The maximum speed of the tester is 300RPM. Four progressive loads are carried out. As the speed increases, the loading force decreases. Since the measuring device is fixed on the output shaft, excessive load at high speed will cause greater vibration.</p>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/机械结构实现.png width=80%  />
+<p>Fig5. Realization of mechanical structure</p>
+</div>
+</details>
+<h1 id="centerprojectex-2021design-and-manufacturing-of-an-intelligent-ankle-and-foot-orthosis"><center>[ProjectEx-2021]Design and Manufacturing of An Intelligent Ankle and Foot Orthosis</h1>
+<blockquote>
+<p><strong>Outcome</strong>: <strong>National Third Prize in ICAN</strong> Entrepreneurship Competition</p>
+</blockquote>
+<p>This project aims to develop a customized intelligent ankle and foot orthosis to solve the problems of many complications caused by wearing common orthotics, long production cycles and single functions of orthotics.Through the research on the additive manufacturing technology of ankle and foot orthotics considering mechanical properties and the 3D printing technology of porous foam materials with gradient elastic modulus, the rapid design and manufacture of orthotics is realized, and the comfort and accuracy of orthotics are improved; through the development of an orthosis information feedback system based on flexible sensors, the patient's recovery is analyzed, and the functions are diversified and the products are intelligent.</p>
+<details>
+<summary>Click to view details </summary>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/扫描后的模型.png width=60%  />
+<p>Step1. model scan</p>
+</div>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/机械结构设计图.png width=60%  />
+<p>Step2. model build</p>
+</div>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/湿固化硅胶3D打印机.png width=60%  />
+<p>Fig1. Wet curing silicone 3D printer</p>
+</div>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/个性化定制鞋垫.png width=60%  />
+<p>Fig2. Personalized custom insoles through 3D printer</p>
+</div>
+</details>
+<h1 id="projectex-2020an-intelligent-walking-aid-with-navigation-and-anti-tripping-functions">[ProjectEx-2020]An Intelligent Walking Aid with Navigation and Anti-Tripping Functions</h1>
+<blockquote>
+<p><strong>Outcome</strong>:</p>
+</blockquote>
+<p>The product is an intelligent walker with multi-functions such as navigation and anti-fall. It mainly solves the safety problems of people getting lost and falling when they go out, as well as the difficulty of young people obtaining effective information about complex traffic. At the same time, taking into account the difficulty of displaying health codes in public places during the epidemic, the function of generating health codes has been added.</p>
+<details>
+<summary>Click to view details </summary>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/外观结构.png width=60%  />
+<p>Fig1. Appearance structure</p>
+</div>
+<div align="center">
+<img src=https://gitee.com/yushen611/img/raw/master/防摔功能.png width=60%  />
+<p>Fig2. Anti-fall function</p>
+</div>
+</details>]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Research Experience]]></title>
+        <id>https://yushen611.github.io/post/about-research/</id>
+        <link href="https://yushen611.github.io/post/about-research/">
+        </link>
+        <updated>2022-11-25T13:27:36.000Z</updated>
+        <summary type="html"><![CDATA[<p>📖 Interests:Natural Language Processing,Graph Neural Networks,Generative Adversarial Networks, Artificial Intelligence for Security,Fine-tuning Large Language Models,BlockChain</p>
+<ul>
+<li>2023:Identifying Blockchain Transaction Risks Based on Graph Neural Networks and Large Language Models.</li>
+<li>2023:Malicious SQL intelligent interceptor in Web applications</li>
+<li>2023:Mocap Data Generation and Virtual Character Redirection Based on TransCGAN</li>
+<li><a href="https://yushen611.github.io/post/about-research/">Click to see more...</a></li>
+</ul>
+]]></summary>
+        <content type="html"><![CDATA[<p>📖 Interests:Natural Language Processing,Graph Neural Networks,Generative Adversarial Networks, Artificial Intelligence for Security,Fine-tuning Large Language Models,BlockChain</p>
+<ul>
+<li>2023:Identifying Blockchain Transaction Risks Based on Graph Neural Networks and Large Language Models.</li>
+<li>2023:Malicious SQL intelligent interceptor in Web applications</li>
+<li>2023:Mocap Data Generation and Virtual Character Redirection Based on TransCGAN</li>
+<li><a href="https://yushen611.github.io/post/about-research/">Click to see more...</a></li>
+</ul>
+<!-- more -->
+<meta name="referrer" content="no-referrer"/>
+<p>I'm interested in Deep Learning,Mocap Data Generation,SQL Injection Attack Detection,Model Compression,Smart Medical etc.</p>
+<h1 id="2023-dl-for-security-reseachmalicious-sql-intelligent-interceptor-in-web-applications">【2023-DL for security-Reseach】Malicious SQL intelligent interceptor in Web applications</h1>
+<blockquote>
+<p><strong>Outcome: the source code is for company,but docker image can be used</strong></p>
+<p><a href="https://hub.docker.com/r/88759863/sqli-detector-java">88759863/sqli-detector-java - Docker Image | Docker Hub</a></p>
+<p><a href="https://hub.docker.com/r/88759863/sqli-detector-python">88759863/sqli-detector-python - Docker Image | Docker Hub</a></p>
+</blockquote>
+<ul>
+<li><strong>web visualization</strong></li>
+</ul>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230907125115509.png" alt="image-20230907125115509"  />
+<p>This paper aims to study and enhance the capabilities of <strong>SQL injection interception</strong> and proposes a viable solution using machine learning-based classification models. For this purpose, the paper accomplishes the following:</p>
+<ol>
+<li><strong>Collected and organized the largest publicly available SQL injection dataset</strong>, consisting of 140,000 records, providing a reliable and effective data source for research on SQL injection interceptors.</li>
+<li><strong>Designed and compared two query string vectorization methods</strong>: the tf-idf method based on term frequency statistics and the word2vec model for word vectorization. Experimental results indicate that using the Random Forest model with tf-idf and SVD dimensionality reduction achieved the highest accuracy of 97%.</li>
+<li><strong>Compared five different machine learning models and experimented with various query string vectorization methods</strong>. The results show that the Random Forest model, when combined with tf-idf and SVD dimensionality reduction, can achieve a maximum accuracy of 97%. In practical applications, the word2vec model and related methods are more widely applicable and feasible, achieving an accuracy rate of up to 95%.</li>
+<li><strong>Implemented a rule-based SQL injection interceptor using syntax analysis for comparative experiments</strong>. The results show that its accuracy is only 78%, making machine learning-based methods and the word2vec model more preferable.</li>
+<li><strong>Developed a user-friendly SQL injection interceptor explanation system</strong> that details the underlying algorithms and provides public download links for Docker images of both rule-based and ML-based SQL injection interceptors.</li>
+</ol>
+<details>
+<summary>Click to view details</summary>
+<p>SQL injection attacks exploit vulnerabilities in web applications to compromise database information and web application security. Developing effective SQL injection interceptors to detect and intercept user-submitted SQL statements is crucial for strong defense.</p>
+<p>This thesis aims to enhance SQL injection interception capabilities by exploring various interception methods and proposing a machine learning classification model. A public SQL injection dataset containing 140,000 records was collected and organized, serving as a reliable source for research. Two query string vectorization methods were designed and compared using statistical frequency of terms and word2vec model. Singular value decomposition and positional encoding were applied to enhance dimensionality reduction and reduce noise. The edit distance method was employed for mapping word vectors and enabling vectorization of arbitrary strings.</p>
+<p>We tested five machine learning models, including logistic regression, SVM, Naive Bayes, random forests, and decision trees, on different query string vectorization methods. Results show that the tf-idf method with SVD dimensionality reduction combined with random forests achieved the highest accuracy rate of 97%, while word2vec with convolutional dimensionality reduction combined with random forests had accuracy of 95%.</p>
+<p>We tested a rule-based SQL injection interceptor and a machine learning model and found the rule-based model to have an accuracy rate of only 78%. Therefore, we believe that the machine learning classification model, which uses the word2vec model, is more practical and effective for SQL injection interception. Our research can contribute to improving SQL injection interception capabilities and network security. We have also developed a demo system for the SQL injection interceptor, explaining the principles and providing download links for Docker images of both rule-based and machine learning-based SQL injection interceptors.</p>
+<ul>
+<li><strong>Architecture of the interceptor</strong></li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="https://gitee.com/yushen611/img/raw/master/image-20230907124613277.png" alt="image-20230907124613277" loading="lazy"></figure>
+<ul>
+<li><strong>New method for word-Embedding</strong></li>
+</ul>
+<figure data-type="image" tabindex="2"><img src="https://gitee.com/yushen611/img/raw/master/image-20230907124732043.png" alt="image-20230907124732043" loading="lazy"></figure>
+<ul>
+<li><strong>Result</strong></li>
+</ul>
+<figure data-type="image" tabindex="3"><img src="https://gitee.com/yushen611/img/raw/master/image-20230907125025187.png" alt="image-20230907125025187" loading="lazy"></figure>
+</details>
+<h1 id="center-2022-dl-reseachmocap-data-generation-and-virtual-character-redirection-based-on-transcgancenter"><center> 【2022-DL-Reseach】Mocap Data Generation and Virtual Character Redirection Based on TransCGAN</center></h1>
+<blockquote>
+<p><strong>Outcome</strong>: <strong>EI Paper</strong> , be invited to be <strong>Reviewers</strong></p>
+</blockquote>
+<p>In the section II, the basic principles and advantages of GAN, CGAN and Transformer are explained and the network architecture of <strong>TransCGAN is proposed</strong>. In the section III, we provide a detailed description of the data pre-processing and model training process. In the section IV, we provide a <strong>qualitative and quantitative analysis</strong> of the generative power of the model, and in the next section an outlook on the application scenarios of the model.</p>
+<details>
+<summary>Click to view details</summary>
+<h2 id="transcgan-model-structure">TransCGan Model Structure</h2>
+<figure data-type="image" tabindex="4"><img src="https://gitee.com/yushen611/img/raw/master/HumanModel.png" alt="Fig1. Human skeleton model" loading="lazy"></figure>
+<p>​																							Fig1. Human skeleton model</p>
+<img src="https://gitee.com/yushen611/img/raw/master/TRANSCGAN.jpg" alt="Fig2. Generator & Discriminator" style="zoom:50%;" />
+<p>​																					Fig2. Generator &amp; Discriminator</p>
+<h2 id="different-effects-with-one-action">Different effects with one action</h2>
+<p>It was discovered that the model generates a variety of actions with the same label name. Using ‘Standing Up’ as an illustration (Figure 3), the diverse data provided by the model reveal that the spatial locations of the joints corresponding to different frame serial numbers are not identical, but the overall continuity is consistent with the action's intent.</p>
+<img src="https://gitee.com/yushen611/img/raw/master/generatadData_01.jpg" alt="Fig3. Different generation of the model for the Standing Up action" style="zoom:50%;" />
+<p>​													Fig3. Different generation of the model for the Standing Up action</p>
+<h2 id="different-movements-with-different-effects">Different movements with different effects</h2>
+<p>the model was able to create the various actions accurately. Six actions were generated in total (Figure 4), and the findings indicated that each action was generated smoothly and in accordance with its meaning.</p>
+<img src="https://gitee.com/yushen611/img/raw/master/generatadData_02.jpg" alt="Fig4. Generative movements of the model for 6 types of movements(Walking Forward, Walking Back, Standing Up, Sitting Down, Picking Up and Body Rotation)" style="zoom: 50%;" />
+<p>​				Fig4. Generative movements of the model for 6 types of movements(Walking Forward, Walking Back, Standing Up, Sitting Down, Picking Up and Body Rotation)</p>
+</details>]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Welcome to Yu Wenya's blog | Contents]]></title>
+        <id>https://yushen611.github.io/post/hello/</id>
+        <link href="https://yushen611.github.io/post/hello/">
+        </link>
+        <updated>2018-12-10T16:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>📖 点击本文进入博客目录<br>
+🙏有任何问题欢迎联系我或在对应博客下方留言。</p>
+<ul>
+<li>Golang后端开发</li>
+<li>Python机器学习与数据分析</li>
+<li>solidity智能合约开发</li>
+<li>深度学习</li>
+<li><a href="https://yushen611.github.io/post/hello/">Click to see more...</a></li>
+</ul>
+]]></summary>
+        <content type="html"><![CDATA[<p>📖 点击本文进入博客目录<br>
+🙏有任何问题欢迎联系我或在对应博客下方留言。</p>
+<ul>
+<li>Golang后端开发</li>
+<li>Python机器学习与数据分析</li>
+<li>solidity智能合约开发</li>
+<li>深度学习</li>
+<li><a href="https://yushen611.github.io/post/hello/">Click to see more...</a></li>
+</ul>
+<!-- more -->
+<p>📱联系方式<br>
+<a href="https://github.com/yushen611">Github: https://github.com/yushen611</a><br>
+Email: ywy_hfut@163.com</p>
+<!-- [主题网站](https://open.gridea.dev/themes) -->
+<p>👋👋👋👋目录</p>
+<h2 id="golang后端开发">Golang后端开发👇</h2>
+<p>📝  <a href="https://yushen611.github.io/post/goBE-golang-basic/">golang基础教程</a><br>
+📝  <a href="https://yushen611.github.io/goBE-consul&amp;grpc/">consul+grpc最佳实践</a><br>
+📝  <a href="https://yushen611.github.io/post/goBE-jwt/">登录功能的设计-JWT的各种使用</a><br>
+📝  <a href="https://yushen611.github.io/post/goBE-fen-bu-shi-suo/">分布式锁-基于redis或基于mysql的go语言实现</a><br>
+📝  <a href="https://yushen611.github.io/post/goBE-MQ-basic/">go语言中的消息队列(MQ)</a></p>
+<h2 id="python机器学习与数据分析">Python机器学习与数据分析👇</h2>
+<p>📝  <a href="https://yushen611.github.io/post/python-basic/">python基础教程</a><br>
+📝  <a href="https://yushen611.github.io/post/python-DA-ML/">python数据分析与机器学习</a></p>
+<h2 id="solidity智能合约开发">solidity智能合约开发👇</h2>
+<p>📝  <a href="https://yushen611.github.io/post/solidity_helloworld/">solidity-helloworld-真实上链-踩坑实录</a></p>
+<h2 id="深度学习">深度学习👇</h2>
+<p>📝  <a href="https://yushen611.github.io/post/DL-pyg-basic/">01-gnn-pyg基础</a><br>
+📝  <a href="https://yushen611.github.io/post/DL-pyg-tgn/">02-gnn-tgn</a></p>
+<h2 id="其他博客">其他博客👇</h2>
+<p>📝  <a href="https://yushen611.github.io/post/other-nginx&amp;rtmp/">nginx+rtmp流媒体服务器搭建</a></p>
+<p>📝  <a href="https://yushen611.github.io/post/other-mysql-basic/">mysql八股</a></p>
+]]></content>
+    </entry>
+</feed>

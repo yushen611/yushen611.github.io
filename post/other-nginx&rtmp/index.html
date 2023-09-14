@@ -1,0 +1,486 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>nginx+rtmp流媒体服务器搭建 | YU WENYA&#39;S BLOG</title>
+<link rel="shortcut icon" href="https://yushen611.github.io/favicon.ico?v=1694708085062">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://yushen611.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="nginx+rtmp流媒体服务器搭建 | YU WENYA&#39;S BLOG - Atom Feed" href="https://yushen611.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+一、概述
+流程概述
+目标是要做直播或者流媒体播放。
+整体架构是：在客户端A向服务器B发送视频流(这一过程称之为推流)，另一个客户端C从服务器拉取视频流（这一过程称之为拉流）进行播放。
+使用的技术：
+
+协议采用的是rtmp协议
+服务器使用的..." />
+    <meta name="keywords" content="other" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://yushen611.github.io">
+  <img class="avatar" src="https://yushen611.github.io/images/avatar.png?v=1694708085062" alt="">
+  </a>
+  <h1 class="site-title">
+    YU WENYA&#39;S BLOG
+  </h1>
+  <p class="site-description">
+    👏  欢迎来到余文涯的博客 ！  <br>
+✍️  这里将分享有关区块链/分布式系统/golang开发/python机器学习与数据分析/redis/mysql/面试八股/leetcod刷题 等面试与技术知识。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/yushen611" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              nginx+rtmp流媒体服务器搭建
+            </h2>
+            <div class="post-info">
+              <span>
+                2023-06-19
+              </span>
+              <span>
+                7 min read
+              </span>
+              
+                <a href="https://yushen611.github.io/tag/ODjzW1X5F/" class="post-tag">
+                  # other
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <meta name="referrer" content="no-referrer"/>
+<h1 id="一-概述">一、概述</h1>
+<h2 id="流程概述">流程概述</h2>
+<p>目标是要做<strong>直播</strong>或者<strong>流媒体播放</strong>。</p>
+<p><strong>整体架构</strong>是：在客户端A向服务器B发送视频流(这一过程称之为<strong>推流</strong>)，另一个客户端C从服务器拉取视频流（这一过程称之为<strong>拉流</strong>）进行播放。</p>
+<p>使用的技术：</p>
+<ul>
+<li>协议采用的是rtmp协议</li>
+<li>服务器使用的是nginx与nginx-rtmp模块</li>
+<li>推流使用的是FFmpeg工具</li>
+<li>拉流使用的是vlc软件</li>
+</ul>
+<p>更多关于rtmp协议 与 FFmpeg vlc 原理的内容未来慢慢补充。</p>
+<h1 id="二-搭建服务器">二、搭建服务器</h1>
+<p>这里主要是将怎么把nginx的插件nginx-rtmp模块与nginx，分别下载，并绑定起来。以及如何修改nginx配置文件，启动rtmp服务</p>
+<p>说明：我的服务器环境是centos7</p>
+<h2 id="21-安装nginx和nginx-rtmp"><strong>2.1 安装nginx和nginx-rtmp</strong></h2>
+<p>1.安装从源代码编译Nginx和Nginx-RTMP所需的工具。</p>
+<pre><code class="language-bash">sudo yum install pcre pcre-devel openssl openssl-devel zlib zlib-devel -y
+</code></pre>
+<p>2.创建一个工作目录并切换到该目录。</p>
+<pre><code class="language-bash">mkdir ~/working
+cd ~/working
+</code></pre>
+<p>3.下载Nginx和Nginx-RTMP源。</p>
+<pre><code class="language-bash">wget http://nginx.org/download/nginx-1.9.7.tar.gz
+wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
+</code></pre>
+<p>Nginx-RTMP官方源码：https://github.com/arut/nginx-rtmp-module</p>
+<p>安装解压缩包。</p>
+<pre><code class="language-bash">sudo yum install unzip
+</code></pre>
+<p>4.提取Nginx和Nginx-RTMP源。</p>
+<pre><code class="language-bash">tar -xvf nginx-1.9.7.tar.gz
+unzip nginx-rtmp-module-master.zip
+</code></pre>
+<p>5.切换到Nginx目录。</p>
+<pre><code class="language-bash">cd nginx-1.9.7
+</code></pre>
+<p>6.添加模块以编译到Nginx中。包括Nginx-RTMP。</p>
+<pre><code class="language-bash">./configure --add-module=../nginx-rtmp-module-master/
+</code></pre>
+<p>7.使用Nginx-RTMP编译并安装Nginx。</p>
+<pre><code class="language-bash">make
+sudo make install
+</code></pre>
+<p>我们执行命令，启动nginx服务器：</p>
+<pre><code class="language-bash">/usr/local/nginx/sbin/nginx
+</code></pre>
+<p>启动后，浏览器输入服务器ip，出现下图页面表示nginx运行成功</p>
+<figure data-type="image" tabindex="1"><img src="https://gitee.com/yushen611/img/raw/master/image-20230429185906074.png" alt="image-20230429185906074" loading="lazy"></figure>
+<h2 id="22-修改nginx配置">2.2 修改nginx配置</h2>
+<p>把<code>/root/working/nginx-1.9.7/conf</code>里的<code>nginx.conf</code>文件打开，在最下面加一个rtmp内容：</p>
+<pre><code>rtmp
+{
+    server
+    {
+        listen 1935;
+        chunk_size 4096;
+        application live
+        {
+            live on;
+        }
+    }
+}
+</code></pre>
+<p>在http中加一个内容，使nginx能具有直播状态监听的功能(<strong>这个功能没测试，但不影响正常的推拉流功能</strong>)。其中/root/working/nginx-rtmp-module-master是博主安装的nginx-rtmp-module的绝对路径，各位得根据自己安装的nginx-rtmp-module的路径进行修改。8080是拉流请求的端口号。</p>
+<pre><code> server {
+        listen       8080;
+        location /stat{
+                rtmp_stat all;
+                rtmp_stat_stylesheet stat.xsl;
+        }
+        location /stat.xsl{
+               root /root/working/nginx-rtmp-module-master;
+        }
+    }
+</code></pre>
+<p>总结：改完后的内容如下：</p>
+<pre><code>
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+rtmp
+{
+    server
+    {
+        listen 1935;
+        chunk_size 4096;
+        application live
+        {
+            live on;
+        }
+    }
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '
+    #                  '$status $body_bytes_sent &quot;$http_referer&quot; '
+    #                  '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    server {
+        listen       8080;
+        location /stat{
+                rtmp_stat all;
+                rtmp_stat_stylesheet stat.xsl;
+        }
+        location /stat.xsl{
+               root /root/working/nginx-rtmp-module-master;
+        }
+    }
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+}
+
+</code></pre>
+<h2 id="23加载nginx新配置并重启">2.3加载nginx新配置，并重启</h2>
+<p>先关闭nginx</p>
+<pre><code class="language-bash">/usr/local/nginx/sbin/nginx -s stop
+</code></pre>
+<p>再设置nginx配置文件路径，并检查一下配置文件是否格式正确</p>
+<pre><code class="language-bash">/usr/local/nginx/sbin/nginx -c /root/working/nginx-1.9.7/conf/nginx.conf
+sudo ./nginx -t
+</code></pre>
+<p>如果输出如下，表示配置文件格式正确：</p>
+<figure data-type="image" tabindex="2"><img src="https://gitee.com/yushen611/img/raw/master/image-20230429191456620.png" alt="image-20230429191456620" loading="lazy"></figure>
+<p>最后重新加载nginx即可</p>
+<pre><code class="language-bash">/usr/local/nginx/sbin/nginx -s reload
+</code></pre>
+<p><strong>检查部分</strong>：查看所有nginx监听的端口</p>
+<pre><code class="language-bash">sudo lsof -i -P -n | grep nginx
+</code></pre>
+<p>如果有监听1935端口，表示监听成功，如图：</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230429191224807.png" alt="image-20230429191224807" style="zoom:80%;" />
+<p>如果只有80端口（如图）表示未配置成功</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230429191303946.png" alt="image-20230429191303946" style="zoom:80%;" />
+<p><strong>防火墙部分</strong>：</p>
+<p>请检查服务器有关端口的防火墙是否关闭，否则也会连接不成功。</p>
+<h1 id="三-ffmpeg-推流">三、FFmpeg 推流</h1>
+<h2 id="31-下载安装">3.1 下载安装</h2>
+<p>FFmpeg 的安装（在window上）：</p>
+<p>从官网这个页面<a href="https://www.gyan.dev/ffmpeg/builds/">Builds - CODEX FFMPEG @ gyan.dev</a>：</p>
+<figure data-type="image" tabindex="3"><img src="https://gitee.com/yushen611/img/raw/master/image-20230429192201129.png" alt="image-20230429192201129" loading="lazy"></figure>
+<p>找到下载的镜像网站https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-github，下载圈出来的这个：</p>
+<figure data-type="image" tabindex="4"><img src="https://gitee.com/yushen611/img/raw/master/image-20230429192254806.png" alt="image-20230429192254806" loading="lazy"></figure>
+<p>如果不想配置环境变量，就随便解压到一个文件夹，在哪个目录下运行exe文件即可完成推荐</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230429192532990.png" alt="image-20230429192532990" style="zoom:80%;" />
+<h2 id="32-推流">3.2 推流</h2>
+<p><strong>视频推流</strong></p>
+<p>在cmd中运行如下命令进行视频推流：</p>
+<pre><code class="language-bash">ffmpeg -i D:\ywy\MYFILE\temp\test.mp4  -f flv rtmp://47.XXX.XXX.XXX/live/test1
+</code></pre>
+<p>D:\ywy\MYFILE\temp\test.mp4 是视频的路径，47.XXX.XXX.XXX是服务器的ip</p>
+<p><strong>摄像头推流</strong></p>
+<pre><code class="language-bash">ffmpeg -f dshow -rtbufsize 100M -i video=&quot;XiaoMi USB 2.0 Webcam&quot; -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://47.XXX.XXX.XXX:1935/live/home
+</code></pre>
+<h1 id="四-vcl拉流">四、VCL拉流</h1>
+<p>vlc官网下载：<a href="https://www.videolan.org/vlc/index.zh_CN.html">官方下载：VLC media player，最棒的开源播放器 - VideoLAN</a></p>
+<figure data-type="image" tabindex="5"><img src="https://gitee.com/yushen611/img/raw/master/image-20230429194610307.png" alt="image-20230429194610307" loading="lazy"></figure>
+<p>输入url:</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230429194658306.png" alt="image-20230429194658306" style="zoom:90%;" />
+<p>拉流成功</p>
+<img src="https://gitee.com/yushen611/img/raw/master/image-20230429194525293.png" alt="image-20230429194525293" style="zoom:67%;" />
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E6%A6%82%E8%BF%B0">一、概述</a>
+<ul>
+<li><a href="#%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0">流程概述</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8">二、搭建服务器</a>
+<ul>
+<li><a href="#21-%E5%AE%89%E8%A3%85nginx%E5%92%8Cnginx-rtmp"><strong>2.1 安装nginx和nginx-rtmp</strong></a></li>
+<li><a href="#22-%E4%BF%AE%E6%94%B9nginx%E9%85%8D%E7%BD%AE">2.2 修改nginx配置</a></li>
+<li><a href="#23%E5%8A%A0%E8%BD%BDnginx%E6%96%B0%E9%85%8D%E7%BD%AE%E5%B9%B6%E9%87%8D%E5%90%AF">2.3加载nginx新配置，并重启</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-ffmpeg-%E6%8E%A8%E6%B5%81">三、FFmpeg 推流</a>
+<ul>
+<li><a href="#31-%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85">3.1 下载安装</a></li>
+<li><a href="#32-%E6%8E%A8%E6%B5%81">3.2 推流</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9B%9B-vcl%E6%8B%89%E6%B5%81">四、VCL拉流</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2c8e752d0e362a2a873f',
+    clientSecret: '862c97459ff5f1f34a4ff6ce3442f41a00c107e0',
+    repo: 'yushen611.github.io',
+    owner: 'yushen611',
+    admin: ['yushen611'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://yushen611.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
